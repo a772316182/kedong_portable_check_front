@@ -1,9 +1,14 @@
 <script setup lang="ts">
 const username = ref('')
 const password = ref('')
+const router = useRouter()
 definePageMeta({
   layout: 'without-drawer'
 })
+
+const login = () => {
+  router.push('/dashboard')
+}
 </script>
 
 <template>
@@ -36,7 +41,7 @@ definePageMeta({
               </div>
               <div class="row" style="padding-top: 3%">
                 <div class="col-12">
-                  <q-btn label="登录" class="full-width" color="primary"/>
+                  <q-btn label="登录" class="full-width" color="primary" @click="login"/>
                 </div>
               </div>
               <div class="row" style="padding-top: 3%">
@@ -49,14 +54,13 @@ definePageMeta({
         </q-card>
       </div>
     </div>
-    <q-footer class="bg-transparent text-center text-weight-bold text-black">
+    <q-footer class="bg-transparent text-center text-weight-bold text-white">
       便携式检查工具V3.0
       <br>
-      Copyright@北京科东.All rights reserved
+      Copyright@北京科东. All rights reserved
     </q-footer>
   </div>
 </template>
 
 <style scoped>
-
 </style>
