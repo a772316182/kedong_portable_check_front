@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import {useRouter} from "vue-router";
+
+const router = useRouter()
 </script>
 
 <template>
@@ -7,6 +10,7 @@
       <q-item
           v-ripple
           clickable
+          @click="router.push('/dashboard')"
       >
         <q-item-section avatar>
           <q-icon name="home"/>
@@ -90,7 +94,18 @@
         <q-item-section>整改通知单</q-item-section>
       </q-item>
     </q-list>
-
+    <q-list class="full-width">
+      <q-item
+          v-ripple
+          clickable
+          @click="router.push('/user_manage')"
+      >
+        <q-item-section avatar>
+          <Icon name="heroicons:users-solid" size="24" mode="svg"/>
+        </q-item-section>
+        <q-item-section>用户管理</q-item-section>
+      </q-item>
+    </q-list>
     <q-list class="full-width">
       <q-item
           v-ripple

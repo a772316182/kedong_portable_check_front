@@ -41,8 +41,7 @@ const username = ref('张三')
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above side="left" behavior="desktop" bordered>
-      <!-- drawer content -->
-      <drawer/>
+      <common-drawer/>
     </q-drawer>
 
     <q-page-container>
