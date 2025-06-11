@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="text-primary text-weight-bold">
+  <div class="text-primary text-weight-bold text-body1">
     <q-list class="full-width">
       <q-item
           v-ripple

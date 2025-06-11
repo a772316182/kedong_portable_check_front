@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import Drawer from "~/ components/drawer.vue";
-
 const leftDrawerOpen = ref(false)
 </script>
 
@@ -26,7 +24,9 @@ const leftDrawerOpen = ref(false)
     </q-drawer>
 
     <q-page-container>
-      <slot/>
+      <q-page class="q-pa-md full-height full-width">
+        <slot/>
+      </q-page>
     </q-page-container>
 
   </q-layout>
