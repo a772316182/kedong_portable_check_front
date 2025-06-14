@@ -110,6 +110,7 @@ const router = useRouter()
       <q-item
           v-ripple
           clickable
+          @click="router.push('/sys_manage')"
       >
         <q-item-section avatar>
           <Icon name="material-symbols-light:settings" size="24" mode="svg"/>

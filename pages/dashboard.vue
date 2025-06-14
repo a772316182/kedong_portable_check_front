@@ -4,22 +4,22 @@ const factoryStationCount = ref(66)
 const reportCount = ref(850)
 
 const chartData = ref([
-  { month: '2020-10', value: 130 },
-  { month: '2020-11', value: 110 },
-  { month: '2020-12', value: 180 },
-  { month: '2021-1', value: 140 },
-  { month: '2021-2', value: 70 },
-  { month: '2021-3', value: 50 }
+  {month: '2020-10', value: 130},
+  {month: '2020-11', value: 110},
+  {month: '2020-12', value: 180},
+  {month: '2021-1', value: 140},
+  {month: '2021-2', value: 70},
+  {month: '2021-3', value: 50}
 ])
 
 const rankingData = ref([
-  { station: 'xxx变电站', score: 96 },
-  { station: 'xxx变电站', score: 95 },
-  { station: 'xxx变电站', score: 94 },
-  { station: 'xxx变电站', score: 90 },
-  { station: 'xxx变电站', score: 89 },
-  { station: 'xxx变电站', score: 89 },
-  { station: 'xxx变电站', score: 88 }
+  {station: 'xxx变电站', score: 96},
+  {station: 'xxx变电站', score: 95},
+  {station: 'xxx变电站', score: 94},
+  {station: 'xxx变电站', score: 90},
+  {station: 'xxx变电站', score: 89},
+  {station: 'xxx变电站', score: 89},
+  {station: 'xxx变电站', score: 88}
 ])
 
 const recentReports = ref([
@@ -52,11 +52,11 @@ const recentReports = ref([
         <!-- Top Stats Cards -->
         <div class="row q-col-gutter-md q-mb-md">
           <div class="col-6">
-            <q-card class="stats-card">
+            <q-card class="stats-card" bordered flat>
               <q-card-section class="q-pa-lg">
                 <div class="stats-content">
                   <div class="stats-icon stats-icon--orange">
-                    <q-icon name="factory" size="24px" />
+                    <q-icon name="factory" size="24px"/>
                   </div>
                   <div class="stats-info">
                     <div class="stats-label">检查厂站数量</div>
@@ -68,11 +68,11 @@ const recentReports = ref([
             </q-card>
           </div>
           <div class="col-6">
-            <q-card class="stats-card">
+            <q-card class="stats-card" bordered flat>
               <q-card-section class="q-pa-lg">
                 <div class="stats-content">
                   <div class="stats-icon stats-icon--green">
-                    <q-icon name="description" size="24px" />
+                    <q-icon name="description" size="24px"/>
                   </div>
                   <div class="stats-info">
                     <div class="stats-label">检查报告数量</div>
@@ -86,7 +86,7 @@ const recentReports = ref([
         </div>
 
         <!-- Chart Card -->
-        <q-card class="chart-card">
+        <q-card class="chart-card" bordered flat>
           <q-card-section>
             <div class="chart-title">验收次数</div>
             <div class="chart-container">
@@ -110,7 +110,7 @@ const recentReports = ref([
       <div class="col-12 col-md-5">
         <div class="right-column">
           <!-- Ranking Card -->
-          <q-card class="ranking-card">
+          <q-card class="ranking-card" bordered flat>
             <q-card-section>
               <div class="card-title">基础核查问题数量排行</div>
               <div class="ranking-list">
@@ -119,7 +119,7 @@ const recentReports = ref([
                     :key="index"
                     class="ranking-item"
                 >
-                  <div class="ranking-bullet" />
+                  <div class="ranking-bullet"/>
                   <div class="ranking-station">{{ item.station }}</div>
                   <div class="ranking-score">{{ item.score }}</div>
                 </div>
@@ -128,19 +128,16 @@ const recentReports = ref([
           </q-card>
 
           <!-- Reports Card -->
-          <q-card class="reports-card">
+          <q-card class="reports-card" bordered flat>
             <q-card-section>
-              <div class="card-header">
-                <div class="card-title">最新验收报告</div>
-                <q-icon name="description" color="primary" size="24px" />
-              </div>
+              <div class="card-title">最新验收报告</div>
               <div class="reports-list">
                 <div
                     v-for="(report, index) in recentReports"
                     :key="index"
                     class="report-item"
                 >
-                  <div class="report-bullet" />
+                  <div class="report-bullet"/>
                   <div class="report-content">
                     <div class="report-title">{{ report.station }}</div>
                     <div class="report-meta">
@@ -149,13 +146,11 @@ const recentReports = ref([
                     </div>
                   </div>
                   <q-btn
-                      size="sm"
                       color="grey-5"
                       text-color="dark"
                       :label="report.status"
                       flat
                       dense
-                      class="report-status-btn"
                   />
                 </div>
               </div>
@@ -272,7 +267,7 @@ const recentReports = ref([
 }
 
 .chart-bar:hover {
-  background: linear-gradient(to top, #2196f3, #64b5f6);
+  background: linear-gradient(to top, #42a694, #21f3d0);
   transform: translateY(-2px);
 }
 
