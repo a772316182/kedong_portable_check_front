@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const tab_name = ref('authorization')
+const tab_name = ref('import_template')
 </script>
 
 <template>
@@ -17,21 +17,18 @@ const tab_name = ref('authorization')
             animated
             transition-prev="fade"
             transition-next="fade"
-            class="col-12"
+            class="full-width"
         >
           <q-tab-panel name="baseline">
-            <div class="text-h6">Mails</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <sys-manage-baseline-check-config/>
           </q-tab-panel>
 
           <q-tab-panel name="alert">
-            <div class="text-h6">Alarms</div>
-            Ad molestiae non facere animi nobis, similique nemo.
+            <sys-manage-alarm-verification-config/>
           </q-tab-panel>
 
           <q-tab-panel name="import_template">
-            <div class="text-h6">Movies</div>
-            Nostrum necessitatibus expedita dolores? Voluptatem.
+            <sys-manage-import-template-config/>
           </q-tab-panel>
           <q-tab-panel name="authorization">
             <sys-manage-authorization-config/>

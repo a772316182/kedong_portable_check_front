@@ -1,14 +1,16 @@
 <script setup>
 
+import {rowClassFn} from "~/utils/tableStyle.js";
+
 const dialog = ref(false)
 
 const columns = [
   {name: 'index', label: '序号', field: 'index'},
-  {name: 'username', align: 'center', label: '用户名', field: 'username', sortable: true},
+  {name: 'username', label: '用户名', field: 'username', sortable: true},
   {name: 'name', label: '姓名', field: 'name', sortable: true},
   {name: 'institution', label: '所属机构', field: 'institution'},
   {name: 'createTime', label: '创建时间', field: 'createTime', sortable: true},
-  {name: 'actions', label: '操作', field: 'actions'}
+  {name: 'actions', label: '操作', field: 'actions', align: 'center'}
 ]
 
 
@@ -54,10 +56,6 @@ const rows = ref([
     actions: ''
   }
 ])
-
-function rowClassFn(row) {
-  return row.index % 2 === 0 ? '' : 'bg-blue-grey-1'
-}
 
 </script>
 

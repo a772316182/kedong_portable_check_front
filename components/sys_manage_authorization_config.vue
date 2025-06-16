@@ -5,7 +5,7 @@ const authorizationSerialNumber = ref('')
 
 <template>
   <div>
-    <q-card bordered flat>
+    <q-card bordered flat square>
       <q-card-section>
         <span class="text-h6">授权管理</span>
       </q-card-section>
@@ -32,7 +32,7 @@ const authorizationSerialNumber = ref('')
         </p>
       </q-card-section>
     </q-card>
-    <q-card bordered flat>
+    <q-card bordered flat square>
       <q-card-section>
         <span class="text-h6">授权管理</span>
       </q-card-section>
