@@ -87,6 +87,7 @@ const router = useRouter()
       <q-item
           v-ripple
           clickable
+          @click="router.push('/rectification_notice')"
       >
         <q-item-section avatar>
           <Icon name="material-symbols-light:chat-info-rounded" size="24" mode="svg"/>
