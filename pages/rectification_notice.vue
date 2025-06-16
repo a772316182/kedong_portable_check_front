@@ -2,7 +2,7 @@
 import {rowClassFn} from "~/utils/tableStyle";
 import Rectification_notice_generate_notice_slip from "~/components/rectification_notice_generate_notice_slip.vue";
 
-const dialogVisible = ref(true)
+const dialogVisible = ref(false)
 
 const columns = [
   {name: 'index', label: '序号', field: 'index', sortable: true, align: 'center'},
