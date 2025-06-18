@@ -75,6 +75,7 @@ const router = useRouter()
       <q-item
           v-ripple
           clickable
+          @click="router.push('/security_report')"
       >
         <q-item-section avatar>
           <Icon name="majesticons:file-report" size="24" mode="svg"/>
