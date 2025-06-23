@@ -203,7 +203,7 @@ function getSortIcon(colName: string) {
       <div class="q-gutter-y-md">
         <div class="row">
           <q-btn color="primary" class="col-auto" @click="generateNoticeSlip"
-            >生成通知单</q-btn
+            >创建核查任务</q-btn
           >
         </div>
         <q-table
@@ -211,7 +211,7 @@ function getSortIcon(colName: string) {
           no-data-label="暂无数据"
           flat
           bordered
-          title="本页面还未完成！！只是做一个占位符用。"
+          title="核查任务表"
           :rows="filteredRows"
           :columns="columns"
           row-key="index"
