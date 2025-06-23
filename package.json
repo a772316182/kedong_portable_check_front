@@ -20,6 +20,7 @@
     "nuxt-quasar-ui": "^2.1.12",
     "quasar": "^2.18.1",
     "sass": "^1.89.1",
+    "v-network-graph": "^0.9.21",
     "vue": "^3.5.16",
     "vue-router": "^4.5.1"
   }
