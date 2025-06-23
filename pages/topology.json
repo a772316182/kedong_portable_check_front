@@ -1,0 +1,335 @@
+{
+  "nodes": {
+    "router_r0": {
+      "name": "r0",
+      "ips": [
+        "192.168.1.1",
+        "192.168.2.1",
+        "192.168.3.1"
+      ],
+      "ports": [],
+      "x": 150,
+      "y": 150,
+      "type": "ROUTER",
+      "domain": 1
+    },
+    "router_r1": {
+      "name": "r1",
+      "ips": [
+        "192.168.252.1",
+        "192.168.3.2"
+      ],
+      "ports": [],
+      "x": 250,
+      "y": 150,
+      "type": "ROUTER",
+      "domain": 1
+    },
+    "router_r2": {
+      "name": "r2",
+      "ips": [
+        "192.168.4.1",
+        "192.168.5.1"
+      ],
+      "ports": [],
+      "x": 591.623,
+      "y": 54.308,
+      "type": "ROUTER",
+      "domain": 1
+    },
+    "host1": {
+      "name": "192.168.1.2",
+      "ips": [
+        "192.168.1.2"
+      ],
+      "ports": [],
+      "x": 150,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "host2": {
+      "name": "192.168.1.3",
+      "ips": [
+        "192.168.1.3"
+      ],
+      "ports": [],
+      "x": 250,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "host3": {
+      "name": "192.168.2.3",
+      "ips": [
+        "192.168.2.3"
+      ],
+      "ports": [
+        "80",
+        "443"
+      ],
+      "x": 350,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "host4": {
+      "name": "192.168.2.4",
+      "ips": [
+        "192.168.2.4"
+      ],
+      "ports": [],
+      "x": 450,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "host5": {
+      "name": "192.168.252.2",
+      "ips": [
+        "192.168.252.2"
+      ],
+      "ports": [
+        "3306"
+      ],
+      "x": 550,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "host6": {
+      "name": "192.168.252.3",
+      "ips": [
+        "192.168.252.3"
+      ],
+      "ports": [],
+      "x": 650,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "host7": {
+      "name": "192.168.4.2",
+      "ips": [
+        "192.168.4.2"
+      ],
+      "ports": [
+        "22"
+      ],
+      "x": 750,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "host8": {
+      "name": "192.168.5.3",
+      "ips": [
+        "192.168.5.3"
+      ],
+      "ports": [],
+      "x": 850,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "node9": {
+      "name": "N7",
+      "ips": [
+        "N9"
+      ],
+      "ports": [],
+      "x": 950,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "node10": {
+      "name": "N10086",
+      "ips": [
+        "N10"
+      ],
+      "ports": [],
+      "x": 1050,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "node11": {
+      "name": "N10066",
+      "ips": [
+        "N11"
+      ],
+      "ports": [],
+      "x": 1150,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "node12": {
+      "name": "N120",
+      "ips": [
+        "N12"
+      ],
+      "ports": [],
+      "x": 1250,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "node13": {
+      "name": "N13",
+      "ips": [
+        "N13"
+      ],
+      "ports": [],
+      "x": 1350,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "node14": {
+      "name": "N14",
+      "ips": [
+        "N14"
+      ],
+      "ports": [],
+      "x": 1450,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "node18": {
+      "name": "N18",
+      "ips": [
+        "N18"
+      ],
+      "ports": [],
+      "x": 1550,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "node19": {
+      "name": "N77",
+      "ips": [
+        "N19"
+      ],
+      "ports": [],
+      "x": 1650,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "node20": {
+      "name": "N20",
+      "ips": [
+        "N20"
+      ],
+      "ports": [],
+      "x": 1750,
+      "y": 450,
+      "type": "LAPTOP",
+      "domain": 1
+    },
+    "node21": {
+      "name": "N21",
+      "ips": [
+        "N21"
+      ],
+      "ports": [],
+      "x": 150,
+      "y": 300,
+      "type": "SWITCH",
+      "domain": 1
+    }
+  },
+  "edges": {
+    "edge1": {
+      "source": "router_r1",
+      "target": "router_r0"
+    },
+    "edge2": {
+      "source": "router_r0",
+      "target": "host1"
+    },
+    "edge3": {
+      "source": "router_r0",
+      "target": "host2"
+    },
+    "edge4": {
+      "source": "router_r0",
+      "target": "host3"
+    },
+    "edge5": {
+      "source": "router_r0",
+      "target": "host4"
+    },
+    "edge6": {
+      "source": "router_r1",
+      "target": "host5"
+    },
+    "edge7": {
+      "source": "router_r1",
+      "target": "host6"
+    },
+    "edge8": {
+      "source": "node11",
+      "target": "node10"
+    },
+    "edge9": {
+      "source": "node12",
+      "target": "node9"
+    },
+    "edge10": {
+      "source": "router_r2",
+      "target": "router_r0"
+    },
+    "edge11": {
+      "source": "router_r2",
+      "target": "host7"
+    },
+    "edge12": {
+      "source": "router_r2",
+      "target": "host8"
+    },
+    "edge13": {
+      "source": "node13",
+      "target": "node14"
+    },
+    "edge14": {
+      "source": "node19",
+      "target": "node18"
+    },
+    "edge15": {
+      "source": "node21",
+      "target": "node20"
+    }
+  },
+  "subnets": [
+    "192.168.0.0/16",
+    "192.168.1.0/24",
+    "192.168.2.0/24",
+    "192.168.3.0/24",
+    "192.168.4.0/24",
+    "192.168.5.0/24",
+    "192.168.252.0/24"
+  ],
+  "ports": [
+    {
+      "ip": "192.168.2.3",
+      "port": "80"
+    },
+    {
+      "ip": "192.168.252.2",
+      "port": "3306"
+    },
+    {
+      "ip": "192.168.2.3",
+      "port": "443"
+    },
+    {
+      "ip": "192.168.4.2",
+      "port": "22"
+    }
+  ]
+}
