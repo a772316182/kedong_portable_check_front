@@ -64,6 +64,7 @@ const router = useRouter()
             v-ripple
             clickable
             :inset-level="1"
+            @click="router.push('/alarm_verification')"
         >
           <q-item-section>安全告警验证</q-item-section>
         </q-item>

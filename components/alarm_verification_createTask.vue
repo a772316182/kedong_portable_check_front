@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import ReportGenerateDialog from "~/components/security_report_generate.vue"
+import Verificationtask from "~/components/alarm_verification_createdialog.vue"
 
 const dialog = ref(false)
 const customPage = ref(null)
+const selectedRows = ref([])
 const pagination = ref({
   page: 1,
   rowsPerPage: 10,
@@ -16,9 +17,9 @@ const generateTestData = () => {
     data.push({
       index: i,
       reportName: `富国站验收任务 ${i}`,
-      stationName: '富国站',
       createTime: '2024-09-09 00:00:00',
-      operator: i % 2 === 0 ? '张三' : '李四',
+      area: `安全${Math.ceil(Math.random() * 2)}区`, // Random security area between 1-2
+      operator: i % 2 === 0 ? '已完成' : '进行中',
       actions: ''
     })
   }
@@ -27,15 +28,40 @@ const generateTestData = () => {
 
 const columns = [
   { name: 'index', label: '编号', field: 'index', align: 'left' },
-  { name: 'reportName', label: '报告名称', field: 'reportName', align: 'left' },
-  { name: 'stationName', label: '厂站名称', field: 'stationName', align: 'left' },
+  { name: 'reportName', label: '任务名称', field: 'reportName', align: 'left' },
   { name: 'createTime', label: '创建时间', field: 'createTime', align: 'left' },
-  { name: 'operator', label: '操作人', field: 'operator', align: 'left' },
+  { name: 'area', label: '核查范围', field: 'area', align: 'left' },
+  { name: 'operator', label: '任务状态', field: 'operator', align: 'left' },
   { name: 'actions', label: '操作', field: 'actions', align: 'left' }
+]
+
+// Track play/pause state for each row
+const playStates = ref(Array(250).fill(false))
+
+// Progress steps
+const activeStep = ref(0)
+const steps = [
+  { label: '创建任务', completed: true },
+  { label: '告警验证', completed: false },
+  { label: '验证结果', completed: false }
 ]
 
 const rows = ref([])
 const totalRows = ref(0)
+
+const isPlaying = ref(false)
+
+// 添加 emits
+const emit = defineEmits(['next'])
+
+// 修改 visibility 图标的点击事件
+const showVerification = () => {
+  emit('next', 'AlarmVerification')
+}
+
+function togglePlay() {
+  isPlaying.value = !isPlaying.value
+}
 
 const currentPageRange = computed(() => {
   const start = (pagination.value.page - 1) * pagination.value.rowsPerPage + 1
@@ -67,9 +93,31 @@ function goToPage() {
 <!-- :row-class="rowClassFn" -->
 <template>
   <q-page class="q-pa-md">
+
+    <!-- Progress Steps -->
+    <!-- <div class="q-mb-md">
+      <q-stepper
+        v-model="activeStep"
+        header-nav
+        flat
+        bordered
+        active-color="primary"
+        done-color="positive"
+        inactive-color="grey-6"
+      >
+        <q-step
+          v-for="(step, index) in steps"
+          :key="index"
+          :name="index"
+          :title="step.label"
+          :done="step.completed"
+        />
+      </q-stepper>
+    </div> -->
+
     <q-card flat>
       <q-card-section>
-        <q-btn label="生成报告" color="primary" @click="dialog = true" />
+        <q-btn label="创建核查任务" color="primary" @click="dialog = true" />
       </q-card-section>
 
       <q-card-section>
@@ -90,23 +138,48 @@ function goToPage() {
           style="height: 500px;"
           virtual-scroll
           class="custom-table"
+          selection="multiple"
+          v-model:selected="selectedRows"
         >
           <template #body="props">
-            <q-tr :props="props" :class="rowClassFn(props.row)">
+            <q-tr :props="props">
+              <q-td auto-width>
+                <q-checkbox v-model="props.selected" @click.stop />
+              </q-td>
               <q-td key="index">{{ props.row.index }}</q-td>
               <q-td key="reportName">{{ props.row.reportName }}</q-td>
-              <q-td key="stationName">{{ props.row.stationName }}</q-td>
               <q-td key="createTime">{{ props.row.createTime }}</q-td>
+              <!-- <q-td key="area">{{ props.row.area }}</q-td> -->
+              <q-td key="area">
+                <div class="q-pa-xs row q-gutter-sm">
+                    <div class="bg-green-1 text-green-10 q-pa-xs q-mr-xs rounded-borders text-caption">
+                    安全1区
+                    </div>
+                    <div class="bg-green-1 text-green-10 q-pa-xs rounded-borders text-caption">
+                    安全2区
+                    </div>
+                </div>
+              </q-td>
               <q-td key="operator">{{ props.row.operator }}</q-td>
               <q-td key="actions">
-                <q-icon name="visibility" class="q-mr-sm cursor-pointer" />
-                <q-icon name="file_download" class="q-mr-sm cursor-pointer" />
+                <q-icon
+                    :name="props.row.operator === '进行中' ? 'play_arrow' : 'pause'"
+                    class="q-mr-sm cursor-pointer"
+                />
+                <q-icon name="visibility" class="q-mr-sm cursor-pointer" @click="showVerification"/>
                 <q-icon name="delete" class="cursor-pointer" />
               </q-td>
             </q-tr>
           </template>
           <template #header="props">
             <q-tr :props="props" class="custom-header">
+              <q-th auto-width>
+                <!-- <q-checkbox
+                  v-model="props.selected"
+                  :indeterminate="props.selected !== true && props.partialSelected === true"
+                  @update:model-value="props.toggleSelectAll"
+                /> -->
+              </q-th>
               <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 {{ col.label }}
               </q-th>
@@ -154,11 +227,21 @@ function goToPage() {
     </q-card>
 
     <!-- 生成报告对话框 -->
-    <ReportGenerateDialog v-model="dialog" />
+    <Verificationtask v-model="dialog" />
   </q-page>
 </template>
 
 <style scoped>
+/* Progress Steps Style
+::v-deep(.q-stepper__header) {
+  box-shadow: none;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+::v-deep(.q-stepper__step-inner) {
+  padding: 12px 24px;
+} */
+
 /* 主表格样式 */
 .custom-header {
   /* background-color: #2e7d32 !important; */
