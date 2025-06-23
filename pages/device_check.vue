@@ -211,7 +211,7 @@ function getSortIcon(colName: string) {
           no-data-label="暂无数据"
           flat
           bordered
-          title="通知单列表"
+          title="本页面还未完成！！只是做一个占位符用。"
           :rows="filteredRows"
           :columns="columns"
           row-key="index"
