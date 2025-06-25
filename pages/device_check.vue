@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import Rectification_notice_generate_notice_slip from "~/components/rectification_notice_generate_notice_slip.vue";
+import device_check_generate from "~/components/device_check_generate.vue";
+import device_check_step2 from "~/components/device_check_step2.vue";
+import device_check_step3 from "~/components/device_check_step3.vue";
 import { rowClassFn } from "~/utils/tableStyle";
 
 const dialogVisible = ref(false);
@@ -7,23 +9,16 @@ const dialogVisible = ref(false);
 const columns = [
   {
     name: "index",
-    label: "序号",
+    label: "编号",
     field: "index",
-    issortable: true, //因为要使用自定义的排序按钮，因此不使用原生的sortable参数
+    issortable: true,
     align: "center",
     searchable: false,
   },
   {
-    name: "name",
-    label: "通知单",
-    field: "name",
-    align: "left",
-    searchable: true,
-  },
-  {
-    name: "plantName",
-    label: "厂站名称",
-    field: "plantName",
+    name: "taskName",
+    label: "任务名称",
+    field: "taskName",
     issortable: true,
     align: "left",
     searchable: true,
@@ -37,77 +32,58 @@ const columns = [
     searchable: true,
   },
   {
-    name: "operator",
-    label: "操作人",
-    field: "operator",
+    name: "checkItem",
+    label: "核查项",
+    field: "checkItem",
     issortable: true,
     align: "center",
-    searchable: true,
+    searchable: false,
+  },
+  {
+    name: "taskStatus",
+    label: "任务状态",
+    field: "taskStatus",
+    issortable: true,
+    align: "center",
+    searchable: false,
   },
   {
     name: "actions",
     label: "操作",
     field: "actions",
-    align: "center",
     issortable: false,
+    align: "center",
+    searchable: false,
   },
 ];
 const rows = [
   {
     index: 1,
-    name: "通知单1",
-    plantName: "厂站1",
+    taskName: "通知单1",
     createTime: "2021-01-01 13:00:00",
-    operator: "admin1",
+    checkItem: ["XXXX", "XXXX", "XXXX", "XXXX"],
+    taskStatus: "进行中",
   },
   {
     index: 2,
-    name: "通知单2",
-    plantName: "厂站2",
+    taskName: "通知单2",
     createTime: "2021-01-01 00:12:00",
-    operator: "admin2",
+    checkItem: ["XXXX"],
+    taskStatus: "已完成",
   },
   {
     index: 3,
-    name: "通知单3",
-    plantName: "厂站3",
+    taskName: "通知单3",
     createTime: "2026-01-01 00:00:00",
-    operator: "admin3",
+    checkItem: ["XXXX", "XXXX", "XXXX", "XXXX"],
+    taskStatus: "已完成",
   },
   {
     index: 4,
-    name: "通知单4",
-    plantName: "厂站4",
+    taskName: "通知单4",
     createTime: "2021-01-05 00:00:00",
-    operator: "admin4",
-  },
-  {
-    index: 5,
-    name: "通知单4",
-    plantName: "厂站4",
-    createTime: "2021-01-05 00:00:00",
-    operator: "admin4",
-  },
-  {
-    index: 6,
-    name: "通知单4",
-    plantName: "厂站4",
-    createTime: "2021-01-05 00:00:00",
-    operator: "admin4",
-  },
-  {
-    index: 7,
-    name: "通知单4",
-    plantName: "厂站4",
-    createTime: "2021-01-05 00:00:00",
-    operator: "admin4",
-  },
-  {
-    index: 8,
-    name: "通知单4",
-    plantName: "厂站4",
-    createTime: "2021-01-05 00:00:00",
-    operator: "admin4",
+    checkItem: ["XXXX", "XXXX"],
+    taskStatus: "进行中",
   },
 ];
 
@@ -127,11 +103,14 @@ const search = reactive({
   operator: "",
 });
 
+const currentStep = ref("1"); // 使用字符串而不是数字来表示步骤
+const selectedTask = ref(null);
+
 function generateNoticeSlip() {
   dialogVisible.value = true;
 }
 
-function saveRectificationNotice(data: unknown) {
+function saveDeviceCheck(data: unknown) {
   dialogVisible.value = false;
   console.log(data);
 }
@@ -195,116 +174,188 @@ function getSortIcon(colName: string) {
   if (sortState.column !== colName) return "unfold_more";
   return sortState.direction === "asc" ? "arrow_upward" : "arrow_downward";
 }
+
+// 查看任务详情
+function viewTask(task) {
+  if (task.taskStatus === "已完成") {
+    selectedTask.value = task;
+    currentStep.value = "2"; // 进入第二步
+  }
+}
 </script>
 
 <template>
   <div>
-    <q-page class="q-pa-md q-gutter-y-md">
-      <div class="q-gutter-y-md">
-        <div class="row">
-          <q-btn color="primary" class="col-auto" @click="generateNoticeSlip"
-            >创建核查任务</q-btn
-          >
-        </div>
-        <q-table
-          square
-          no-data-label="暂无数据"
-          flat
-          bordered
-          title="核查任务表"
-          :rows="filteredRows"
-          :columns="columns"
-          row-key="index"
-          :table-row-class-fn="rowClassFn"
-          :rows-per-page-options="[5, 10, 20, 50, 0]"
-          :sort-method="() => {}"
-          @sort="(ctx) => {}"
-        >
-          <template #header="props">
-            <q-tr :props="props">
-              <q-th
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-                class="relative"
+    <q-stepper
+      v-model="currentStep"
+      alternative-labels
+      active-color="orange"
+      done-color="green"
+    >
+      <q-step name="1" title="创建任务" :done="currentStep > '1'">
+        <div>
+          <q-page class="q-pa-md q-gutter-y-md">
+            <div class="q-gutter-y-md">
+              <div class="row">
+                <q-btn
+                  color="primary"
+                  class="col-auto"
+                  @click="generateNoticeSlip"
+                >
+                  创建核查任务
+                </q-btn>
+              </div>
+              <q-table
+                square
+                no-data-label="暂无数据"
+                flat
+                bordered
+                title="任务列表"
+                :rows="filteredRows"
+                :columns="columns"
+                row-key="index"
+                :table-row-class-fn="rowClassFn"
+                :rows-per-page-options="[5, 10, 20, 50, 0]"
+                :sort-method="() => {}"
+                @sort="(ctx) => {}"
               >
-                <div class="row items-center no-wrap justify-between">
-                  <span>{{ col.label }}</span>
-                  <div class="row items-center">
-                    <!-- 只在 searchable 为 true 的列显示搜索按钮 -->
-                    <template v-if="col.searchable">
-                      <q-btn
-                        dense
-                        flat
-                        round
-                        icon="search"
-                        size="sm"
-                        @click.stop
-                      >
-                        <q-popup-edit
-                          v-model="search[col.name]"
-                          v-slot="scope"
-                          anchor="top left"
-                          self="bottom right"
-                          auto-save
+                <template #header="props">
+                  <q-tr :props="props">
+                    <q-th
+                      v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props"
+                      class="relative"
+                    >
+                      <div class="row items-center no-wrap justify-between">
+                        <span>{{ col.label }}</span>
+                        <div class="row items-center">
+                          <!-- 只在 searchable 为 true 的列显示搜索按钮 -->
+                          <template v-if="col.searchable">
+                            <q-btn
+                              dense
+                              flat
+                              round
+                              icon="search"
+                              size="sm"
+                              @click.stop
+                            >
+                              <q-popup-edit
+                                v-model="search[col.name]"
+                                v-slot="scope"
+                                anchor="top left"
+                                self="bottom right"
+                                auto-save
+                              >
+                                <q-input
+                                  dense
+                                  autofocus
+                                  v-model="scope.value"
+                                  @keyup.enter="scope.set"
+                                  label="搜索"
+                                />
+                              </q-popup-edit>
+                            </q-btn>
+                          </template>
+
+                          <template v-if="col.issortable">
+                            <q-btn
+                              dense
+                              flat
+                              round
+                              :icon="getSortIcon(col.name)"
+                              size="sm"
+                              @click="handleSortClick(col.name)"
+                            />
+                          </template>
+                        </div>
+                      </div>
+                    </q-th>
+                  </q-tr>
+                </template>
+                <!-- 保留 body 插槽 -->
+                <template #body="props">
+                  <q-tr :props="props">
+                    <q-td key="index" :props="props">{{
+                      props.row.index
+                    }}</q-td>
+                    <q-td key="taskName" :props="props">{{
+                      props.row.taskName
+                    }}</q-td>
+                    <q-td key="createTime" :props="props">{{
+                      props.row.createTime
+                    }}</q-td>
+                    <q-td key="checkItem" :props="props">
+                      <div class="q-gutter-sm row items-center">
+                        <q-badge
+                          v-for="(item, index) in props.row.checkItem"
+                          :key="index"
+                          color="green-1"
+                          text-color="green-7"
+                          class="q-pa-sm"
                         >
-                          <q-input
-                            dense
-                            autofocus
-                            v-model="scope.value"
-                            @keyup.enter="scope.set"
-                            label="搜索"
-                          />
-                        </q-popup-edit>
-                      </q-btn>
-                    </template>
-
-                    <template v-if="col.issortable">
+                          {{ item }}
+                        </q-badge>
+                      </div>
+                    </q-td>
+                    <q-td
+                      key="taskStatus"
+                      :props="props"
+                      :class="{
+                        'text-green': props.row.taskStatus === '进行中',
+                        'text-black': props.row.taskStatus === '已完成',
+                      }"
+                      >{{ props.row.taskStatus }}
+                    </q-td>
+                    <q-td key="actions" :props="props">
                       <q-btn
-                        dense
                         flat
-                        round
-                        :icon="getSortIcon(col.name)"
-                        size="sm"
-                        @click="handleSortClick(col.name)"
+                        color="indigo-10"
+                        :label="
+                          props.row.taskStatus === '进行中' ? '暂停' : '查看'
+                        "
+                        @click="viewTask(props.row)"
                       />
-                    </template>
-                  </div>
-                </div>
-              </q-th>
-            </q-tr>
-          </template>
-
-          <!-- 保留 body 插槽 -->
-          <template #body="props">
-            <q-tr :props="props">
-              <q-td key="index" :props="props">{{ props.row.index }}</q-td>
-              <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-              <q-td key="plantName" :props="props">{{
-                props.row.plantName
-              }}</q-td>
-              <q-td key="createTime" :props="props">{{
-                props.row.createTime
-              }}</q-td>
-              <q-td key="operator" :props="props">{{
-                props.row.operator
-              }}</q-td>
-              <q-td key="actions" :props="props">
-                <q-btn flat color="indigo-10">查看</q-btn>
-                <q-btn flat color="primary">下载</q-btn>
-                <q-btn flat color="red-10">删除</q-btn>
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table>
-      </div>
-    </q-page>
-    <q-dialog v-model="dialogVisible">
-      <rectification_notice_generate_notice_slip
-        @cancel="dialogVisible = false"
-        @save="saveRectificationNotice"
-      />
-    </q-dialog>
+                      <q-btn flat color="primary">下载</q-btn>
+                      <q-btn flat color="red-10">删除</q-btn>
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
+            </div>
+          </q-page>
+          <q-dialog v-model="dialogVisible">
+            <device_check_generate
+              @cancel="dialogVisible = false"
+              @save="saveDeviceCheck"
+            />
+          </q-dialog>
+        </div>
+      </q-step>
+      <q-step name="2" title="基础检查" :done="currentStep > '2'">
+        <div>
+          <q-page class="q-pa-md">
+            <!-- 这里放置第二步的内容组件 -->
+            <device_check_step2
+              :task="selectedTask"
+              @back="currentStep = '1'"
+              @next="currentStep = '3'"
+            />
+          </q-page>
+        </div>
+      </q-step>
+      <q-step name="3" title="检查结果" :done="currentStep > '3'">
+        <div>
+          <q-page class="q-pa-md">
+            <device_check_step3
+              :task="selectedTask"
+              @back="currentStep = '2'"
+              @next="currentStep = '1'"
+            />
+          </q-page>
+        </div>
+      </q-step>
+    </q-stepper>
   </div>
 </template>
 

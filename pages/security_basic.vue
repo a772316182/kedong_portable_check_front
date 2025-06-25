@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import security_basic_generate from "~/components/security_basic_generate.vue";
-import security_basic_setp2 from "~/components/security_basic_setp2.vue";
-import security_basic_setp3 from "~/components/security_basic_setp3.vue";
+import security_basic_setp2 from "~/components/security_basic_step2.vue";
+import security_basic_setp3 from "~/components/security_basic_step3.vue";
 import { rowClassFn } from "~/utils/tableStyle";
 
 const dialogVisible = ref(false);
