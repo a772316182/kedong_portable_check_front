@@ -57,6 +57,7 @@ const router = useRouter()
             v-ripple
             clickable
             :inset-level="1"
+            @click="router.push('/strategy_check')"
         >
           <q-item-section>安全策略检查</q-item-section>
         </q-item>

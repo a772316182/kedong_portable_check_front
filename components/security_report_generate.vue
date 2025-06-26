@@ -47,7 +47,7 @@ function confirmDialog() {
 
 <template>
   <q-dialog :model-value="modelValue" persistent @update:model-value="val => emit('update:modelValue', val)">
-    <q-card style="min-width: 1200px;">
+    <q-card style="min-width: 1200px; max-width: 90vw; max-height: 90vh; overflow-y: auto;">
       <!-- 顶部标题行 -->
       <q-card-section class="q-py-sm row items-center" style="background-color: #3BB5A3; position: relative;">
         <q-icon 
