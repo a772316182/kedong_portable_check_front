@@ -39,7 +39,7 @@ const options = ref([
         :columns="columns"
         row-key="index"
         :table-row-class-fn="rowClassFn"
-        :rows-per-page-options="[0]"
+        :rows-per-page-options="[5, 10, 20, 50, 0]"
     >
       <template #body="props">
         <q-tr :props="props">
