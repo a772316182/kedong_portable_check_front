@@ -11,17 +11,26 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.13.4",
+    "@grpc/proto-loader": "^0.7.15",
     "@nuxt/content": "^3.5.1",
     "@nuxt/eslint": "^1.4.1",
     "@nuxt/icon": "^1.13.0",
     "@quasar/extras": "^1.17.0",
+    "date-fns": "^4.1.0",
     "eslint": "^9.28.0",
+    "google-protobuf": "^3.21.4",
     "nuxt": "^3.17.5",
     "nuxt-quasar-ui": "^2.1.12",
+    "protoc-gen-grpc-web": "^1.5.0",
     "quasar": "^2.18.1",
     "sass": "^1.89.1",
+    "ts-node": "^10.9.2",
     "v-network-graph": "^0.9.21",
     "vue": "^3.5.16",
     "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.3"
   }
 }

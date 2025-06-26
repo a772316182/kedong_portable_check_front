@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from "vue";
 import { useQuasar } from 'quasar';
-import {type Nodes, type Edges, type Layouts, type VNetworkGraphInstance, VNetworkGraph} from "v-network-graph";
+import {type Nodes, type Edges, type Layouts, type VNetworkGraphInstance, VNetworkGraph, type EventHandlers, type ViewMode, type NodeEvent, type EdgeEvent} from "v-network-graph";
 import graphData from "./data";
 import topoData from "./topology.json";
+import type { RootObject } from "../types/city";
+
+const { data, error } = await useFetch<RootObject>('/api/city', { query: { areaPid: 0 } })
+console.log(data.value?.messageContent)
 
 const $q = useQuasar();
 const isBoxSelectionMode = ref(false)
 interface Topology {
-  nodes: { [id: string]: { name: string; ips: string[]; ports: string[]; x?: number; y?: number } };
+  nodes: { [id: string]: { name: string; ips: string[]; ports: string[]; x?: number; y?: number; type?: string } };
   edges: { [id: string]: { source: string; target: string } };
   subnets: string[];
   ports: { ip: string; port: string }[];
@@ -187,8 +191,8 @@ function clearSelection() {
 const editingNodeId = ref<string | null>(null);
 const newNodeName = ref('');
 
-const eventHandlers = {
-  "node:click": ({ node, event }: { node: string, event: MouseEvent }) => {
+const eventHandlers: EventHandlers = {
+  "node:click": ({ node, event }: NodeEvent<MouseEvent>) => {
     if (event.ctrlKey) {
       const index = selectedNodes.value.indexOf(node);
       if (index >= 0) {
@@ -201,7 +205,7 @@ const eventHandlers = {
       selectedEdges.value = [];
     }
   },
-  "edge:click": ({ edge, event }: { edge: string, event: MouseEvent }) => {
+  "edge:click": ({ edge, event }: EdgeEvent<MouseEvent>) => {
     if (event.ctrlKey) {
       const index = selectedEdges.value.indexOf(edge);
       if (index >= 0) {
@@ -219,7 +223,7 @@ const eventHandlers = {
   },
   "node:dblclick": ({ node }: { node: string }) => {
     editingNodeId.value = node;
-    newNodeName.value = nodes[node].name;
+    newNodeName.value = nodes[node].name ?? '';
   },
   "box-selection:end": ({ nodes: boxSelectedNodes }: { nodes: string[] }) => {
     boxSelectedNodes.forEach(nodeId => {
@@ -228,7 +232,7 @@ const eventHandlers = {
       }
     });
   },
-  "view:mode": mode => {
+  "view:mode": (mode: ViewMode) => {
     isBoxSelectionMode.value = mode === "box-selection"
   },
 };

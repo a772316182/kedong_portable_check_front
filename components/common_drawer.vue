@@ -132,6 +132,18 @@ const router = useRouter()
         <q-item-section>系统管理</q-item-section>
       </q-item>
     </q-list>
+    <q-list class="full-width">
+      <q-item
+          v-ripple
+          clickable
+          @click="router.push('/api_test')"
+      >
+        <q-item-section avatar>
+          <Icon name="material-symbols-light:settings" size="24" mode="svg"/>
+        </q-item-section>
+        <q-item-section>测试页面</q-item-section>
+      </q-item>
+    </q-list>
   </div>
 </template>
 
