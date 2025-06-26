@@ -1,0 +1,701 @@
+syntax = "proto3";
+package plantStationControl;
+
+service PSC{
+    // 配置数据
+    rpc PublicData(publicDataRequest) returns(publicDataResponse){}  // 公共接口  王浩
+    rpc Hello(HelloRequest) returns (HelloReply); // 公共接口  王浩
+  // 厂站验收-选择厂站和验收方式
+    rpc Station(stationRequest) returns(stationResponse){}   //厂站厂站- 省市厂站三级联动  王浩
+  // 厂站验收-选择验收范围  展示当前验收厂站的安全区和网段
+    rpc NetConfig(netConfigRequest) returns(netConfigResponse){}  //网络配置  王浩
+    // 列出指定厂站、可选 securityarea、network 下的配置
+    rpc ListNetworkConfigsByArea(ListNetworkConfigsByAreaRequest)
+            returns (ListNetworkConfigsByAreaResponse);
+    // 厂站验收-设备探测
+    rpc Accept(acceptRequest) returns(acceptResponse){}  // 资产探测开始验收记录入库  王浩
+    rpc AssetsExport(assetsExportRequest) returns(assetsExportResponse){}  // 台账导出  康家钰
+  // 厂站验收-设备验收
+    rpc DevList(checkDevResquest) returns(checkDevResopnse){}    // 获取设备  王王琨琨
+    rpc CheckMessage(checkMessageRequest) returns (checkMessageResponse) {}   // 下发验收项   王琨
+    rpc AcceptCheckStop(acceptCheckStopRequest)returns(acceptCheckStopResponse){} //
+    rpc DevListResult(checkDevResultResquest) returns(checkDevResultResopnse){}    // 获取设备验收结果   王琨
+    rpc GetTable(getTableRequest) returns(getTableResponse){}  // 查看核查详情   王琨
+  // 厂站验收-验收报告
+    rpc CreateReport(createReportRequest) returns(createReportResponse){}  // 生成报表  王琨
+    rpc AcceptEvaluate(acceptEvaluateRequest) returns(acceptEvaluateResponse){}  //验收评价   王琨
+    rpc AccpetRecord(accpetRecordRequest) returns(accpetRecordResponse){}  //验收记录   王琨   验收报告-点击列表   赵航
+    rpc AcceptNetworks(acceptNetworksRequest) returns(acceptNetworksResponse){}  // 验收网段   王浩
+    rpc MergeReport(mergeReportRequest) returns(mergeReportResponse){}  // 合并报表   王琨
+    rpc ExportReport(exportReportRequest) returns(exportReportResponse){}  // 导出报表    王琨
+    rpc DeleteReport(deleteReportRequest) returns(deleteReportResponse){} // 删除报表
+  // 用户管理
+    rpc UserManage(userManageRequest) returns(userManageResponse){}  // 用户管理   王浩
+  //厂站管理
+    rpc City(cityRequest) returns(cityResponse){}  //厂站配置-选择省市   王浩
+    rpc BasicMessage(basicConfigRequest) returns (basicConfigResponse) {}  //基本信息配置    王浩
+    rpc StationManage(stationManageRequest) returns(stationManageResponse) {} //厂站管理     王浩
+
+    // 首页
+    rpc HomePageData(homepageRequest) returns(homepageResponse){} // 首页（验收厂站数量、验收合格率、验收排名、验收次数） 赵航
+  // 系统管理
+    rpc dataManage(dataManageRequest) returns(dataManageResponse) {} //（厂站备份和恢复接口）
+    rpc licenseManage(licenseManageRequest) returns(licenseManageResponse) {} //（授权认证接口）
+
+    // 设备核查 选择设备时 点击下一步时 操作。
+    rpc DevCheckNext(devInfoRequest) returns(devInfoResponse){}  // 设备核查点击下一步
+  // 设备核查
+    rpc DevCheck(devCheckRequest) returns (devCheckResponse){}
+    // 更改设备Ip
+    rpc ChangeIp(changeIpRequest) returns (changeIpResponse){}
+
+    rpc CreateMonitorObject(CreateMonitorObjectRequest) returns (MonitorObjectResponse);
+    rpc DeleteMonitorObject(DeleteMonitorObjectRequest) returns (MonitorObjectResponse);
+    rpc UpdateMonitorObject(UpdateMonitorObjectRequest) returns (MonitorObjectResponse);
+    rpc GetMonitorObject(GetMonitorObjectRequest) returns (GetMonitorObjectResponse);
+    rpc QueryMonitorObjects(QueryMonitorObjectsRequest) returns (QueryMonitorObjectsResponse);
+}
+message CreateMonitorObjectRequest {
+    string guid = 1;
+    string id = 2;
+    string ip = 3;
+    string ip2 = 4;
+    string devname = 5;
+    float devtype = 6;
+    string systype = 7;
+    string subsystype = 8;
+    int32 securityarea = 9;
+    string mac = 10;
+    string mac2 = 11;
+    string hostname = 12;
+    string username = 13;
+    string passwd = 14;
+    string factory = 15;
+    string devversion = 16;
+    string remark = 17;
+    string asset_flag = 18;
+    string snmp_read_pwd = 19;
+    string snmp_write_pwd = 20;
+    string businesssys = 21;
+    bool bay_level_device = 22;
+    bool draw_topology = 23;
+}
+
+message DeleteMonitorObjectRequest {
+    string guid = 1;
+}
+
+message UpdateMonitorObjectRequest {
+    string guid = 1;
+    map<string, string> updates = 2; // 动态更新字段，值转为字符串
+}
+
+message GetMonitorObjectRequest {
+    string guid = 1;
+}
+
+message QueryMonitorObjectsRequest {
+    message SearchParams {
+        string devname = 1;      // 模糊搜索
+        float devtype = 2;       // 精确搜索
+        string subsystype = 3;   // 精确搜索
+        int32 securityarea = 4;  // 精确搜索
+        string ip = 5;           // 模糊搜索
+        string ip2 = 6;          // 模糊搜索
+    }
+    SearchParams search_params = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+}
+
+message MonitorObjectResponse {
+    int32 status_code = 1;
+    string message = 2;
+    string guid = 3; // 对于 CreateMonitorObject 返回 guid
+}
+
+message GetMonitorObjectResponse {
+    int32 status_code = 1;
+    string message = 2;
+    MonitorObjectData data = 3;
+}
+
+message QueryMonitorObjectsResponse {
+    int32 status_code = 1;
+    string message = 2;
+    QueryMonitorObjectsData data = 3;
+}
+
+message MonitorObjectData {
+    string guid = 1;
+    string id = 2;
+    string ip = 3;
+    string ip2 = 4;
+    string devname = 5;
+    float devtype = 6;
+    string systype = 7;
+    string subsystype = 8;
+    int32 securityarea = 9;
+    string mac = 10;
+    string mac2 = 11;
+    string hostname = 12;
+    string username = 13;
+    string passwd = 14; // 返回时为 ******
+    string factory = 15;
+    string devversion = 16;
+    string remark = 17;
+    string asset_flag = 18;
+    string snmp_read_pwd = 19;
+    string snmp_write_pwd = 20;
+    string businesssys = 21;
+    bool bay_level_device = 22;
+    string ips = 23;
+}
+
+message QueryMonitorObjectsData {
+    int32 total = 1;
+    int32 page = 2;
+    int32 page_size = 3;
+    repeated MonitorObjectData records = 4;
+}
+// The greeting service definition. 逄达、张嵩
+service Greeter {
+    // Sends a greeting
+    rpc SayHello (HelloRequest) returns (HelloReply) {}
+    //探测设备？
+    rpc bidir_stream(stream HelloRequest) returns (stream HelloReply) {}
+}
+
+message ListNetworkConfigsByAreaRequest {
+    string stationId        = 1;  // 厂站 GUID
+    string secArea          = 2;  // 可选，安全区 ID
+    string network_type_id  = 3;  // 可选，网络类型 ID（原 network_id）
+}
+
+message ListNetworkConfigsByAreaResponse {
+    int32  retNum         = 1;
+    string errMessage     = 2;
+    string messageContent = 3;  // JSON 数组，每项含 network_id
+}
+// The request message containing the user's name.
+message HelloRequest {
+    string request_json = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+    string reply_json = 1;
+}
+//获取设备请求
+message checkDevResquest {
+    string guid = 1; //厂站ID
+    string acceptId = 2; //验收ID
+    int32  securityArea = 3;//安全区,编码
+    string net=4;//所属网络id
+    string network=5;//所属网段id
+    string  checkTime = 6;//核查时间 字符串
+}
+
+//获取设备返回
+message checkDevResopnse {
+    int32 retNum=1;  //返回值 成功返回0，失败返回错误码？
+    string errMessage=2; //返回错误信息
+    string checkIps=3; // 核查目标IP列表，逗号分隔
+}
+
+//核查下发
+message checkMessageRequest {//安全核查下发
+    string guid = 1; //厂站ID
+    string acceptId = 2; //验收ID
+    string checkIps = 3;//核查目标IP列表，逗号分隔
+    int32  checkType = 4;//核查类型
+    string checkTime = 5;//核查时间 字符串
+    int32  securityArea = 6;//安全区,编码
+    string net=7;//所属网络id
+    string network=8;//所属网段id
+}
+
+//核查下发返回
+message checkMessageResponse{
+    int32 retNum=1;//返回值 成功返回0，失败返回错误码？
+    string errMessage=2;//返回错误信息
+}
+
+//获取设备验收结果下发
+message checkDevResultResquest{
+    PageParam pageParam=1;
+    string acceptId = 2; //验收ID
+    string net=3;//所属网络id
+    string network=4;//所属网段id
+}
+
+//获取设备验收结果返回
+message checkDevResultResopnse{
+    PageReturn pageReturn=1; // 返devname,devtype,ip,ip2,baseline,vulnerscan,weakpasswd,highport
+    int32 retNum=2;//返回值 成功返回0，失败返回错误码？
+    string errMessage=3;//返回错误信息
+    string cross=4; // 是否存在跨区互联
+    string illegal=5; // 是否存在违规外联
+    string peripheral=6; //是否存在违规外设
+}
+
+
+//分页下发
+message PageParam{
+    int32  pageNum=1;//第几页
+    int32  pageSize=2;//页大小
+    string keywords=3;//筛选关键字,传''返回所有
+}
+
+// 分页返回
+message PageReturn{
+    int32  pageNum=1;//第几页
+    int32  pageSize=2;//页大小
+    string keywords=3;//筛选关键字,传''返回所有
+    int32 begin=4;//起始序号，从0开始
+    int32 end=5;//结束序号
+    int32 total=6;//总条数
+    int32 pageTotal=7;//总页数
+    string messageContent=8;
+}
+
+//获取公共数据
+message publicDataRequest{
+}
+
+//获取公共数据返回结果
+message publicDataResponse{
+    int32 retNum=1;
+    string errMessage=2;
+    string messageContent=3; //核查类型，设备类型，安全区，所属网段，漏洞级别，json
+}
+
+//生成报表下发
+message createReportRequest{
+    string acceptId=1; // 验收ID
+}
+
+//生成报表返回
+message createReportResponse{
+    int32 retNum=1;
+    string errMessage=2;
+    string station=3;          // 厂站名称
+    string produce=4;          // 厂站省份
+    string score=5;            // 验收得分
+    string acceptItems=6;      // 验收项（中文，逗号分隔）
+    string stime=7;            // 验收时间 2021-04-28 17:20:00
+    string isQualify=8;        // 0不通过，1通过，""未评价
+    string disQualReason=9;    // 未通过原因
+    string txt=10;             // 报告正文
+    string devRecordTotal=11;  // 台账设备数
+    string devScannedNum=12;   // 探测到的已知资产
+    string devUnknownNum=13;   // 探测到的未知资产
+    string baseLineJson=14;    //{"I区":{dev:10,num:10},"II区":{dev:10,num:10}}
+    string holeScanJson=15;    //{"I区":{dev:10,num:10},"II区":{dev:10,num:10}}
+    string weakPasswordJson=16;//{"I区":{dev:10,num:10},"II区":{dev:10,num:10}}
+    string highPortJson=17;    //{"I区":{dev:10,num:10},"II区":{dev:10,num:10}}
+    string company=18;         // 公司名
+    string endingTime=19;      // 结尾时间
+    string devScanedTotal=20;      //探测到总资产
+}
+
+//验收评价下发
+message acceptEvaluateRequest{
+    string acceptId=1; // 验收ID
+    string isQualify=2; // 评价结果 0不通过，1通过
+    string disQualReason=3; // 不通过原因
+}
+
+//验收评价返回
+message acceptEvaluateResponse{
+    int32 retNum=1;
+    string errMessage=2;
+}
+
+//验收记录下发
+message accpetRecordRequest{
+    PageParam pageParam=1;
+    string guid=2; // 厂站id(如果查询一个厂站的验收记录以下参数不用赋值，如果查询所有厂站的记录，guid给"", 其他正常下发)
+    string province=3; // 省
+    string city=4; // 市
+    string startTime=5; // 开始时间 字符串
+    string endTime=6; // 结束时间 字符串
+}
+
+// 验收记录返回
+message accpetRecordResponse{
+    PageReturn pageReturn=1;//
+    int32  retNum=2; //
+    string errMessage=3; //
+}
+
+// 验收网段下发
+message acceptNetworksRequest{
+    string acceptId=1; //验收ID
+    string stationId=2;  //厂站id
+}
+
+// 验收网段返回
+message acceptNetworksResponse{
+    // string networkJson=1; // {"1001":{"A":[...], "B":[...], "C":[...]},"1002":{"A":[...], "B":[...], "C":[...]},"1003":{"A":[...], "B":[...], "C":[...]}}
+    int32   retNum= 1;           // 成功失败标识。  成功：0  失败:1
+    string  errMessage= 2;       // 返回错误信息
+    string  messageContent=3;    // 返回信息 json
+
+}
+
+// 合并报表下发
+message mergeReportRequest{
+    repeated string acceptIds=1; // 验收ID数组
+}
+
+//合并报表返回
+message mergeReportResponse{
+    int32  retNum=1; //
+    string errMessage=2; //
+}
+
+// 核查详情下发
+message getTableRequest{
+    PageParam pageParam=1;
+    string tableName=2;//dev、devConfig、holeScan、weakPasswordScan、cross、baseLineResult、holeScanResult、weakPasswordScanResult、crossResult、user
+    string acceptId=3; //验收id
+    string devip=4; // 设备ip
+    string resType=5; // 详情类型 (不通过2/失败3)
+    int32  securityArea = 6;//安全区,编码
+    string net=7;//所属网络id
+    string network=8;//所属网段id
+}
+
+// 核查详情返回
+message getTableResponse{
+    PageReturn pageReturn=1;//devName
+    int32 retNum=2;
+    string errMessage=3;
+    string reason=4; // 失败原因
+}
+
+
+//导出报表
+//图片文件名格式：
+// 厂站名_验收id.后缀
+// 示例：某某厂站_1232132322.png
+message exportReportRequest{
+    string acceptId=1;
+    repeated string tuopuImg=2; //没有传[],
+}
+
+
+message exportReportResponse{
+    int32 retNum=1;
+    string errMessage=2;
+    string path=3;
+}
+
+message deleteReportRequest{
+    repeated string acceptIds=1;
+}
+
+message deleteReportResponse{
+    int32 retNum=1;
+    string errMessage=2;
+}
+
+//用户管理
+message userManageRequest{
+    int32  action=1;//动作编码,0x01添加,0x02编辑,0x03删除,0x04校验
+    string userName=2;//用户名
+    string password=3;//密码
+    string uname=4; //姓名
+    string company=5; //机构名称
+    string telephone=6; //电话号码
+}
+
+message userManageResponse{
+    int32 retNum=1;
+    string errMessage=2;
+    string  messageContent=3;    // 返回信息 json
+}
+
+//// 基本配置下发
+//message basicConfigRequest{
+//  int32  sendType=1 ; // 动作标识：0x01 添加，0x02：查看，0x03: 编辑基本信息, 0x04:评分权重，0x05：删除厂站
+//  string province=2; // 省份
+//  string city=3;  // 城市
+//  string manufactor=4;  // 综自厂商
+//  string stationName=5 ; // 变电站名称
+//  string stationId=6;   // 变电站id  stationId
+//  string stationType=7;  // 厂站类型： 发电厂，变电站
+//  int32  highPort=8; // 高危端口百分比
+//  int32  weakPassPer=9;  // 弱口令百分比
+//  int32  vulScan=10;  //  漏洞扫描百分比
+//  int32  baseline=11;  //  配置核查百分比
+//  int32  disareaConn=12;  // 跨区互联百分比
+//}
+// 基本配置下发
+message basicConfigRequest{
+    int32  sendType=1 ; // 动作标识：0x01 添加，0x02：查看，0x03: 编辑基本信息, 0x04:评分权重，0x05：删除厂站
+    string province=2; // 省份
+    string city=3;  // 城市
+    string manufactor=4;  // 综自厂商
+    string stationName=5 ; // 变电站名称
+    string stationId=6;   // 变电站id  stationId
+    string stationType=7;  // 厂站类型： 发电厂，变电站
+    int32 voltagelevel=8;
+    bool drawTuoPu=9;
+}
+
+// 基本配置返回
+message basicConfigResponse{
+    int32   retNum= 1;           // 成功失败标识。  成功：0  失败:1
+    string  errMessage= 2;       // 返回错误信息
+    string  messageContent=3;    // 返回信息 json
+}
+
+// 网络配置
+message Net{
+    string indexId = 1;   // 唯一标识id列表（0x02:删除； 0x03:编辑；）
+    string devIp = 2;    // 设备ip
+    string netItemId = 3;  // 所属网络id
+    string netItemRe = 4; // 所属网络描述
+    string subnetMask=5; //  所属网段
+}
+
+// 网络配置下发
+message netConfigRequest {
+    int32   sendType = 1;   // 动作标识： 0x01：添加；0x02:删除； 0x03:编辑； 0x04：查看  0x05: 步骤1下一步 。
+    string  stationId =2 ;  // 厂站id
+    string  secArea= 3;   // 安全区id
+    repeated Net nets = 4;   // 网络配置
+}
+
+// 网络配置返回
+message netConfigResponse {
+    int32   retNum= 1;           // 成功失败标识。  成功：0  失败:1
+    string  errMessage= 2;       // 返回错误信息
+    string  messageContent=3;    // 返回信息 json
+}
+
+// 获取省份城市信息信息下发
+message cityRequest{
+    int32 areaPid=1; // 获取省市父id  0: 中国， 2100：辽宁省
+}
+
+// 获取省份城市信息信息返回
+message cityResponse{
+    int32   retNum= 1;           // 成功失败标识。  成功：0  失败:1
+    string  errMessage= 2;       // 返回错误信息
+    string  messageContent=3;    // 返回信息 json
+}
+
+
+// 获取省市厂站三级联动信息下发
+message stationRequest{
+    int32 sendType=1 ; // 动作标识：0x01:查询省份，0x02:查询城市，0x03:查询厂站
+    string p_name=2;   // 上级名称
+}
+
+// 获取省市厂站三级联动信息返回
+message stationResponse{
+    int32   retNum= 1;           // 成功失败标识。  成功：0  失败:1
+    string  errMessage= 2;       // 返回错误信息
+    string  messageContent=3;    // 返回信息 json
+}
+
+// 厂站管理消息下发
+// 厂站管理消息下发
+message stationManageRequest {
+    string acceptSTime = 1; // 验收时间 开始
+    string acceptETime = 2; // 验收时间 结束
+    string province = 3; // 省份搜索关键字
+    string city = 4; // 市搜索关键字
+    string station_name = 5; // 厂站名称搜索关键字
+    string station_type = 6; // 厂站类型筛选
+    string sort_by = 7; // 排序字段：voltagelevel, assets_num, reports_num, last_check_time
+    string sort_order = 8; // 排序顺序：ASC, DESC
+}
+//message stationManageRequest{
+//  int32 type=1; // 0x01: 查看(取消了), 0x02: 搜索(模糊查询)
+//  int32 isAccept=2; //是否验收 0：没有验收，1：验收， 2：全部
+//  string acceptSTime=3; //验收时间 开始。
+//  string acceptETime=4; //验收时间 结束。
+//  string keyword=5; // 模糊查询关键字，厂站名或者省市名
+//}
+
+
+// 厂站管理消息返回
+message stationManageResponse{
+    int32   retNum= 1;           // 成功失败标识。  成功：0  失败:1
+    string  errMessage= 2;       // 返回错误信息
+    string  messageContent=3;    // 返回信息 json
+}
+
+
+// rpc Accept(acceptRequest) returns(acceptResponse){}
+// 验收消息保存下发
+message acceptRequest{
+    int32 sendType=1; //下发类型 0x01: 资产探测开始，验收记录入库。 0x02: 查询验收结果。
+    string acceptId=2;// 验收id
+    string stationId=3; //场站id
+    string acceptItems=4; //验收项id列表  1,2,3
+    string networks=5; //验收项网段id列表 11,12,13
+    string person=6;  //验收人
+    string acceptTime=7; //验收时间 2021-05-01 12:23:45
+}
+
+// 验收消息返回
+message acceptResponse{
+    int32   retNum= 1;           // 成功失败标识。  成功：0  失败:1
+    string  errMessage= 2;       // 返回错误信息
+    string  messageContent=3;    // 返回信息 json
+}
+
+
+// 首页下发
+message homepageRequest{
+    int32 sendType=1; // 0x01:全部数据及验收得分年排名，0x02：验收得分月排名，0x03：验收得分日排名
+
+}
+
+// 首页返回数据
+message homepageResponse{
+    int32 retNum= 1; // 成功失败标识。 成功：0 失败:1
+    string errMessage= 2; // 返回错误信息
+    string messageContent=3; // 返回信息 json
+
+}
+
+//系统管理- 数据导入导出请求
+message dataManageRequest{
+    int32  sendType=1 ; // 动作标识：0x01 备份，0x02：查看备份厂站信息，0x03: 选择备份厂站进行恢复
+    string guids=2;    // 需要备份的厂站guid列表，用逗号分开
+    string path=3;  //下发需要查询的文件绝对路径
+}
+
+//系统管理- 数据导出返回
+message dataManageResponse{
+    int32   retNum= 1;           // 成功失败标识。  成功：0  失败:1
+    string  errMessage= 2;       // 返回错误信息
+    string  messageContent=3;    // 返回信息
+}
+//系统管理- 授权请求
+message licenseManageRequest{
+    int32  sendType=1 ; // 动作标识：0x01 获取授权请求码，0x02：验证授权码
+    string path=2;   //下发需要查询的文件绝对路径
+}
+
+//系统管理- 授权返回
+message licenseManageResponse{
+    int32   retNum= 1;           // 成功失败标识。  成功：0  失败:1
+    string  errMessage= 2;       // 返回错误信息
+    string  messageContent=3;    // 返回信息
+}
+
+//系统管理- 台账导出请求
+message assetsExportRequest{
+    string assets=1 ; // 台账信息JSON
+    string path=2;   //  导出的文件绝对路径
+}
+
+//系统管理- 台账导出返回
+message assetsExportResponse{
+    int32   retNum= 1;           // 成功失败标识。  成功：0  失败:1
+    string  errMessage= 2;       // 返回错误信息
+    string  messageContent=3;    // 返回信息
+}
+
+//设备信息
+message devInfo{
+    string   GUID=1;    // 厂站id *
+    string   id=2;  // id
+    string   ip=3;  // ip1 *
+    string   ip2=4;  // ip2 *
+    string   devname=5;  // 设备名称 *
+    string   remark=6;  // 设备类型 *
+    string   system_type=7;  //系统类型
+    string   security_area=8;  // 安全区名称 *
+    string   mac=9;  // mac1
+    string   mac2=10;  // mac2
+    string   user_name=11;  // 用户名
+    string   password=12;  // 密码
+    string   manufactory=13;  // 厂商 *
+    string   devversion=14;  // 型号
+    string   asset_flag=15; // 资产标记
+    string   snmp_read_pwd=16;  // 交换机read团体名
+    string   snmp_write_pwd=17;  // 交换机write团体名
+}
+
+// 核查点击下一步下发
+message devInfoRequest {
+    int32   sendType=1;   // 动作标识： 0x01  点击下一步
+    string  stationId=2 ;  // 厂站id
+    string  checkId=3; // 核查id
+    string  checkItems=4;  // 验收项id列表，逗号分割
+    repeated devInfo devInfos=5;   // 设备信息 list
+}
+
+// 核查点击下一步返回
+message devInfoResponse {
+    int32   retNum=1;   // 返回值 成功返回0，失败返回错误码
+    string  errMessage=2 ;  // 返回错误信息
+    string  messageContent=3; // 0x01  返回配置的网段与ip对应关系
+    string  checkId=4;
+}
+
+
+// 设备核查-核查下发
+message devCheckRequest{
+    string guid = 1; //厂站ID
+    string checkId = 2; //核查ID
+    string checkIps = 3;//核查目标IP列表，逗号分隔
+    int32  checkType = 4;//核查类型
+    int32  securityArea = 5;//安全区,编码
+    string net=6; //所属网络id
+    string network=7;//所属网段id
+    string  id = 8;//核查目标id列表，逗号分隔  "2,3"
+    int32  sendType=9; //0x01 下发核查任务  0x02:核查任务完成(guid,checkId)
+}
+
+// 设备核查-核查返回
+message devCheckResponse{
+    int32  retNum = 1;   // 返回值 成功返回0，失败返回错误码
+    string errMessage =2 ;  // 返回错误信息
+    string messageContent=3; // 返回
+}
+
+
+// 更改ip请求
+message changeIpRequest{
+    string ip = 1;
+}
+
+// 更改ip返回
+message changeIpResponse{
+    int32   retNum=1;   // 返回值 成功返回0，失败返回错误码
+    string  errMessage=2 ;  // 返回错误信息
+}
+
+//// rpc NetItem(netItemRequest)  returns(netItemResponse){}
+//// 所属网络信息下发
+//message netItemRequest{
+//  int32  sendType=1; // 0x01: 保存, 0x02: 查询
+//  string netRemark=2; //  所属网络描述
+//}
+//// 所属网络信息返回
+//message netItemResponse{
+//  int32   retNum= 1;           // 成功失败标识。  成功：0  失败:1
+//  string  errMessage= 2;       // 返回错误信息
+//  string  messageContent=3;    // 返回信息 json
+//}
+
+message acceptCheckStopRequest{
+    string guid=1; //厂站ID
+    string acceptId=2; //验收ID
+    int32  checkType=3;//核查类型
+    string network=4;//所属网段id
+}
+
+message acceptCheckStopResponse{
+    int32   retNum=1;   // 返回值 成功返回0，失败返回错误码
+    string  errMessage=2 ;  // 返回错误信息
+}
