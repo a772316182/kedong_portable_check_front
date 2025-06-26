@@ -43,6 +43,7 @@ export function useCityApi() {
         method: 'GET',
         query: params
       })
+      console.log(state.value.data)
     } catch (error) {
       console.error('Error fetching city data:', error)
       state.value.error = error
@@ -74,6 +75,8 @@ export function useStationManageApi() {
         method: 'POST',
         body: params
       })
+      console.log(state.value.data)
+
     } catch (error) {
       console.error('Error fetching station data:', error)
       state.value.error = error
