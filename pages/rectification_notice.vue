@@ -81,6 +81,34 @@ const rows = [
     createTime: "2021-01-05 00:00:00",
     operator: "admin4",
   },
+  {
+    index: 5,
+    name: "通知单4",
+    plantName: "厂站4",
+    createTime: "2021-01-05 00:00:00",
+    operator: "admin4",
+  },
+  {
+    index: 6,
+    name: "通知单4",
+    plantName: "厂站4",
+    createTime: "2021-01-05 00:00:00",
+    operator: "admin4",
+  },
+  {
+    index: 7,
+    name: "通知单4",
+    plantName: "厂站4",
+    createTime: "2021-01-05 00:00:00",
+    operator: "admin4",
+  },
+  {
+    index: 8,
+    name: "通知单4",
+    plantName: "厂站4",
+    createTime: "2021-01-05 00:00:00",
+    operator: "admin4",
+  },
 ];
 
 // 添加自定义排序状态
@@ -188,7 +216,7 @@ function getSortIcon(colName: string) {
           :columns="columns"
           row-key="index"
           :table-row-class-fn="rowClassFn"
-          :rows-per-page-options="[0]"
+          :rows-per-page-options="[5, 10, 20, 50, 0]"
           :sort-method="() => {}"
           @sort="(ctx) => {}"
         >
