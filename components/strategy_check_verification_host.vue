@@ -199,7 +199,7 @@ function handlePolicyClick(device) {
             </q-card-section>
 
             <q-card-actions align="right">
-              <q-btn flat label="取消" color="primary" v-close-popup />
+              <q-btn v-close-popup flat label="取消" color="primary" />
               <q-btn flat label="开始" color="primary" @click="handleStart" />
             </q-card-actions>
           </q-card>
@@ -207,9 +207,11 @@ function handlePolicyClick(device) {
 
       <q-card-section>
         <q-table
+        v-model:pagination="pagination"
         square
         no-data-label="暂无数据"
         flat
+        v-model:selected="selectedRows"
         bordered
         :rows="rows.slice(
             (pagination.page - 1) * pagination.rowsPerPage,
@@ -218,13 +220,11 @@ function handlePolicyClick(device) {
         :columns="columns"
         row-key="index"
         :table-row-class-fn="rowClassFn"
-        :pagination.sync="pagination"
         hide-pagination
         style="height: 500px;"
         virtual-scroll
         class="custom-table"
         selection="multiple"
-        v-model:selected="selectedRows"
         >
         <template #header="props">
             <q-tr :props="props" class="custom-header">

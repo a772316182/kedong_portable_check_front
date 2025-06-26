@@ -137,7 +137,8 @@ function goToPage() {
 
   <!-- 动态切换子组件 -->
   <div>
-    <component :is="{
+    <component
+:is="{
       host: HostPolicy,
       vertical: VerticalPolicy,
       isolation: IsolationPolicy,

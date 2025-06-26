@@ -399,10 +399,10 @@ async function loadTopology() {
             </div>
             <div class="row q-mt-sm">
               <div class="col-12">
-                <q-badge color="primary" v-if="selectedNodes.length > 0">
+                <q-badge v-if="selectedNodes.length > 0" color="primary">
                   已选择节点: {{ selectedNodes.join(', ') }}
                 </q-badge>
-                <q-badge color="secondary" class="q-ml-sm" v-if="selectedEdges.length > 0">
+                <q-badge v-if="selectedEdges.length > 0" color="secondary" class="q-ml-sm">
                   已选择连接: {{ selectedEdges.join(', ') }}
                 </q-badge>
               </div>

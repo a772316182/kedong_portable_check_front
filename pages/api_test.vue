@@ -69,7 +69,7 @@ function handleFetchStationData() {
         <q-card flat bordered class="q-mb-md">
           <q-card-section>
             <div class="text-h6">请求参数</div>
-            <q-form @submit.prevent="handleFetchCityData" class="q-gutter-md">
+            <q-form class="q-gutter-md" @submit.prevent="handleFetchCityData">
               <q-input 
                 v-model="cityParams.areaPid" 
                 label="areaPid" 
@@ -96,7 +96,7 @@ function handleFetchStationData() {
         </q-card>
         
         <!-- 响应展示 -->
-        <q-card flat bordered v-if="cityState.data || cityState.error">
+        <q-card v-if="cityState.data || cityState.error" flat bordered>
           <q-card-section>
             <div class="text-h6">响应数据</div>
             <pre v-if="cityState.data" class="response-data">{{ JSON.stringify(cityState.data, null, 2) }}</pre>
@@ -114,7 +114,7 @@ function handleFetchStationData() {
         <q-card flat bordered class="q-mb-md">
           <q-card-section>
             <div class="text-h6">请求参数</div>
-            <q-form @submit.prevent="handleFetchStationData" class="q-gutter-sm row">
+            <q-form class="q-gutter-sm row" @submit.prevent="handleFetchStationData">
               <div class="col-xs-12 col-sm-6 col-md-4">
                 <q-input 
                   v-model="stationParams.acceptSTime" 
@@ -219,7 +219,7 @@ function handleFetchStationData() {
         </q-card>
         
         <!-- 响应展示 -->
-        <q-card flat bordered v-if="stationState.data || stationState.error">
+        <q-card v-if="stationState.data || stationState.error" flat bordered>
           <q-card-section>
             <div class="text-h6">响应数据</div>
             <pre v-if="stationState.data" class="response-data">{{ JSON.stringify(stationState.data, null, 2) }}</pre>

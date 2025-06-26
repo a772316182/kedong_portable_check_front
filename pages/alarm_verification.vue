@@ -25,7 +25,8 @@ function handleStepChange(newStep: number) {
         done-color="positive"
         inactive-color="grey-6"
       >
-        <q-step v-for="(label, index) in ['创建任务', '告警验证', '验证结果']"
+        <q-step
+v-for="(label, index) in ['创建任务', '告警验证', '验证结果']"
                 :key="index"
                 :name="index"
                 :title="label"

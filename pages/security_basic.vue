@@ -255,18 +255,18 @@ function viewTask(task) {
                               @click.stop
                             >
                               <q-popup-edit
-                                v-model="search[col.name]"
                                 v-slot="scope"
+                                v-model="search[col.name]"
                                 anchor="top left"
                                 self="bottom right"
                                 auto-save
                               >
                                 <q-input
+                                  v-model="scope.value"
                                   dense
                                   autofocus
-                                  v-model="scope.value"
-                                  @keyup.enter="scope.set"
                                   label="搜索"
+                                  @keyup.enter="scope.set"
                                 />
                               </q-popup-edit>
                             </q-btn>

@@ -58,7 +58,7 @@ function confirmDialog() {
         <div class="text-h6 text-white" style="flex: 1; text-align: center;">
           生成报告
         </div>
-        <q-btn icon="close" flat round dense @click="closeDialog" style="position: absolute; top: 4px; right: 4px; color: white;" />
+        <q-btn icon="close" flat round dense style="position: absolute; top: 4px; right: 4px; color: white;" @click="closeDialog" />
       </q-card-section>
 
       <q-card-section>
@@ -103,15 +103,15 @@ function confirmDialog() {
             style="width: 1080px;"
             :row-class="taskRowClassFn"
           >
-            <template v-slot:header="props">
+            <template #header="props">
               <q-tr :props="props" class="dialog-header">
-                <q-th auto-width></q-th>
+                <q-th auto-width/>
                 <q-th v-for="col in props.cols" :key="col.name" :props="props">
                   {{ col.label }}
                 </q-th>
               </q-tr>
             </template>
-            <template v-slot:body="props">
+            <template #body="props">
               <q-tr :props="props" :class="taskRowClassFn(props.row)">
                 <q-td>
                   <q-checkbox v-model="props.row.selected" />

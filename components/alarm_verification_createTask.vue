@@ -12,7 +12,7 @@ const pagination = ref({
 })
 
 const generateTestData = () => {
-  let data = []
+  const data = []
   for (let i = 1; i <= 250; i++) {
     data.push({
       index: i,
@@ -122,9 +122,11 @@ function goToPage() {
 
       <q-card-section>
         <q-table
+          v-model:pagination="pagination"
           square
           no-data-label="暂无数据"
           flat
+          v-model:selected="selectedRows"
           bordered
           :rows="rows.slice(
             (pagination.page - 1) * pagination.rowsPerPage,
@@ -133,13 +135,11 @@ function goToPage() {
           :columns="columns"
           row-key="index"
           :table-row-class-fn="rowClassFn"
-          :pagination.sync="pagination"
           hide-pagination
           style="height: 500px;"
           virtual-scroll
           class="custom-table"
           selection="multiple"
-          v-model:selected="selectedRows"
         >
           <template #body="props">
             <q-tr :props="props">

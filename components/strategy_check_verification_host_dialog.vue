@@ -193,7 +193,7 @@ onMounted(() => {
         <div class="text-h6 text-white" style="flex: 1; text-align: center;">
           主机策略- {{ currentDeviceName }}
         </div>
-        <q-btn icon="close" flat round dense @click="closeDialog" style="position: absolute; top: 4px; right: 4px; color: white;" />
+        <q-btn icon="close" flat round dense style="position: absolute; top: 4px; right: 4px; color: white;" @click="closeDialog" />
       </q-card-section>
 
       <q-separator />
@@ -241,6 +241,7 @@ onMounted(() => {
         <!-- 网络连接白名单表格 -->
         <q-table
           v-if="selectedPolicyType.value === 'network'"
+          v-model:pagination="pagination"
           flat
           bordered
           :rows="networkWhitelist.slice(
@@ -249,7 +250,6 @@ onMounted(() => {
           )"
           :columns="networkColumns"
           row-key="index"
-          :pagination.sync="pagination"
           hide-pagination
           virtual-scroll
           :header-class="'custom-header'"
@@ -260,6 +260,7 @@ onMounted(() => {
         <!-- 服务端口白名单表格 -->
         <q-table
           v-else-if="selectedPolicyType.value === 'service'"
+          v-model:pagination="pagination"
           flat
           bordered
           :rows="serviceWhitelist.slice(
@@ -268,7 +269,6 @@ onMounted(() => {
           )"
           :columns="serviceColumns"
           row-key="index"
-          :pagination.sync="pagination"
           hide-pagination
           virtual-scroll
           :header-class="'custom-header'"
@@ -279,6 +279,7 @@ onMounted(() => {
         <!-- 关键文件/目录表格 -->
         <q-table
           v-else-if="selectedPolicyType.value === 'files'"
+          v-model:pagination="pagination"
           flat
           bordered
           :rows="criticalFiles.slice(
@@ -287,7 +288,6 @@ onMounted(() => {
           )"
           :columns="fileColumns"
           row-key="index"
-          :pagination.sync="pagination"
           hide-pagination
           virtual-scroll
           :header-class="'custom-header'"
@@ -298,6 +298,7 @@ onMounted(() => {
         <!-- 危险操作指令表格 -->
         <q-table
           v-else-if="selectedPolicyType.value === 'commands'"
+          v-model:pagination="pagination"
           flat
           bordered
           :rows="dangerousCommands.slice(
@@ -306,7 +307,6 @@ onMounted(() => {
           )"
           :columns="commandColumns"
           row-key="index"
-          :pagination.sync="pagination"
           hide-pagination
           virtual-scroll
           :header-class="'custom-header'"
@@ -357,7 +357,7 @@ onMounted(() => {
       <q-separator />
 
       <q-card-actions align="right">
-        <q-btn flat label="关闭" color="primary" v-close-popup />
+        <q-btn v-close-popup flat label="关闭" color="primary" />
       </q-card-actions>
     </q-card>
   </q-dialog>
