@@ -40,4 +40,127 @@ export interface StationManageResponse {
   total: number;
 }
 
+// MonitorObject API 类型定义
+
+// CreateMonitorObject
+export interface CreateMonitorObjectParams {
+  guid?: string;
+  id?: string;
+  ip: string;
+  ip2?: string;
+  devname: string;
+  devtype: number;
+  systype?: string;
+  subsystype: string;
+  securityarea: number;
+  mac?: string;
+  mac2?: string;
+  hostname?: string;
+  username?: string;
+  passwd?: string;
+  factory?: string;
+  devversion?: string;
+  remark?: string;
+  asset_flag?: string;
+  snmp_read_pwd?: string;
+  snmp_write_pwd?: string;
+  businesssys?: string;
+  bay_level_device?: boolean;
+  draw_topology?: boolean;
+}
+
+export interface CreateMonitorObjectResponse {
+  status_code: number;
+  message: string;
+  guid: string;
+}
+
+// GetMonitorObject
+export interface GetMonitorObjectParams {
+  guid: string;
+}
+
+export interface MonitorObjectData {
+  guid: string;
+  id?: string;
+  ip: string;
+  ip2?: string;
+  devname: string;
+  devtype: number;
+  systype?: string;
+  subsystype: string;
+  securityarea: number;
+  mac?: string;
+  mac2?: string;
+  hostname?: string;
+  username?: string;
+  passwd?: string; // 返回时通常会被遮蔽为 ******
+  factory?: string;
+  devversion?: string;
+  remark?: string;
+  asset_flag?: string;
+  snmp_read_pwd?: string;
+  snmp_write_pwd?: string;
+  businesssys?: string;
+  bay_level_device?: boolean;
+  ips?: boolean;
+}
+
+export interface GetMonitorObjectResponse {
+  status_code: number;
+  message: string;
+  data: MonitorObjectData;
+}
+
+// UpdateMonitorObject
+export interface UpdateMonitorObjectParams {
+  guid: string;
+  updates: Record<string, string | number | boolean>;
+}
+
+export interface UpdateMonitorObjectResponse {
+  status_code: number;
+  message: string;
+  guid: string;
+}
+
+// DeleteMonitorObject
+export interface DeleteMonitorObjectParams {
+  guid: string;
+}
+
+export interface DeleteMonitorObjectResponse {
+  status_code: number;
+  message: string;
+}
+
+// QueryMonitorObjects
+export interface QueryMonitorObjectsSearchParams {
+  devname?: string;
+  devtype?: number;
+  subsystype?: string;
+  securityarea?: number;
+  ip?: string;
+  ip2?: string;
+}
+
+export interface QueryMonitorObjectsParams {
+  search_params?: QueryMonitorObjectsSearchParams;
+  page: number;
+  page_size: number;
+}
+
+export interface QueryMonitorObjectsData {
+  total: number;
+  page: number;
+  page_size: number;
+  records: MonitorObjectData[];
+}
+
+export interface QueryMonitorObjectsResponse {
+  status_code: number;
+  message: string;
+  data: QueryMonitorObjectsData;
+}
+
 // 可以根据需要添加更多的API类型定义 

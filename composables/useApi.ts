@@ -1,5 +1,12 @@
 import { ref } from 'vue'
 import type { ApiState, CityApiParams, CityApiResponse, StationManageParams, StationManageResponse } from '~/types/api'
+import type { 
+  CreateMonitorObjectParams, CreateMonitorObjectResponse,
+  GetMonitorObjectParams, GetMonitorObjectResponse,
+  UpdateMonitorObjectParams, UpdateMonitorObjectResponse,
+  DeleteMonitorObjectParams, DeleteMonitorObjectResponse,
+  QueryMonitorObjectsParams, QueryMonitorObjectsResponse
+} from '~/types/api'
 
 /**
  * 通用的API调用组合式函数
@@ -89,6 +96,156 @@ export function useStationManageApi() {
     stationState: state,
     fetchStationData,
     resetStationState: reset
+  }
+}
+
+/**
+ * MonitorObject API - Create
+ */
+export function useCreateMonitorObjectApi() {
+  const { state, reset } = useApiState<CreateMonitorObjectResponse>()
+  
+  async function createMonitorObject(params: CreateMonitorObjectParams) {
+    state.value.loading = true
+    state.value.error = null
+    
+    try {
+      state.value.data = await $fetch<CreateMonitorObjectResponse>('/api/monitor/create', {
+        method: 'POST',
+        body: params
+      })
+    } catch (error) {
+      console.error('Error creating monitor object:', error)
+      state.value.error = error
+    } finally {
+      state.value.loading = false
+    }
+  }
+  
+  return {
+    createState: state,
+    createMonitorObject,
+    resetCreateState: reset
+  }
+}
+
+/**
+ * MonitorObject API - Get
+ */
+export function useGetMonitorObjectApi() {
+  const { state, reset } = useApiState<GetMonitorObjectResponse>()
+  
+  async function getMonitorObject(params: GetMonitorObjectParams) {
+    state.value.loading = true
+    state.value.error = null
+    
+    try {
+      state.value.data = await $fetch<GetMonitorObjectResponse>('/api/monitor/get', {
+        method: 'POST',
+        body: params
+      })
+    } catch (error) {
+      console.error('Error getting monitor object:', error)
+      state.value.error = error
+    } finally {
+      state.value.loading = false
+    }
+  }
+  
+  return {
+    getState: state,
+    getMonitorObject,
+    resetGetState: reset
+  }
+}
+
+/**
+ * MonitorObject API - Update
+ */
+export function useUpdateMonitorObjectApi() {
+  const { state, reset } = useApiState<UpdateMonitorObjectResponse>()
+  
+  async function updateMonitorObject(params: UpdateMonitorObjectParams) {
+    state.value.loading = true
+    state.value.error = null
+    
+    try {
+      state.value.data = await $fetch<UpdateMonitorObjectResponse>('/api/monitor/update', {
+        method: 'POST',
+        body: params
+      })
+    } catch (error) {
+      console.error('Error updating monitor object:', error)
+      state.value.error = error
+    } finally {
+      state.value.loading = false
+    }
+  }
+  
+  return {
+    updateState: state,
+    updateMonitorObject,
+    resetUpdateState: reset
+  }
+}
+
+/**
+ * MonitorObject API - Delete
+ */
+export function useDeleteMonitorObjectApi() {
+  const { state, reset } = useApiState<DeleteMonitorObjectResponse>()
+  
+  async function deleteMonitorObject(params: DeleteMonitorObjectParams) {
+    state.value.loading = true
+    state.value.error = null
+    
+    try {
+      state.value.data = await $fetch<DeleteMonitorObjectResponse>('/api/monitor/delete', {
+        method: 'POST',
+        body: params
+      })
+    } catch (error) {
+      console.error('Error deleting monitor object:', error)
+      state.value.error = error
+    } finally {
+      state.value.loading = false
+    }
+  }
+  
+  return {
+    deleteState: state,
+    deleteMonitorObject,
+    resetDeleteState: reset
+  }
+}
+
+/**
+ * MonitorObject API - Query
+ */
+export function useQueryMonitorObjectsApi() {
+  const { state, reset } = useApiState<QueryMonitorObjectsResponse>()
+  
+  async function queryMonitorObjects(params: QueryMonitorObjectsParams) {
+    state.value.loading = true
+    state.value.error = null
+    
+    try {
+      state.value.data = await $fetch<QueryMonitorObjectsResponse>('/api/monitor/query', {
+        method: 'POST',
+        body: params
+      })
+    } catch (error) {
+      console.error('Error querying monitor objects:', error)
+      state.value.error = error
+    } finally {
+      state.value.loading = false
+    }
+  }
+  
+  return {
+    queryState: state,
+    queryMonitorObjects,
+    resetQueryState: reset
   }
 }
 
