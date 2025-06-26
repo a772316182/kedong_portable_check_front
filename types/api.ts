@@ -40,6 +40,60 @@ export interface StationManageResponse {
   total: number;
 }
 
+// BasicMessage API 类型定义
+export interface BasicConfigParams {
+  sendType: number;
+  province?: string;
+  city?: string;
+  manufactor?: string;
+  stationName?: string;
+  stationId?: string;
+  stationType?: string;
+  voltagelevel?: number | string;
+  drawTuoPu?: boolean;
+}
+
+export interface BasicConfigResponse {
+  retNum: number;
+  errMessage: string;
+  messageContent: any;
+}
+
+// NetConfig API 类型定义
+export interface NetItem {
+  indexId: string;
+  devIp: string;
+  netItemId: string;
+  netItemRe: string;
+  subnetMask: string;
+}
+
+export interface NetConfigParams {
+  sendType: number;
+  stationId: string;
+  secArea?: string;
+  nets?: NetItem[];
+}
+
+export interface NetConfigResponse {
+  retNum: number;
+  errMessage: string;
+  messageContent: any;
+}
+
+// ListNetworkConfigsByArea API 类型定义
+export interface ListNetworkConfigsByAreaParams {
+  stationId: string;
+  secArea?: string;
+  network_type_id?: string;
+}
+
+export interface ListNetworkConfigsByAreaResponse {
+  retNum: number;
+  errMessage: string;
+  messageContent: any;
+}
+
 // MonitorObject API 类型定义
 
 // CreateMonitorObject

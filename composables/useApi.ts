@@ -5,7 +5,10 @@ import type {
   GetMonitorObjectParams, GetMonitorObjectResponse,
   UpdateMonitorObjectParams, UpdateMonitorObjectResponse,
   DeleteMonitorObjectParams, DeleteMonitorObjectResponse,
-  QueryMonitorObjectsParams, QueryMonitorObjectsResponse
+  QueryMonitorObjectsParams, QueryMonitorObjectsResponse,
+  BasicConfigParams, BasicConfigResponse,
+  NetConfigParams, NetConfigResponse,
+  ListNetworkConfigsByAreaParams, ListNetworkConfigsByAreaResponse
 } from '~/types/api'
 
 /**
@@ -96,6 +99,165 @@ export function useStationManageApi() {
     stationState: state,
     fetchStationData,
     resetStationState: reset
+  }
+}
+
+/**
+ * 厂站基本信息配置API调用
+ */
+export function useBasicConfigApi() {
+  const { state, reset } = useApiState<BasicConfigResponse>()
+  
+  /**
+   * 调用厂站基本信息配置API
+   * @param params 请求参数
+   * @param sendType 操作类型：1=添加，2=查看，3=编辑基本信息，4=删除厂站
+   */
+  async function callBasicConfig(params: Omit<BasicConfigParams, 'sendType'>, sendType: number) {
+    state.value.loading = true
+    state.value.error = null
+    
+    try {
+      state.value.data = await $fetch<BasicConfigResponse>('/api/station/basic', {
+        method: 'POST',
+        body: {
+          ...params,
+          sendType
+        }
+      })
+    } catch (error) {
+      console.error(`Error calling BasicMessage with sendType ${sendType}:`, error)
+      state.value.error = error
+    } finally {
+      state.value.loading = false
+    }
+
+    return state.value.data
+  }
+  
+  // 添加厂站
+  async function addStation(params: Omit<BasicConfigParams, 'sendType'>) {
+    return callBasicConfig(params, 0x01)
+  }
+  
+  // 查看厂站信息
+  async function getStation(stationId: string) {
+    return callBasicConfig({ stationId }, 0x02)
+  }
+  
+  // 编辑厂站基本信息
+  async function updateStation(params: Omit<BasicConfigParams, 'sendType'>) {
+    return callBasicConfig(params, 0x03)
+  }
+  
+  // 删除厂站
+  async function deleteStation(stationId: string) {
+    return callBasicConfig({ stationId }, 0x04)
+  }
+  
+  return {
+    basicState: state,
+    addStation,
+    getStation,
+    updateStation,
+    deleteStation,
+    resetBasicState: reset
+  }
+}
+
+/**
+ * 网络配置API调用
+ */
+export function useNetConfigApi() {
+  const { state, reset } = useApiState<NetConfigResponse>()
+  
+  /**
+   * 调用网络配置API
+   * @param params 请求参数，包括sendType
+   */
+  async function callNetConfig(params: NetConfigParams) {
+    state.value.loading = true
+    state.value.error = null
+    
+    try {
+      state.value.data = await $fetch<NetConfigResponse>('/api/network/net-config', {
+        method: 'POST',
+        body: params
+      })
+    } catch (error) {
+      console.error(`Error calling NetConfig with sendType ${params.sendType}:`, error)
+      state.value.error = error
+    } finally {
+      state.value.loading = false
+    }
+
+    return state.value.data
+  }
+  
+  // 添加网络配置
+  async function addNetworkConfig(params: Omit<NetConfigParams, 'sendType'>) {
+    return callNetConfig({ ...params, sendType: 0x01 })
+  }
+  
+  // 删除网络配置
+  async function deleteNetworkConfig(params: Omit<NetConfigParams, 'sendType'>) {
+    return callNetConfig({ ...params, sendType: 0x02 })
+  }
+  
+  // 修改网络配置
+  async function updateNetworkConfig(params: Omit<NetConfigParams, 'sendType'>) {
+    return callNetConfig({ ...params, sendType: 0x03 })
+  }
+  
+  // 从扫描结果添加子网
+  async function addSubnetsFromScan(params: Omit<NetConfigParams, 'sendType'>) {
+    return callNetConfig({ ...params, sendType: 0x08 })
+  }
+  
+  return {
+    netConfigState: state,
+    callNetConfig,
+    addNetworkConfig,
+    deleteNetworkConfig,
+    updateNetworkConfig,
+    addSubnetsFromScan,
+    resetNetConfigState: reset
+  }
+}
+
+/**
+ * 列出网络配置API调用
+ */
+export function useListNetworkConfigsApi() {
+  const { state, reset } = useApiState<ListNetworkConfigsByAreaResponse>()
+  
+  /**
+   * 列出指定厂站、安全区、网络类型下的网络配置
+   * @param params 请求参数
+   */
+  async function listNetworkConfigs(params: ListNetworkConfigsByAreaParams) {
+    state.value.loading = true
+    state.value.error = null
+    
+    try {
+      state.value.data = await $fetch<ListNetworkConfigsByAreaResponse>('/api/network/list-network-configs', {
+        method: 'POST',
+        body: params
+      })
+    } catch (error) {
+      console.error('Error listing network configs:', error)
+      state.value.error = error
+    } finally {
+      state.value.loading = false
+    }
+
+    return state.value.data
+  }
+  
+  return {
+    listNetworkConfigsState: state,
+    listNetworkConfigs,
+    resetListNetworkConfigsState: reset
   }
 }
 

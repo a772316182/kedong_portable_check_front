@@ -22,7 +22,14 @@ const router = useRouter();
         label="空间资产测绘"
       >
         <q-item v-ripple clickable :inset-level="1">
-          <q-item-section>基本信息维护</q-item-section>
+          <q-item
+              v-ripple
+              clickable
+              :inset-level="1"
+              @click="router.push('/basic_info')"
+          >
+            <q-item-section>基本信息维护</q-item-section>
+          </q-item>
         </q-item>
       </q-expansion-item>
     </q-list>
