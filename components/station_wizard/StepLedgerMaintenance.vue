@@ -68,7 +68,9 @@ const columns: QTableProps['columns'] = [
 async function onRequest(requestProps: { pagination?: QTableProps['pagination'] }) {
   const { page, rowsPerPage, sortBy, descending } = requestProps.pagination || pagination.value;
 
-  const apiSearchParams: QueryMonitorObjectsSearchParams = {};
+  const apiSearchParams: QueryMonitorObjectsSearchParams = {
+    guid: props.stationId
+  };
   if (searchFilters.devname) apiSearchParams.devname = searchFilters.devname;
   if (searchFilters.ip) apiSearchParams.ip = searchFilters.ip;
   if (searchFilters.devtype) apiSearchParams.devtype = searchFilters.devtype;
@@ -99,13 +101,14 @@ watch(queryState, (newState) => {
 function openAddDialog() {
   isEdit.value = false;
   Object.keys(currentAsset).forEach(key => delete (currentAsset as any)[key]);
+  currentAsset.guid = props.stationId;
   dialogVisible.value = true;
 }
 
 async function openEditDialog(asset: MonitorObjectData) {
   isEdit.value = true;
   Object.keys(currentAsset).forEach(key => delete (currentAsset as any)[key]);
-  await getMonitorObject({ guid: asset.guid });
+  await getMonitorObject({ id: asset.id });
 }
 
 watch(getState, (newState) => {
@@ -126,7 +129,7 @@ async function handleDelete(asset: MonitorObjectData) {
     message: `确定要删除资产 "${asset.devname}" 吗？`,
     cancel: true,
   }).onOk(async () => {
-    await deleteMonitorObject({ guid: asset.guid });
+    await deleteMonitorObject({ id: asset.id });
   });
 }
 
@@ -143,7 +146,7 @@ watch(deleteState, (newState) => {
 
 async function handleSubmit() {
   if (isEdit.value) {
-    await updateMonitorObject({ guid: currentAsset.guid!, updates: currentAsset });
+    await updateMonitorObject({ id: currentAsset.id!, updates: currentAsset });
   } else {
     await createMonitorObject(currentAsset as CreateMonitorObjectParams);
   }
@@ -176,7 +179,7 @@ onMounted(() => {
       title="台账列表"
       :rows="rows"
       :columns="columns"
-      row-key="guid"
+      row-key="id"
       :loading="queryState.loading || createState.loading || updateState.loading || deleteState.loading"
       v-model:pagination="pagination"
       @request="onRequest"

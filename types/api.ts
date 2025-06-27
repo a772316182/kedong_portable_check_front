@@ -126,17 +126,17 @@ export interface CreateMonitorObjectParams {
 export interface CreateMonitorObjectResponse {
   status_code: number;
   message: string;
-  guid: string;
+  id: string;
 }
 
 // GetMonitorObject
 export interface GetMonitorObjectParams {
-  guid: string;
+  id: string;
 }
 
 export interface MonitorObjectData {
-  guid: string;
-  id?: string;
+  guid: string; // This is the station ID
+  id: string; // This is the monitor object's unique ID
   ip: string;
   ip2?: string;
   devname: string;
@@ -168,19 +168,19 @@ export interface GetMonitorObjectResponse {
 
 // UpdateMonitorObject
 export interface UpdateMonitorObjectParams {
-  guid: string;
+  id: string;
   updates: Record<string, string | number | boolean>;
 }
 
 export interface UpdateMonitorObjectResponse {
   status_code: number;
   message: string;
-  guid: string;
+  id: string;
 }
 
 // DeleteMonitorObject
 export interface DeleteMonitorObjectParams {
-  guid: string;
+  id: string;
 }
 
 export interface DeleteMonitorObjectResponse {
@@ -196,6 +196,7 @@ export interface QueryMonitorObjectsSearchParams {
   securityarea?: number;
   ip?: string;
   ip2?: string;
+  guid?: string; // Station ID for filtering
 }
 
 export interface QueryMonitorObjectsParams {
