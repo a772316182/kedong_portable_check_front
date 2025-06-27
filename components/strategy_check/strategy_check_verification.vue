@@ -1,10 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import HostPolicy from '~/components/strategy_check_verification_host.vue'
-import VerticalPolicy from '~/components/strategy_check_verification_vertical.vue'
-import IsolationPolicy from '~/components/strategy_check_verification_isolation.vue'
-import FirewallPolicy from '~/components/strategy_check_verification_firewall.vue'
-
 const activePolicy = ref('host') // 默认显示主机策略
 const emit = defineEmits(['prev', 'next'])
 

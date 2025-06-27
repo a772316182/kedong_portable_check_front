@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import ReportGenerateDialog from "~/components/security_report_generate.vue"
 
 const dialog = ref(false)
 const customPage = ref(null)
@@ -49,10 +48,6 @@ onMounted(() => {
   totalRows.value = data.length
   pagination.value.rowsNumber = data.length
 })
-
-// function rowClassFn(row) {
-//   return row.index % 2 === 0 ? 'even-row' : 'odd-row'
-// }
 
 function goToPage() {
   if (!customPage.value) return

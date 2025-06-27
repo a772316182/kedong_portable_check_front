@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import device_check_generate from "~/components/device_check_generate.vue";
-import device_check_step2 from "~/components/device_check_step2.vue";
-import device_check_step3 from "~/components/device_check_step3.vue";
-import { rowClassFn } from "~/utils/tableStyle";
-
 const dialogVisible = ref(false);
 
 const columns = [

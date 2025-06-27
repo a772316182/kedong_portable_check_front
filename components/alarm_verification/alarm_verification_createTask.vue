@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import Verificationtask from "~/components/alarm_verification_createdialog.vue"
 
 const dialog = ref(false)
 const customPage = ref(null)
@@ -162,12 +161,17 @@ function goToPage() {
               </q-td>
               <q-td key="operator">{{ props.row.operator }}</q-td>
               <q-td key="actions">
-                <q-icon
-                    :name="props.row.operator === '进行中' ? 'play_arrow' : 'pause'"
-                    class="q-mr-sm cursor-pointer"
-                />
-                <q-icon name="visibility" class="q-mr-sm cursor-pointer" @click="showVerification"/>
-                <q-icon name="delete" class="cursor-pointer" />
+                <q-td key="actions">
+                  <q-btn :color="props.row.operator === '进行中' ? 'indigo-10' : 'red-10'" flat @click="showVerification">
+                    {{ props.row.operator === '进行中' ? '启动' : '暂停' }}
+                  </q-btn>
+                  <q-btn color="primary" flat>
+                    查看
+                  </q-btn>
+                  <q-btn color="red-10" flat>
+                    删除
+                  </q-btn>
+                </q-td>
               </q-td>
             </q-tr>
           </template>

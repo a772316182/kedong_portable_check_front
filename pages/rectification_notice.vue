@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import Rectification_notice_generate_notice_slip from "~/components/rectification_notice_generate_notice_slip.vue";
-import { rowClassFn } from "~/utils/tableStyle";
 
 const dialogVisible = ref(false);
 
