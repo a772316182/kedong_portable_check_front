@@ -236,6 +236,45 @@ const sortedRows = computed(() => {
   return data;
 });
 
+// 辅助函数：加载省份列表，防止重复加载
+const loadProvinces = async () => {
+  if (provinces.value.length > 0 || provincesLoading.value) return;
+  provincesLoading.value = true;
+  try {
+    const provinceData = await $fetch('/api/city', { query: { areaPid: 0 } });
+    if (provinceData && provinceData.retNum === 0) {
+      provinces.value = provinceData.messageContent;
+    }
+  } catch (e) {
+    console.error("加载省份失败:", e);
+  } finally {
+    provincesLoading.value = false;
+  }
+};
+
+// 辅助函数：根据省份名称加载城市列表
+const loadCities = async (provinceName: string | null) => {
+  cities.value = [];
+  if (!provinceName) return;
+
+  await loadProvinces(); // 确保省份数据已加载
+
+  const selectedProvince = provinces.value.find(p => p.area_name === provinceName);
+  if (selectedProvince) {
+    citiesLoading.value = true;
+    try {
+      const cityData = await $fetch('/api/city', { query: { areaPid: selectedProvince.area_code } });
+      if (cityData && cityData.retNum === 0) {
+        cities.value = cityData.messageContent;
+      }
+    } catch (e) {
+      console.error("加载城市失败:", e);
+    } finally {
+      citiesLoading.value = false;
+    }
+  }
+};
+
 // 从服务器加载数据 (后端筛选)
 async function loadDataFromServer() {
   loading.value = true;
@@ -354,29 +393,24 @@ async function openEditDialog(stationId: string) {
     const response = await getStation(stationId);
     if (response && response.retNum === 0) {
       const data = response.messageContent;
-      Object.assign(editStation, data);
-      
-      // Pre-load cities for the existing province
-      if (editStation.province) {
-        const selectedProvince = provinces.value.find(p => p.area_name === editStation.province);
-        if (selectedProvince) {
-            citiesLoading.value = true;
-            try {
-                const cityData = await $fetch('/api/city', { query: { areaPid: selectedProvince.area_code }});
-                if (cityData && cityData.retNum === 0) {
-                    cities.value = cityData.messageContent;
-                    // The v-model on q-select will handle matching the city name
-                }
-            } finally {
-                citiesLoading.value = false;
-            }
-        }
-      }
-      
+
+      // 1. 先重置并赋值除城市外的所有字段
+      Object.assign(editStation, {
+        ...data,
+        city: null, // 先将城市设置为空
+        stationId: stationId
+      });
+
+      // 2. 根据省份加载对应的城市列表，并等待其完成
+      await loadCities(data.province);
+
+      // 3. 城市列表加载完毕后，再设置城市的值以确保正确回显
+      editStation.city = data.city;
+
       if (data.voltagelevel && typeof data.voltagelevel === "string") {
         editStation.voltagelevel = parseInt(data.voltagelevel, 10);
       }
-      editStation.stationId = stationId;
+      
       editDialogVisible.value = true;
     }
   } catch (error) {
@@ -418,59 +452,23 @@ async function removeStation(stationId: string) {
 
 // --- Watchers for cascading selects ---
 watch(() => newStation.province, async (newProvinceName) => {
-    newStation.city = null; // Reset city on province change
-    cities.value = [];
-    if (newProvinceName) {
-        const selectedProvince = provinces.value.find(p => p.area_name === newProvinceName);
-        if (selectedProvince) {
-            citiesLoading.value = true;
-            try {
-                const cityData = await $fetch('/api/city', { query: { areaPid: selectedProvince.area_code }});
-                if (cityData && cityData.retNum === 0) {
-                    cities.value = cityData.messageContent;
-                }
-            } finally {
-                citiesLoading.value = false;
-            }
-        }
-    }
+    newStation.city = null; // 省份改变时重置城市
+    await loadCities(newProvinceName);
 });
 
-watch(() => editStation.province, async (newProvinceName) => {
-    // Only reset city if the change is from the user, not initial load
-    if (editStation.city) {
+watch(() => editStation.province, async (newProvinceName, oldProvinceName) => {
+    // 仅当省份发生真实改变时（即非首次加载）才重置城市
+    if (newProvinceName !== oldProvinceName && editDialogVisible.value) {
         editStation.city = null;
-    }
-    cities.value = [];
-    if (newProvinceName) {
-        const selectedProvince = provinces.value.find(p => p.area_name === newProvinceName);
-        if (selectedProvince) {
-            citiesLoading.value = true;
-            try {
-                const cityData = await $fetch('/api/city', { query: { areaPid: selectedProvince.area_code }});
-                if (cityData && cityData.retNum === 0) {
-                    cities.value = cityData.messageContent;
-                }
-            } finally {
-                citiesLoading.value = false;
-            }
-        }
+        await loadCities(newProvinceName);
     }
 });
 
 // 组件挂载时加载初始数据
 onMounted(async () => {
   await loadDataFromServer();
-  // Fetch initial provinces
-  provincesLoading.value = true;
-  try {
-    const provinceData = await $fetch('/api/city', { query: { areaPid: 0 }});
-    if (provinceData && provinceData.retNum === 0) {
-        provinces.value = provinceData.messageContent;
-    }
-  } finally {
-    provincesLoading.value = false;
-  }
+  // 预加载省份数据
+  await loadProvinces();
 });
 </script>
 
