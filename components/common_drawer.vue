@@ -21,7 +21,7 @@ const router = useRouter();
         icon="travel_explore"
         label="空间资产测绘"
       >
-        <q-item v-ripple clickable :inset-level="1">
+      
           <q-item
               v-ripple
               clickable
@@ -30,7 +30,7 @@ const router = useRouter();
           >
             <q-item-section>基本信息维护</q-item-section>
           </q-item>
-        </q-item>
+
       </q-expansion-item>
     </q-list>
 

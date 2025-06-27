@@ -43,13 +43,13 @@ export interface StationManageResponse {
 // BasicMessage API 类型定义
 export interface BasicConfigParams {
   sendType: number;
-  province?: string;
-  city?: string;
+  province?: string | null;
+  city?: string | null;
   manufactor?: string;
   stationName?: string;
   stationId?: string;
   stationType?: string;
-  voltagelevel?: number | string;
+  voltagelevel?: number | string | null;
   drawTuoPu?: boolean;
 }
 
