@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import {ref} from 'vue'
 
 const emit = defineEmits(['prev', 'next'])
 
@@ -17,50 +17,50 @@ const totalRows = ref(0)
 
 const devices = ref([
   {
-    index: 1,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 1, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   },
   {
-    index: 2,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 2, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   },
   {
-    index: 3,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 3, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   },
   {
-    index: 4,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 4, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   },
   {
-    index: 5,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 5, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   },
   {
-    index: 6,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 6, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   },
   {
-    index: 7,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 7, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   },
   {
-    index: 8,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 8, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   },
   {
-    index: 9,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 9, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   },
   {
-    index: 10,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 10, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   },
   {
-    index: 11,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 11, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   },
   {
-    index: 12,name: '山东省调', ip: '10.200.114.23',type: '纵向',zone: 'Ⅰ区', count:'1'
+    index: 12, name: '山东省调', ip: '10.200.114.23', type: '纵向', zone: 'Ⅰ区', count: '1'
   }
 ])
 
 const columns = [
-  { name: 'index', label: '编号', field: 'index', align: 'left' },
-  { name: 'name', label: '设备名称', field: 'name', align: 'left' },
-  { name: 'ip', label: '设备IP', field: 'ip', align: 'left' },
-  { name: 'type', label: '设备类型', field: 'type', align: 'left' },
-  { name: 'zone', label: '安全区', field: 'zone', align: 'left' },
-  { name: 'count', label: '策略数量', field: 'count', align: 'left' }
+  {name: 'index', label: '编号', field: 'index', align: 'left'},
+  {name: 'name', label: '设备名称', field: 'name', align: 'left'},
+  {name: 'ip', label: '设备IP', field: 'ip', align: 'left'},
+  {name: 'type', label: '设备类型', field: 'type', align: 'left'},
+  {name: 'zone', label: '安全区', field: 'zone', align: 'left'},
+  {name: 'count', label: '策略数量', field: 'count', align: 'left'}
 ]
 
 const selectedRows = ref([])
@@ -85,7 +85,7 @@ function selectAllRows(props) {
 const currentPageRange = computed(() => {
   const start = (pagination.value.page - 1) * pagination.value.rowsPerPage + 1
   const end = Math.min(pagination.value.page * pagination.value.rowsPerPage, totalRows.value)
-  return { start, end }
+  return {start, end}
 })
 
 onMounted(() => {
@@ -108,63 +108,63 @@ function goToPage() {
 </script>
 
 <template>
-    <!-- 中间内容 -->
-    <div class="col q-pa-md">
-      <q-card flat>
+  <!-- 中间内容 -->
+  <div class="col q-pa-md">
+    <q-card flat>
       <q-card-section>
-        <q-btn label="策略导入" color="primary"  />
+        <q-btn label="策略导入" color="primary"/>
       </q-card-section>
 
       <q-card-section>
         <q-table
-        v-model:pagination="pagination"
-        square
-        no-data-label="暂无数据"
-        flat
-        v-model:selected="selectedRows"
-        bordered
-        :rows="rows.slice(
+            v-model:pagination="pagination"
+            v-model:selected="selectedRows"
+            square
+            no-data-label="暂无数据"
+            flat
+            bordered
+            :rows="rows.slice(
             (pagination.page - 1) * pagination.rowsPerPage,
             pagination.page * pagination.rowsPerPage
         )"
-        :columns="columns"
-        row-key="index"
-        :table-row-class-fn="rowClassFn"
-        hide-pagination
-        style="height: 500px;"
-        virtual-scroll
-        class="custom-table"
-        selection="multiple"
+            :columns="columns"
+            row-key="index"
+            :table-row-class-fn="rowClassFn"
+            hide-pagination
+            style="height: 500px;"
+            virtual-scroll
+            class="custom-table"
+            selection="multiple"
         >
-        <template #header="props">
+          <template #header="props">
             <q-tr :props="props" class="custom-header">
-            <q-th auto-width>
+              <q-th auto-width>
                 <q-checkbox
-                v-model="props.selected"
-                indeterminate-value="some"
-                @update:model-value="selectAllRows(props)"
+                    v-model="props.selected"
+                    indeterminate-value="some"
+                    @update:model-value="selectAllRows(props)"
                 />
-            </q-th>
-            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+              </q-th>
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 {{ col.label }}
-            </q-th>
+              </q-th>
             </q-tr>
-        </template>
+          </template>
 
-        <template #body="props">
+          <template #body="props">
             <q-tr :props="props">
-            <q-td auto-width>
-                <q-checkbox v-model="props.selected" />
-            </q-td>
-            <q-td key="index">{{ props.row.index }}</q-td>
-            <q-td key="name">{{ props.row.name }}</q-td>
-            <q-td key="ip">{{ props.row.ip }}</q-td>
-            <q-td key="type">{{ props.row.type }}</q-td>
-            <q-td key="zone">{{ props.row.zone }}</q-td>
-            <q-td key="count">{{ props.row.count }}</q-td>
+              <q-td auto-width>
+                <q-checkbox v-model="props.selected"/>
+              </q-td>
+              <q-td key="index">{{ props.row.index }}</q-td>
+              <q-td key="name">{{ props.row.name }}</q-td>
+              <q-td key="ip">{{ props.row.ip }}</q-td>
+              <q-td key="type">{{ props.row.type }}</q-td>
+              <q-td key="zone">{{ props.row.zone }}</q-td>
+              <q-td key="count">{{ props.row.count }}</q-td>
             </q-tr>
-        </template>
-    </q-table>
+          </template>
+        </q-table>
 
         <div class="row items-center justify-start q-mt-md">
           <div class="text-caption q-mr-md">
@@ -172,17 +172,17 @@ function goToPage() {
           </div>
 
           <q-pagination
-            v-model="pagination.page"
-            :max="Math.ceil(totalRows / pagination.rowsPerPage)"
-            :max-pages="6"
-            direction-links
-            boundary-links
-            boundary-numbers
-            size="sm"
-            flat
-            color="black"
-            active-color="primary"
-            class="my-pagination-custom q-mr-md"
+              v-model="pagination.page"
+              :max="Math.ceil(totalRows / pagination.rowsPerPage)"
+              :max-pages="6"
+              direction-links
+              boundary-links
+              boundary-numbers
+              size="sm"
+              flat
+              color="black"
+              active-color="primary"
+              class="my-pagination-custom q-mr-md"
           />
 
           <div class="text-caption custom-page-size q-mr-md">
@@ -192,12 +192,12 @@ function goToPage() {
           <div class="row items-center">
             <span class="q-mr-sm">跳至</span>
             <q-input
-              v-model.number="customPage"
-              type="number"
-              dense
-              style="width: 60px;"
-              class="custom-jump-input"
-              @keyup.enter="goToPage"
+                v-model.number="customPage"
+                type="number"
+                dense
+                style="width: 60px;"
+                class="custom-jump-input"
+                @keyup.enter="goToPage"
             />
             <span class="q-ml-sm">页</span>
           </div>
@@ -205,7 +205,7 @@ function goToPage() {
       </q-card-section>
     </q-card>
 
-    </div>
+  </div>
 
 </template>
 

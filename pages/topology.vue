@@ -1,16 +1,27 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
-import { useQuasar } from 'quasar';
-import {type Nodes, type Edges, type Layouts, type VNetworkGraphInstance, VNetworkGraph, type EventHandlers, type ViewMode, type NodeEvent, type EdgeEvent} from "v-network-graph";
+import {reactive, ref, onMounted} from "vue";
+import {useQuasar} from 'quasar';
+import {
+  type Nodes,
+  type Edges,
+  type Layouts,
+  type VNetworkGraphInstance,
+  VNetworkGraph,
+  type EventHandlers,
+  type ViewMode,
+  type NodeEvent,
+  type EdgeEvent
+} from "v-network-graph";
 import graphData from "./data";
 import topoData from "./topology.json";
-import type { RootObject } from "../types/city";
+import type {RootObject} from "../types/city";
 
-const { data, error } = await useFetch<RootObject>('/api/city', { query: { areaPid: 0 } })
+const {data, error} = await useFetch<RootObject>('/api/city', {query: {areaPid: 0}})
 console.log(data.value?.messageContent)
 
 const $q = useQuasar();
 const isBoxSelectionMode = ref(false)
+
 interface Topology {
   nodes: { [id: string]: { name: string; ips: string[]; ports: string[]; x?: number; y?: number; type?: string } };
   edges: { [id: string]: { source: string; target: string } };
@@ -39,7 +50,7 @@ const DEVICE_IMAGES = {
 type DeviceType = keyof typeof DEVICE_IMAGES;
 
 const nodes: Nodes = reactive({});
-const layouts = reactive<Layouts>({ nodes: {} });
+const layouts = reactive<Layouts>({nodes: {}});
 
 function calculateLayout(nodeIds: string[]) {
   const centerX = 300;
@@ -83,7 +94,7 @@ function calculateLayout(nodeIds: string[]) {
     const horizontalSpacing = 100;
     groupNodes.forEach((nodeId, index) => {
       layouts.nodes[nodeId] = {
-        x: centerX - width/2 + (index + 1) * horizontalSpacing,
+        x: centerX - width / 2 + (index + 1) * horizontalSpacing,
         y: yPos
       };
     });
@@ -106,12 +117,12 @@ function initializeGraph(topology: Topology) {
     };
 
     if (nodeInfo.x !== undefined && nodeInfo.y !== undefined) {
-      layouts.nodes[nodeId] = { x: nodeInfo.x, y: nodeInfo.y };
+      layouts.nodes[nodeId] = {x: nodeInfo.x, y: nodeInfo.y};
     }
   }
 
   for (const [edgeId, edgeInfo] of Object.entries(topology.edges)) {
-    edges[edgeId] = { source: edgeInfo.source, target: edgeInfo.target };
+    edges[edgeId] = {source: edgeInfo.source, target: edgeInfo.target};
   }
 
   calculateLayout(Object.keys(topology.nodes));
@@ -172,7 +183,7 @@ function addEdge() {
 
   const [source, target] = selectedNodes.value;
   const edgeId = `edge${nextEdgeIndex.value}`;
-  edges[edgeId] = { source, target };
+  edges[edgeId] = {source, target};
   nextEdgeIndex.value++;
 }
 
@@ -192,7 +203,7 @@ const editingNodeId = ref<string | null>(null);
 const newNodeName = ref('');
 
 const eventHandlers: EventHandlers = {
-  "node:click": ({ node, event }: NodeEvent<MouseEvent>) => {
+  "node:click": ({node, event}: NodeEvent<MouseEvent>) => {
     if (event.ctrlKey) {
       const index = selectedNodes.value.indexOf(node);
       if (index >= 0) {
@@ -205,7 +216,7 @@ const eventHandlers: EventHandlers = {
       selectedEdges.value = [];
     }
   },
-  "edge:click": ({ edge, event }: EdgeEvent<MouseEvent>) => {
+  "edge:click": ({edge, event}: EdgeEvent<MouseEvent>) => {
     if (event.ctrlKey) {
       const index = selectedEdges.value.indexOf(edge);
       if (index >= 0) {
@@ -221,11 +232,11 @@ const eventHandlers: EventHandlers = {
   "view:click": () => {
     clearSelection();
   },
-  "node:dblclick": ({ node }: { node: string }) => {
+  "node:dblclick": ({node}: { node: string }) => {
     editingNodeId.value = node;
     newNodeName.value = nodes[node].name ?? '';
   },
-  "box-selection:end": ({ nodes: boxSelectedNodes }: { nodes: string[] }) => {
+  "box-selection:end": ({nodes: boxSelectedNodes}: { nodes: string[] }) => {
     boxSelectedNodes.forEach(nodeId => {
       if (!selectedNodes.value.includes(nodeId)) {
         selectedNodes.value.push(nodeId);
@@ -348,7 +359,7 @@ async function loadTopology() {
                 />
               </div>
               <div class="col-auto">
-                <q-btn color="primary" label="添加节点" @click="addNode" />
+                <q-btn color="primary" label="添加节点" @click="addNode"/>
               </div>
               <div class="col-auto">
                 <q-btn
@@ -391,10 +402,10 @@ async function loadTopology() {
                 />
               </div>
               <div class="col-auto">
-                <q-btn color="positive" label="保存拓扑" @click="saveTopology" />
+                <q-btn color="positive" label="保存拓扑" @click="saveTopology"/>
               </div>
               <div class="col-auto">
-                <q-btn color="info" label="加载拓扑" @click="loadTopology" />
+                <q-btn color="info" label="加载拓扑" @click="loadTopology"/>
               </div>
             </div>
             <div class="row q-mt-sm">
@@ -424,7 +435,7 @@ async function loadTopology() {
         >
           <defs>
             <clipPath id="faceCircle" clipPathUnits="objectBoundingBox">
-              <circle cx="0.5" cy="0.5" r="0.5" />
+              <circle cx="0.5" cy="0.5" r="0.5"/>
             </clipPath>
           </defs>
 
@@ -496,17 +507,20 @@ async function loadTopology() {
 .node-bg {
   fill: white;
 }
+
 .graph {
   width: 100%;
   height: 600px;
   border: 1px solid #ccc;
   background-color: #f9f9f9;
 }
+
 .selected-node circle {
   stroke: #FF5722 !important;
   stroke-width: 2px !important;
   filter: drop-shadow(0 0 4px rgba(255, 87, 34, 0.6));
 }
+
 .node-edit-container {
   background-color: white;
   padding: 8px;
@@ -514,6 +528,7 @@ async function loadTopology() {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }
+
 .mode {
   position: absolute;
   bottom: 10px;

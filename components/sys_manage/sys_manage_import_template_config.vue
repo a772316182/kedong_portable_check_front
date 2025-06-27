@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { rowClassFn } from "~/utils/tableStyle";
+import {rowClassFn} from "~/utils/tableStyle";
 
 const columns = [
   {
@@ -30,7 +30,7 @@ const columns = [
     sortable: true,
     align: "center",
   },
-  { name: "actions", label: "操作", field: "actions", align: "center" },
+  {name: "actions", label: "操作", field: "actions", align: "center"},
 ];
 const rows = [
   {
@@ -66,16 +66,16 @@ const rows = [
       <q-btn color="primary" class="col-md-2 col-lg-1 col-sm-2">添加模板</q-btn>
     </div>
     <q-table
-      square
-      no-data-label="暂无数据"
-      flat
-      bordered
-      title="导入模板配置"
-      :rows="rows"
-      :columns="columns"
-      row-key="index"
-      :table-row-class-fn="rowClassFn"
-      :rows-per-page-options="[5, 10, 20, 50, 0]"
+        square
+        no-data-label="暂无数据"
+        flat
+        bordered
+        title="导入模板配置"
+        :rows="rows"
+        :columns="columns"
+        row-key="index"
+        :table-row-class-fn="rowClassFn"
+        :rows-per-page-options="[5, 10, 20, 50, 0]"
     >
       <template #body="props">
         <q-tr :props="props">

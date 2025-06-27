@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import {ref, computed, onMounted} from 'vue'
 
 const dialog = ref(false)
 const customPage = ref(null)
@@ -26,12 +26,12 @@ const generateTestData = () => {
 }
 
 const columns = [
-  { name: 'index', label: '编号', field: 'index', align: 'left' },
-  { name: 'reportName', label: '任务名称', field: 'reportName', align: 'left' },
-  { name: 'createTime', label: '创建时间', field: 'createTime', align: 'left' },
-  { name: 'area', label: '核查范围', field: 'area', align: 'left' },
-  { name: 'operator', label: '任务状态', field: 'operator', align: 'left' },
-  { name: 'actions', label: '操作', field: 'actions', align: 'left' }
+  {name: 'index', label: '编号', field: 'index', align: 'left'},
+  {name: 'reportName', label: '任务名称', field: 'reportName', align: 'left'},
+  {name: 'createTime', label: '创建时间', field: 'createTime', align: 'left'},
+  {name: 'area', label: '核查范围', field: 'area', align: 'left'},
+  {name: 'operator', label: '任务状态', field: 'operator', align: 'left'},
+  {name: 'actions', label: '操作', field: 'actions', align: 'left'}
 ]
 
 // Track play/pause state for each row
@@ -40,9 +40,9 @@ const playStates = ref(Array(250).fill(false))
 // Progress steps
 const activeStep = ref(0)
 const steps = [
-  { label: '创建任务', completed: true },
-  { label: '告警验证', completed: false },
-  { label: '验证结果', completed: false }
+  {label: '创建任务', completed: true},
+  {label: '告警验证', completed: false},
+  {label: '验证结果', completed: false}
 ]
 
 const rows = ref([])
@@ -65,7 +65,7 @@ function togglePlay() {
 const currentPageRange = computed(() => {
   const start = (pagination.value.page - 1) * pagination.value.rowsPerPage + 1
   const end = Math.min(pagination.value.page * pagination.value.rowsPerPage, totalRows.value)
-  return { start, end }
+  return {start, end}
 })
 
 onMounted(() => {
@@ -116,34 +116,34 @@ function goToPage() {
 
     <q-card flat>
       <q-card-section>
-        <q-btn label="创建核查任务" color="primary" @click="dialog = true" />
+        <q-btn label="创建核查任务" color="primary" @click="dialog = true"/>
       </q-card-section>
 
       <q-card-section>
         <q-table
-          v-model:pagination="pagination"
-          square
-          no-data-label="暂无数据"
-          flat
-          v-model:selected="selectedRows"
-          bordered
-          :rows="rows.slice(
+            v-model:pagination="pagination"
+            v-model:selected="selectedRows"
+            square
+            no-data-label="暂无数据"
+            flat
+            bordered
+            :rows="rows.slice(
             (pagination.page - 1) * pagination.rowsPerPage,
             pagination.page * pagination.rowsPerPage
           )"
-          :columns="columns"
-          row-key="index"
-          :table-row-class-fn="rowClassFn"
-          hide-pagination
-          style="height: 500px;"
-          virtual-scroll
-          class="custom-table"
-          selection="multiple"
+            :columns="columns"
+            row-key="index"
+            :table-row-class-fn="rowClassFn"
+            hide-pagination
+            style="height: 500px;"
+            virtual-scroll
+            class="custom-table"
+            selection="multiple"
         >
           <template #body="props">
             <q-tr :props="props">
               <q-td auto-width>
-                <q-checkbox v-model="props.selected" @click.stop />
+                <q-checkbox v-model="props.selected" @click.stop/>
               </q-td>
               <q-td key="index">{{ props.row.index }}</q-td>
               <q-td key="reportName">{{ props.row.reportName }}</q-td>
@@ -151,18 +151,19 @@ function goToPage() {
               <!-- <q-td key="area">{{ props.row.area }}</q-td> -->
               <q-td key="area">
                 <div class="q-pa-xs row q-gutter-sm">
-                    <div class="bg-green-1 text-green-10 q-pa-xs q-mr-xs rounded-borders text-caption">
+                  <div class="bg-green-1 text-green-10 q-pa-xs q-mr-xs rounded-borders text-caption">
                     安全1区
-                    </div>
-                    <div class="bg-green-1 text-green-10 q-pa-xs rounded-borders text-caption">
+                  </div>
+                  <div class="bg-green-1 text-green-10 q-pa-xs rounded-borders text-caption">
                     安全2区
-                    </div>
+                  </div>
                 </div>
               </q-td>
               <q-td key="operator">{{ props.row.operator }}</q-td>
               <q-td key="actions">
                 <q-td key="actions">
-                  <q-btn :color="props.row.operator === '进行中' ? 'indigo-10' : 'red-10'" flat @click="showVerification">
+                  <q-btn :color="props.row.operator === '进行中' ? 'indigo-10' : 'red-10'" flat
+                         @click="showVerification">
                     {{ props.row.operator === '进行中' ? '启动' : '暂停' }}
                   </q-btn>
                   <q-btn color="primary" flat>
@@ -197,17 +198,17 @@ function goToPage() {
           </div>
 
           <q-pagination
-            v-model="pagination.page"
-            :max="Math.ceil(totalRows / pagination.rowsPerPage)"
-            :max-pages="6"
-            direction-links
-            boundary-links
-            boundary-numbers
-            size="sm"
-            flat
-            color="black"
-            active-color="primary"
-            class="my-pagination-custom q-mr-md"
+              v-model="pagination.page"
+              :max="Math.ceil(totalRows / pagination.rowsPerPage)"
+              :max-pages="6"
+              direction-links
+              boundary-links
+              boundary-numbers
+              size="sm"
+              flat
+              color="black"
+              active-color="primary"
+              class="my-pagination-custom q-mr-md"
           />
 
           <div class="text-caption custom-page-size q-mr-md">
@@ -217,12 +218,12 @@ function goToPage() {
           <div class="row items-center">
             <span class="q-mr-sm">跳至</span>
             <q-input
-              v-model.number="customPage"
-              type="number"
-              dense
-              style="width: 60px;"
-              class="custom-jump-input"
-              @keyup.enter="goToPage"
+                v-model.number="customPage"
+                type="number"
+                dense
+                style="width: 60px;"
+                class="custom-jump-input"
+                @keyup.enter="goToPage"
             />
             <span class="q-ml-sm">页</span>
           </div>
@@ -231,7 +232,7 @@ function goToPage() {
     </q-card>
 
     <!-- 生成报告对话框 -->
-    <Verificationtask v-model="dialog" />
+    <Verificationtask v-model="dialog"/>
   </q-page>
 </template>
 
@@ -311,7 +312,8 @@ function goToPage() {
 ::v-deep(.custom-jump-input) {
   height: 28px !important;
 }
-/* 
+
+/*
 ::v-deep(.my-pagination-custom .q-btn.active) {
   background-color: #2e7d32 !important;
   color: white !important;

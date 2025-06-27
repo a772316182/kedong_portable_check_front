@@ -31,13 +31,24 @@ function handleStepChange(newStep: number) {
       </q-stepper>
     </div>
 
-    <!-- 动态组件 -->
-    <component
-        :is="[
-        CreateTask,
-        strategyVerification,
-        VerificationResult
-      ][activeStep]"
+    <strategy-check-create-task
+        v-if="activeStep === 0"
+        @next="handleStepChange(activeStep + 1)"
+        @prev="handleStepChange(activeStep - 1)"
+        @reset="handleStepChange(0)"
+        @view-verification="handleStepChange(1)"
+    />
+
+    <strategy-check-verification
+        v-else-if="activeStep === 1"
+        @next="handleStepChange(activeStep + 1)"
+        @prev="handleStepChange(activeStep - 1)"
+        @reset="handleStepChange(0)"
+        @view-verification="handleStepChange(1)"
+    />
+
+    <strategy-check-result
+        v-else-if="activeStep === 2"
         @next="handleStepChange(activeStep + 1)"
         @prev="handleStepChange(activeStep - 1)"
         @reset="handleStepChange(0)"

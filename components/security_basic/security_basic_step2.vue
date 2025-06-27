@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { rowClassFn } from "~/utils/tableStyle";
+import {rowClassFn} from "~/utils/tableStyle";
+
 const selectedRows = ref([]);
 const columns = [
   {
@@ -95,19 +96,20 @@ const segmentGroups = ref([
     name: "Ⅰ区B网",
     selectedAll: false,
     segments: [
-      { range: "192.168.11.11 - 192.168.11.12", selected: false },
-      { range: "192.168.11.13 - 192.168.11.14", selected: false },
+      {range: "192.168.11.11 - 192.168.11.12", selected: false},
+      {range: "192.168.11.13 - 192.168.11.14", selected: false},
     ],
   },
   {
     name: "ⅠⅠ区A网",
     selectedAll: false,
     segments: [
-      { range: "10.0.0.1 - 10.0.0.2", selected: false },
-      { range: "10.0.0.3 - 10.0.0.4", selected: false },
+      {range: "10.0.0.1 - 10.0.0.2", selected: false},
+      {range: "10.0.0.3 - 10.0.0.4", selected: false},
     ],
   },
 ]);
+
 function getProgressColor(row) {
   if (row.error) return "red";
   if (row.progress === 0) return "grey";
@@ -154,8 +156,8 @@ function updateGroupSelection(group) {
     <div class="row q-gutter-md">
       <!-- 左侧：白色分区选择框 -->
       <div
-        class="bg-white q-pa-md"
-        style="
+          class="bg-white q-pa-md"
+          style="
           width: 300px;
           border: 1px solid #ccc;
           border-radius: 8px;
@@ -164,25 +166,25 @@ function updateGroupSelection(group) {
         "
       >
         <div
-          v-for="(group, index) in segmentGroups"
-          :key="index"
-          class="q-mb-md"
+            v-for="(group, index) in segmentGroups"
+            :key="index"
+            class="q-mb-md"
         >
           <div class="row items-center q-mb-sm">
             <q-checkbox
-              v-model="group.selectedAll"
-              label="全选"
-              @update:model-value="toggleGroup(group)"
+                v-model="group.selectedAll"
+                label="全选"
+                @update:model-value="toggleGroup(group)"
             />
             <div class="q-ml-sm text-bold">{{ group.name }}</div>
           </div>
           <div class="q-ml-lg">
             <q-checkbox
-              v-for="(segment, idx) in group.segments"
-              :key="idx"
-              v-model="segment.selected"
-              :label="segment.range"
-              @update:model-value="updateGroupSelection(group)"
+                v-for="(segment, idx) in group.segments"
+                :key="idx"
+                v-model="segment.selected"
+                :label="segment.range"
+                @update:model-value="updateGroupSelection(group)"
             />
           </div>
         </div>
@@ -193,48 +195,51 @@ function updateGroupSelection(group) {
         <q-page class="q-pa-md q-gutter-y-md">
           <div class="q-gutter-y-md">
             <div class="q-mt-md row justify-left items-center q-gutter-x-md">
-              <q-btn label="批量核查" color="primary" />
-              <q-btn label="取消检查" color="primary" />
+              <q-btn label="批量核查" color="primary"/>
+              <q-btn label="取消检查" color="primary"/>
             </div>
             <q-table
-              square
-              no-data-label="暂无数据"
-              flat
-              bordered
-              title="基础检查表"
-              :rows="rows"
-              :columns="columns"
-              row-key="index"
-              :table-row-class-fn="rowClassFn"
-              :rows-per-page-options="[5, 10, 20, 50, 0]"
+                square
+                no-data-label="暂无数据"
+                flat
+                bordered
+                title="基础检查表"
+                :rows="rows"
+                :columns="columns"
+                row-key="index"
+                :table-row-class-fn="rowClassFn"
+                :rows-per-page-options="[5, 10, 20, 50, 0]"
             >
               <template #body="props">
                 <q-tr :props="props" @click="toggleRowSelection(props.row)">
                   <q-td key="selection" :props="props">
-                    <q-checkbox v-model="selectedRows" :val="props.row.index" />
+                    <q-checkbox v-model="selectedRows" :val="props.row.index"/>
                   </q-td>
                   <q-td key="index" :props="props">{{ props.row.index }}</q-td>
                   <q-td key="name" :props="props">{{ props.row.name }}</q-td>
                   <q-td key="networkSegment" :props="props">{{
-                    props.row.networkSegment
-                  }}</q-td>
+                      props.row.networkSegment
+                    }}
+                  </q-td>
                   <q-td key="deviceType" :props="props">{{
-                    props.row.deviceType
-                  }}</q-td>
+                      props.row.deviceType
+                    }}
+                  </q-td>
                   <q-td key="ip" :props="props">{{ props.row.ip }}</q-td>
                   <q-td key="mac" :props="props">{{ props.row.mac }}</q-td>
                   <q-td key="progress" :props="props">
                     <div v-if="props.row.error">
                       <q-badge color="red">{{
-                        props.row.errorMessage
-                      }}</q-badge>
+                          props.row.errorMessage
+                        }}
+                      </q-badge>
                     </div>
                     <template v-else>
                       <q-linear-progress
-                        :value="parseProgress(props.row.progress)"
-                        :color="getProgressColor(props.row)"
-                        size="md"
-                        class="q-mt-sm"
+                          :value="parseProgress(props.row.progress)"
+                          :color="getProgressColor(props.row)"
+                          size="md"
+                          class="q-mt-sm"
                       />
                       <div class="text-center">
                         {{ getStatusText(props.row) }}
@@ -251,8 +256,8 @@ function updateGroupSelection(group) {
 
     <!-- 页面底部导航按钮 -->
     <div class="q-mt-md row justify-center items-center q-gutter-x-md">
-      <q-btn label="上一步" color="primary" @click="$emit('back')" />
-      <q-btn label="下一步" color="primary" @click="$emit('next')" />
+      <q-btn label="上一步" color="primary" @click="$emit('back')"/>
+      <q-btn label="下一步" color="primary" @click="$emit('next')"/>
     </div>
   </div>
 </template>

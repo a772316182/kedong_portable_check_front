@@ -1,12 +1,12 @@
-import { defineEventHandler, getQuery } from 'h3'
-import { pscClient } from '../../utils/pscClient'
+import {defineEventHandler, getQuery} from 'h3'
+import {pscClient} from '../../utils/pscClient'
 
 export default defineEventHandler(async (event) => {
-    const { areaPid = '0' } = getQuery(event)
+    const {areaPid = '0'} = getQuery(event)
 
     // 用 Promise + await 拿到 RPC 返回值
     const resp: any = await new Promise((resolve, reject) => {
-        pscClient.City({ areaPid: Number(areaPid) }, (err: any, response: any) => {
+        pscClient.City({areaPid: Number(areaPid)}, (err: any, response: any) => {
             if (err) return reject(err)
             resolve(response)
         })

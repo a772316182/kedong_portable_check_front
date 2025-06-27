@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { rowClassFn } from "~/utils/tableStyle";
+import {rowClassFn} from "~/utils/tableStyle";
 
 const columns = [
   {
@@ -86,36 +86,40 @@ const rows = [
     <q-page class="q-pa-md q-gutter-y-md">
       <div class="q-gutter-y-md">
         <q-table
-          square
-          no-data-label="暂无数据"
-          flat
-          bordered
-          title="检查结果表"
-          :rows="rows"
-          :columns="columns"
-          row-key="index"
-          :table-row-class-fn="rowClassFn"
-          :rows-per-page-options="[5, 10, 20, 50, 0]"
+            square
+            no-data-label="暂无数据"
+            flat
+            bordered
+            title="检查结果表"
+            :rows="rows"
+            :columns="columns"
+            row-key="index"
+            :table-row-class-fn="rowClassFn"
+            :rows-per-page-options="[5, 10, 20, 50, 0]"
         >
           <template #body="props">
             <q-tr :props="props">
               <q-td key="index" :props="props">{{ props.row.index }}</q-td>
               <q-td key="deviceName" :props="props">{{
-                props.row.deviceName
-              }}</q-td>
+                  props.row.deviceName
+                }}
+              </q-td>
               <q-td key="deviceType" :props="props">{{
-                props.row.deviceType
-              }}</q-td>
+                  props.row.deviceType
+                }}
+              </q-td>
               <q-td key="deviceIP1" :props="props">{{
-                props.row.deviceIP1
-              }}</q-td>
+                  props.row.deviceIP1
+                }}
+              </q-td>
               <q-td key="deviceIP2" :props="props">{{
-                props.row.deviceIP2
-              }}</q-td>
+                  props.row.deviceIP2
+                }}
+              </q-td>
               <q-td
-                key="checkResult"
-                :props="props"
-                :class="{ 'text-red': props.row.checkResult === '不合格' }"
+                  key="checkResult"
+                  :props="props"
+                  :class="{ 'text-red': props.row.checkResult === '不合格' }"
               >
                 {{ props.row.checkResult }}
               </q-td>
@@ -127,8 +131,8 @@ const rows = [
   </div>
   <!-- 页面底部导航按钮 -->
   <div class="q-mt-md row justify-center items-center q-gutter-x-md">
-    <q-btn label="上一步" color="primary" @click="$emit('back')" />
-    <q-btn label="完成" color="primary" @click="$emit('next')" />
+    <q-btn label="上一步" color="primary" @click="$emit('back')"/>
+    <q-btn label="完成" color="primary" @click="$emit('next')"/>
   </div>
 </template>
 
@@ -145,6 +149,7 @@ const rows = [
 .q-th .q-btn {
   padding: 2px;
 }
+
 /* 强制列表头居中 */
 .q-table th:nth-child(6) > div {
   justify-content: center !important;

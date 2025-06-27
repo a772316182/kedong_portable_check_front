@@ -137,11 +137,11 @@ const customSort = (rows: any[], column: string, direction: "asc" | "desc") => {
 // 修改后的过滤+排序计算属性
 const filteredRows = computed(() => {
   let result = rows.filter((row) =>
-    Object.keys(search).every((key) =>
-      String(row[key as keyof typeof row])
-        .toLowerCase()
-        .includes(search[key as keyof typeof search].toLowerCase())
-    )
+      Object.keys(search).every((key) =>
+          String(row[key as keyof typeof row])
+              .toLowerCase()
+              .includes(search[key as keyof typeof search].toLowerCase())
+      )
   );
 
   // 应用自定义排序
@@ -171,7 +171,7 @@ function getSortIcon(colName: string) {
 }
 
 // 查看任务详情
-function viewTask(task) {
+function viewTask(task: any) {
   if (task.taskStatus === "已完成") {
     selectedTask.value = task;
     currentStep.value = "2"; // 进入第二步
@@ -182,10 +182,10 @@ function viewTask(task) {
 <template>
   <div>
     <q-stepper
-      v-model="currentStep"
-      alternative-labels
-      active-color="orange"
-      done-color="green"
+        v-model="currentStep"
+        alternative-labels
+        active-color="orange"
+        done-color="green"
     >
       <q-step name="1" title="创建任务" :done="currentStep > '1'">
         <div>
@@ -193,34 +193,34 @@ function viewTask(task) {
             <div class="q-gutter-y-md">
               <div class="row">
                 <q-btn
-                  color="primary"
-                  class="col-auto"
-                  @click="generateNoticeSlip"
+                    color="primary"
+                    class="col-auto"
+                    @click="generateNoticeSlip"
                 >
                   创建核查任务
                 </q-btn>
               </div>
               <q-table
-                square
-                no-data-label="暂无数据"
-                flat
-                bordered
-                title="任务列表"
-                :rows="filteredRows"
-                :columns="columns"
-                row-key="index"
-                :table-row-class-fn="rowClassFn"
-                :rows-per-page-options="[5, 10, 20, 50, 0]"
-                :sort-method="() => {}"
-                @sort="(ctx) => {}"
+                  square
+                  no-data-label="暂无数据"
+                  flat
+                  bordered
+                  title="任务列表"
+                  :rows="filteredRows"
+                  :columns="columns"
+                  row-key="index"
+                  :table-row-class-fn="rowClassFn"
+                  :rows-per-page-options="[5, 10, 20, 50, 0]"
+                  :sort-method="() => {}"
+                  @sort="(ctx) => {}"
               >
                 <template #header="props">
                   <q-tr :props="props">
                     <q-th
-                      v-for="col in props.cols"
-                      :key="col.name"
-                      :props="props"
-                      class="relative"
+                        v-for="col in props.cols"
+                        :key="col.name"
+                        :props="props"
+                        class="relative"
                     >
                       <div class="row items-center no-wrap justify-between">
                         <span>{{ col.label }}</span>
@@ -228,26 +228,26 @@ function viewTask(task) {
                           <!-- 只在 searchable 为 true 的列显示搜索按钮 -->
                           <template v-if="col.searchable">
                             <q-btn
-                              dense
-                              flat
-                              round
-                              icon="search"
-                              size="sm"
-                              @click.stop
+                                dense
+                                flat
+                                round
+                                icon="search"
+                                size="sm"
+                                @click.stop
                             >
                               <q-popup-edit
-                                v-slot="scope"
-                                v-model="search[col.name]"
-                                anchor="top left"
-                                self="bottom right"
-                                auto-save
+                                  v-slot="scope"
+                                  v-model="search[col.name]"
+                                  anchor="top left"
+                                  self="bottom right"
+                                  auto-save
                               >
                                 <q-input
-                                  v-model="scope.value"
-                                  dense
-                                  autofocus
-                                  label="搜索"
-                                  @keyup.enter="scope.set"
+                                    v-model="scope.value"
+                                    dense
+                                    autofocus
+                                    label="搜索"
+                                    @keyup.enter="scope.set"
                                 />
                               </q-popup-edit>
                             </q-btn>
@@ -255,12 +255,12 @@ function viewTask(task) {
 
                           <template v-if="col.issortable">
                             <q-btn
-                              dense
-                              flat
-                              round
-                              :icon="getSortIcon(col.name)"
-                              size="sm"
-                              @click="handleSortClick(col.name)"
+                                dense
+                                flat
+                                round
+                                :icon="getSortIcon(col.name)"
+                                size="sm"
+                                @click="handleSortClick(col.name)"
                             />
                           </template>
                         </div>
@@ -272,44 +272,47 @@ function viewTask(task) {
                 <template #body="props">
                   <q-tr :props="props">
                     <q-td key="index" :props="props">{{
-                      props.row.index
-                    }}</q-td>
+                        props.row.index
+                      }}
+                    </q-td>
                     <q-td key="taskName" :props="props">{{
-                      props.row.taskName
-                    }}</q-td>
+                        props.row.taskName
+                      }}
+                    </q-td>
                     <q-td key="createTime" :props="props">{{
-                      props.row.createTime
-                    }}</q-td>
+                        props.row.createTime
+                      }}
+                    </q-td>
                     <q-td key="checkItem" :props="props">
                       <div class="q-gutter-sm row items-center">
                         <q-badge
-                          v-for="(item, index) in props.row.checkItem"
-                          :key="index"
-                          color="green-1"
-                          text-color="green-7"
-                          class="q-pa-sm"
+                            v-for="(item, index) in props.row.checkItem"
+                            :key="index"
+                            color="green-1"
+                            text-color="green-7"
+                            class="q-pa-sm"
                         >
                           {{ item }}
                         </q-badge>
                       </div>
                     </q-td>
                     <q-td
-                      key="taskStatus"
-                      :props="props"
-                      :class="{
+                        key="taskStatus"
+                        :props="props"
+                        :class="{
                         'text-green': props.row.taskStatus === '进行中',
                         'text-black': props.row.taskStatus === '已完成',
                       }"
-                      >{{ props.row.taskStatus }}
+                    >{{ props.row.taskStatus }}
                     </q-td>
                     <q-td key="actions" :props="props">
                       <q-btn
-                        flat
-                        color="indigo-10"
-                        :label="
+                          flat
+                          color="indigo-10"
+                          :label="
                           props.row.taskStatus === '进行中' ? '暂停' : '查看'
                         "
-                        @click="viewTask(props.row)"
+                          @click="viewTask(props.row)"
                       />
                       <q-btn flat color="primary">下载</q-btn>
                       <q-btn flat color="red-10">删除</q-btn>
@@ -321,8 +324,8 @@ function viewTask(task) {
           </q-page>
           <q-dialog v-model="dialogVisible">
             <device_check_generate
-              @cancel="dialogVisible = false"
-              @save="saveDeviceCheck"
+                @cancel="dialogVisible = false"
+                @save="saveDeviceCheck"
             />
           </q-dialog>
         </div>
@@ -332,9 +335,9 @@ function viewTask(task) {
           <q-page class="q-pa-md">
             <!-- 这里放置第二步的内容组件 -->
             <device_check_step2
-              :task="selectedTask"
-              @back="currentStep = '1'"
-              @next="currentStep = '3'"
+                :task="selectedTask"
+                @back="currentStep = '1'"
+                @next="currentStep = '3'"
             />
           </q-page>
         </div>
@@ -343,9 +346,9 @@ function viewTask(task) {
         <div>
           <q-page class="q-pa-md">
             <device_check_step3
-              :task="selectedTask"
-              @back="currentStep = '2'"
-              @next="currentStep = '1'"
+                :task="selectedTask"
+                @back="currentStep = '2'"
+                @next="currentStep = '1'"
             />
           </q-page>
         </div>
@@ -367,6 +370,7 @@ function viewTask(task) {
 .q-th .q-btn {
   padding: 2px;
 }
+
 /* 强制列表头居中 */
 .q-table th:nth-child(6) > div {
   justify-content: center !important;

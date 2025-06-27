@@ -1,4 +1,4 @@
-import { defineEventHandler } from 'h3';
+import {defineEventHandler} from 'h3';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -11,6 +11,6 @@ export default defineEventHandler(async () => {
         console.error('Error reading topology file:', error);
         // @ts-ignore
         event.res.statusCode = 500;
-        return { success: false, error: 'Failed to load topology.' };
+        return {success: false, error: 'Failed to load topology.'};
     }
 }); 

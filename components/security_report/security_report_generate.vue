@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import {ref} from 'vue'
 
 defineProps({
   modelValue: {
@@ -16,19 +16,19 @@ const creator = ref('张三')
 const checkboxes = ref([])
 
 const taskColumns = [
-  { name: 'id', label: '编号', field: 'id', align: 'left' },
-  { name: 'type', label: '任务类型', field: 'type', align: 'left' },
-  { name: 'name', label: '检查任务名称', field: 'name', align: 'left' },
-  { name: 'time', label: '检查时间', field: 'time', align: 'left' },
-  { name: 'detail', label: '查看详情', field: 'detail', align: 'left' }
+  {name: 'id', label: '编号', field: 'id', align: 'left'},
+  {name: 'type', label: '任务类型', field: 'type', align: 'left'},
+  {name: 'name', label: '检查任务名称', field: 'name', align: 'left'},
+  {name: 'time', label: '检查时间', field: 'time', align: 'left'},
+  {name: 'detail', label: '查看详情', field: 'detail', align: 'left'}
 ]
 
 const taskRows = ref([
-  { id: 1, type: '安全基础检查', name: '', time: '2023-09-09 00:00:00', detail: '查看', selected: false },
-  { id: 2, type: '安全基础检查', name: '', time: '2023-09-09 00:00:00', detail: '', selected: false },
-  { id: 3, type: '策略核查', name: '', time: '2023-09-09 00:00:00', detail: '', selected: false },
-  { id: 4, type: '安全基础检查', name: '', time: '', detail: '', selected: false },
-  { id: 5, type: '安全基础检查', name: '', time: '', detail: '', selected: false }
+  {id: 1, type: '安全基础检查', name: '', time: '2023-09-09 00:00:00', detail: '查看', selected: false},
+  {id: 2, type: '安全基础检查', name: '', time: '2023-09-09 00:00:00', detail: '', selected: false},
+  {id: 3, type: '策略核查', name: '', time: '2023-09-09 00:00:00', detail: '', selected: false},
+  {id: 4, type: '安全基础检查', name: '', time: '', detail: '', selected: false},
+  {id: 5, type: '安全基础检查', name: '', time: '', detail: '', selected: false}
 ])
 
 function taskRowClassFn(row) {
@@ -50,15 +50,16 @@ function confirmDialog() {
     <q-card style="min-width: 1200px; max-width: 90vw; max-height: 90vh; overflow-y: auto;">
       <!-- 顶部标题行 -->
       <q-card-section class="q-py-sm row items-center" style="background-color: #3BB5A3; position: relative;">
-        <q-icon 
-          name="description" 
-          size="30px"
-          class="q-mr-sm text-white"
+        <q-icon
+            name="description"
+            size="30px"
+            class="q-mr-sm text-white"
         />
         <div class="text-h6 text-white" style="flex: 1; text-align: center;">
           生成报告
         </div>
-        <q-btn icon="close" flat round dense style="position: absolute; top: 4px; right: 4px; color: white;" @click="closeDialog" />
+        <q-btn icon="close" flat round dense style="position: absolute; top: 4px; right: 4px; color: white;"
+               @click="closeDialog"/>
       </q-card-section>
 
       <q-card-section>
@@ -66,42 +67,43 @@ function confirmDialog() {
         <div class="row q-mb-md">
           <div class="row items-center col-6">
             <div class="text-weight-bold">任务名称：</div>
-            <q-input v-model="taskName" dense :style="{ backgroundColor: '#f0f0f0' , width: '490px'}" class="q-ml-sm" />
+            <q-input v-model="taskName" dense :style="{ backgroundColor: '#f0f0f0' , width: '490px'}" class="q-ml-sm"/>
           </div>
           <div class="row items-center col-6">
             <div class="text-weight-bold">厂站名称：</div>
-            <q-input v-model="stationName" dense :style="{ backgroundColor: '#f0f0f0' , width: '490px'}" class="q-ml-sm" />
+            <q-input v-model="stationName" dense :style="{ backgroundColor: '#f0f0f0' , width: '490px'}"
+                     class="q-ml-sm"/>
           </div>
         </div>
 
         <!-- 创建人 -->
         <div class="row q-mb-md">
           <div class="text-weight-bold" style="margin-left: 1em;">创建人：</div>
-          <q-input v-model="creator" dense :style="{ backgroundColor: '#f0f0f0', width: '1075px' }" class="q-ml-sm" />
+          <q-input v-model="creator" dense :style="{ backgroundColor: '#f0f0f0', width: '1075px' }" class="q-ml-sm"/>
         </div>
 
         <!-- 报告项 -->
         <div class="row q-mb-md">
           <div class="text-weight-bold" style="margin-left: 1em;">报告项：</div>
           <div class="q-ml-sm">
-            <q-checkbox v-model="checkboxes" val="安全基础检查" label="安全基础检查" />
-            <q-checkbox v-model="checkboxes" val="网络设备检查" label="网络设备检查" />
-            <q-checkbox v-model="checkboxes" val="策略核查" label="策略核查" />
-            <q-checkbox v-model="checkboxes" val="告警验证" label="告警验证" />
+            <q-checkbox v-model="checkboxes" val="安全基础检查" label="安全基础检查"/>
+            <q-checkbox v-model="checkboxes" val="网络设备检查" label="网络设备检查"/>
+            <q-checkbox v-model="checkboxes" val="策略核查" label="策略核查"/>
+            <q-checkbox v-model="checkboxes" val="告警验证" label="告警验证"/>
           </div>
         </div>
         <div class="row no-wrap q-mt-md" style="align-items: flex-start;">
           <div class="text-weight-bold q-mb-sm">任务列表：</div>
           <q-table
-            flat
-            bordered
-            :rows="taskRows"
-            :columns="taskColumns"
-            row-key="id"
-            hide-pagination
-            hide-bottom
-            style="width: 1080px;"
-            :row-class="taskRowClassFn"
+              flat
+              bordered
+              :rows="taskRows"
+              :columns="taskColumns"
+              row-key="id"
+              hide-pagination
+              hide-bottom
+              style="width: 1080px;"
+              :row-class="taskRowClassFn"
           >
             <template #header="props">
               <q-tr :props="props" class="dialog-header">
@@ -114,7 +116,7 @@ function confirmDialog() {
             <template #body="props">
               <q-tr :props="props" :class="taskRowClassFn(props.row)">
                 <q-td>
-                  <q-checkbox v-model="props.row.selected" />
+                  <q-checkbox v-model="props.row.selected"/>
                 </q-td>
                 <q-td v-for="col in props.cols" :key="col.name" :props="props">
                   {{ col.value }}
@@ -126,8 +128,8 @@ function confirmDialog() {
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat label="取消" color="primary" @click="closeDialog" />
-        <q-btn label="确认" color="primary" @click="confirmDialog" />
+        <q-btn flat label="取消" color="primary" @click="closeDialog"/>
+        <q-btn label="确认" color="primary" @click="confirmDialog"/>
       </q-card-actions>
     </q-card>
   </q-dialog>

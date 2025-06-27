@@ -1,5 +1,5 @@
 export interface RootObject {
-	retNum: number;
-	errMessage: string;
-	messageContent: string;
+    retNum: number;
+    errMessage: string;
+    messageContent: string;
 }

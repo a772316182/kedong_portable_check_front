@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { rowClassFn } from "~/utils/tableStyle";
+import {rowClassFn} from "~/utils/tableStyle";
+
 const selectedRows = ref([]);
 const columns = [
   {
@@ -114,8 +115,8 @@ function parseProgress(value) {
       <q-page class="q-pa-md q-gutter-y-md">
         <div class="q-gutter-y-md">
           <div class="q-mt-md row justify-left items-center q-gutter-x-md">
-            <q-btn label="核查" color="primary" @click="showDialog = true" />
-            <q-btn label="取消" color="primary" />
+            <q-btn label="核查" color="primary" @click="showDialog = true"/>
+            <q-btn label="取消" color="primary"/>
             <q-dialog v-model="showDialog" persistent>
               <q-card style="min-width: 300px">
                 <q-card-section>
@@ -124,46 +125,47 @@ function parseProgress(value) {
 
                 <q-card-section>
                   <div>请将检查工具与待检查的网络设备直连</div>
-                  <q-checkbox v-model="checked" label="已连接" />
+                  <q-checkbox v-model="checked" label="已连接"/>
                 </q-card-section>
 
                 <q-card-actions align="right">
                   <q-btn
-                    flat
-                    label="取消"
-                    color="primary"
-                    @click="handleCancel"
+                      flat
+                      label="取消"
+                      color="primary"
+                      @click="handleCancel"
                   />
                   <q-btn
-                    flat
-                    label="开始"
-                    color="primary"
-                    :disable="!checked"
-                    @click="handleStart"
+                      flat
+                      label="开始"
+                      color="primary"
+                      :disable="!checked"
+                      @click="handleStart"
                   />
                 </q-card-actions>
               </q-card>
             </q-dialog>
           </div>
           <q-table
-            square
-            no-data-label="暂无数据"
-            flat
-            bordered
-            title="基础检查表"
-            :rows="rows"
-            :columns="columns"
-            row-key="index"
-            :table-row-class-fn="rowClassFn"
-            :rows-per-page-options="[5, 10, 20, 50, 0]"
+              square
+              no-data-label="暂无数据"
+              flat
+              bordered
+              title="基础检查表"
+              :rows="rows"
+              :columns="columns"
+              row-key="index"
+              :table-row-class-fn="rowClassFn"
+              :rows-per-page-options="[5, 10, 20, 50, 0]"
           >
             <template #body="props">
               <q-tr :props="props">
                 <q-td key="index" :props="props">{{ props.row.index }}</q-td>
                 <q-td key="name" :props="props">{{ props.row.name }}</q-td>
                 <q-td key="deviceType" :props="props">{{
-                  props.row.deviceType
-                }}</q-td>
+                    props.row.deviceType
+                  }}
+                </q-td>
                 <q-td key="ip" :props="props">{{ props.row.ip }}</q-td>
                 <q-td key="mac" :props="props">{{ props.row.mac }}</q-td>
                 <q-td key="progress" :props="props">
@@ -172,10 +174,10 @@ function parseProgress(value) {
                   </div>
                   <template v-else>
                     <q-linear-progress
-                      :value="parseProgress(props.row.progress)"
-                      :color="getProgressColor(props.row)"
-                      size="md"
-                      class="q-mt-sm"
+                        :value="parseProgress(props.row.progress)"
+                        :color="getProgressColor(props.row)"
+                        size="md"
+                        class="q-mt-sm"
                     />
                     <div class="text-center">
                       {{ getStatusText(props.row) }}
@@ -191,8 +193,8 @@ function parseProgress(value) {
 
     <!-- 页面底部导航按钮 -->
     <div class="q-mt-md row justify-center items-center q-gutter-x-md">
-      <q-btn label="上一步" color="primary" @click="$emit('back')" />
-      <q-btn label="下一步" color="primary" @click="$emit('next')" />
+      <q-btn label="上一步" color="primary" @click="$emit('back')"/>
+      <q-btn label="下一步" color="primary" @click="$emit('next')"/>
     </div>
   </div>
 </template>

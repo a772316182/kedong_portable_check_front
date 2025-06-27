@@ -161,11 +161,11 @@ const customSort = (rows: any[], column: string, direction: "asc" | "desc") => {
 // 修改后的过滤+排序计算属性
 const filteredRows = computed(() => {
   let result = rows.filter((row) =>
-    Object.keys(search).every((key) =>
-      String(row[key as keyof typeof row])
-        .toLowerCase()
-        .includes(search[key as keyof typeof search].toLowerCase())
-    )
+      Object.keys(search).every((key) =>
+          String(row[key as keyof typeof row])
+              .toLowerCase()
+              .includes(search[key as keyof typeof search].toLowerCase())
+      )
   );
 
   // 应用自定义排序
@@ -201,30 +201,31 @@ function getSortIcon(colName: string) {
       <div class="q-gutter-y-md">
         <div class="row">
           <q-btn color="primary" class="col-auto" @click="generateNoticeSlip"
-            >生成通知单</q-btn
+          >生成通知单
+          </q-btn
           >
         </div>
         <q-table
-          square
-          no-data-label="暂无数据"
-          flat
-          bordered
-          title="通知单列表"
-          :rows="filteredRows"
-          :columns="columns"
-          row-key="index"
-          :table-row-class-fn="rowClassFn"
-          :rows-per-page-options="[5, 10, 20, 50, 0]"
-          :sort-method="() => {}"
-          @sort="(ctx) => {}"
+            square
+            no-data-label="暂无数据"
+            flat
+            bordered
+            title="通知单列表"
+            :rows="filteredRows"
+            :columns="columns"
+            row-key="index"
+            :table-row-class-fn="rowClassFn"
+            :rows-per-page-options="[5, 10, 20, 50, 0]"
+            :sort-method="() => {}"
+            @sort="(ctx) => {}"
         >
           <template #header="props">
             <q-tr :props="props">
               <q-th
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-                class="relative"
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props"
+                  class="relative"
               >
                 <div class="row items-center no-wrap justify-between">
                   <span>{{ col.label }}</span>
@@ -232,26 +233,26 @@ function getSortIcon(colName: string) {
                     <!-- 只在 searchable 为 true 的列显示搜索按钮 -->
                     <template v-if="col.searchable">
                       <q-btn
-                        dense
-                        flat
-                        round
-                        icon="search"
-                        size="sm"
-                        @click.stop
+                          dense
+                          flat
+                          round
+                          icon="search"
+                          size="sm"
+                          @click.stop
                       >
                         <q-popup-edit
-                          v-slot="scope"
-                          v-model="search[col.name]"
-                          anchor="top left"
-                          self="bottom right"
-                          auto-save
+                            v-slot="scope"
+                            v-model="search[col.name]"
+                            anchor="top left"
+                            self="bottom right"
+                            auto-save
                         >
                           <q-input
-                            v-model="scope.value"
-                            dense
-                            autofocus
-                            label="搜索"
-                            @keyup.enter="scope.set"
+                              v-model="scope.value"
+                              dense
+                              autofocus
+                              label="搜索"
+                              @keyup.enter="scope.set"
                           />
                         </q-popup-edit>
                       </q-btn>
@@ -259,12 +260,12 @@ function getSortIcon(colName: string) {
 
                     <template v-if="col.issortable">
                       <q-btn
-                        dense
-                        flat
-                        round
-                        :icon="getSortIcon(col.name)"
-                        size="sm"
-                        @click="handleSortClick(col.name)"
+                          dense
+                          flat
+                          round
+                          :icon="getSortIcon(col.name)"
+                          size="sm"
+                          @click="handleSortClick(col.name)"
                       />
                     </template>
                   </div>
@@ -279,14 +280,17 @@ function getSortIcon(colName: string) {
               <q-td key="index" :props="props">{{ props.row.index }}</q-td>
               <q-td key="name" :props="props">{{ props.row.name }}</q-td>
               <q-td key="plantName" :props="props">{{
-                props.row.plantName
-              }}</q-td>
+                  props.row.plantName
+                }}
+              </q-td>
               <q-td key="createTime" :props="props">{{
-                props.row.createTime
-              }}</q-td>
+                  props.row.createTime
+                }}
+              </q-td>
               <q-td key="operator" :props="props">{{
-                props.row.operator
-              }}</q-td>
+                  props.row.operator
+                }}
+              </q-td>
               <q-td key="actions" :props="props">
                 <q-btn flat color="indigo-10">查看</q-btn>
                 <q-btn flat color="primary">下载</q-btn>
@@ -299,8 +303,8 @@ function getSortIcon(colName: string) {
     </q-page>
     <q-dialog v-model="dialogVisible">
       <rectification_notice_generate_notice_slip
-        @cancel="dialogVisible = false"
-        @save="saveRectificationNotice"
+          @cancel="dialogVisible = false"
+          @save="saveRectificationNotice"
       />
     </q-dialog>
   </div>
@@ -319,6 +323,7 @@ function getSortIcon(colName: string) {
 .q-th .q-btn {
   padding: 2px;
 }
+
 /* 强制列表头居中 */
 .q-table th:nth-child(6) > div {
   justify-content: center !important;

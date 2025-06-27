@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { rowClassFn } from "~/utils/tableStyle";
+import {rowClassFn} from "~/utils/tableStyle";
 
 const columns = [
-  { name: "index", label: "序号", field: "index", sortable: true },
-  { name: "isEnabled", label: "是否启用", field: "isEnabled", sortable: true },
+  {name: "index", label: "序号", field: "index", sortable: true},
+  {name: "isEnabled", label: "是否启用", field: "isEnabled", sortable: true},
   {
     name: "itemNameForTesting",
     label: "检测项名称",
@@ -16,8 +16,8 @@ const columns = [
     field: "itemTypeForTesting",
     sortable: true,
   },
-  { name: "ruleDesc", label: "规则说明", field: "ruleDesc", sortable: true },
-  { name: "actions", label: "操作", field: "actions", align: "center" },
+  {name: "ruleDesc", label: "规则说明", field: "ruleDesc", sortable: true},
+  {name: "actions", label: "操作", field: "actions", align: "center"},
 ];
 const rows = [
   {
@@ -54,16 +54,16 @@ const rows = [
 <template>
   <div>
     <q-table
-      square
-      no-data-label="暂无数据"
-      flat
-      bordered
-      title="基线核查配置"
-      :rows="rows"
-      :columns="columns"
-      row-key="index"
-      :table-row-class-fn="rowClassFn"
-      :rows-per-page-options="[5, 10, 20, 50, 0]"
+        square
+        no-data-label="暂无数据"
+        flat
+        bordered
+        title="基线核查配置"
+        :rows="rows"
+        :columns="columns"
+        row-key="index"
+        :table-row-class-fn="rowClassFn"
+        :rows-per-page-options="[5, 10, 20, 50, 0]"
     >
       <template #body="props">
         <q-tr :props="props">
@@ -71,7 +71,7 @@ const rows = [
             {{ props.row.index }}
           </q-td>
           <q-td key="isEnabled" :props="props">
-            <q-toggle v-model="props.row.isEnabled" />
+            <q-toggle v-model="props.row.isEnabled"/>
           </q-td>
           <q-td key="itemNameForTesting" :props="props">
             {{ props.row.itemNameForTesting }}

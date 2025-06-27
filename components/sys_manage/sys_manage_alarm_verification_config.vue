@@ -12,9 +12,27 @@ const columns = [
   {name: 'actions', label: '操作', field: 'actions', align: 'center'}
 ]
 const rows = [
-  {index: 1, itemNameForVerify: '检测项1', systemVersion: 'Windows Server 2025', ruleDesc: '主机配置的关键文件/目录不得缺失', isEnabled: true},
-  {index: 2, itemNameForVerify: '检测项2', systemVersion: 'Windows Server 2025', ruleDesc: '规则说明2', isEnabled: false},
-  {index: 3, itemNameForVerify: '检测项3', systemVersion: 'RHEL 9', ruleDesc: '主机网络连接白名单内不得包含高危端口；目的端口和目的IP固定一个；主机源IP为一个IP地址或者少于20个IP地址段，服务端主机端口为1024-65535.', isEnabled: true},
+  {
+    index: 1,
+    itemNameForVerify: '检测项1',
+    systemVersion: 'Windows Server 2025',
+    ruleDesc: '主机配置的关键文件/目录不得缺失',
+    isEnabled: true
+  },
+  {
+    index: 2,
+    itemNameForVerify: '检测项2',
+    systemVersion: 'Windows Server 2025',
+    ruleDesc: '规则说明2',
+    isEnabled: false
+  },
+  {
+    index: 3,
+    itemNameForVerify: '检测项3',
+    systemVersion: 'RHEL 9',
+    ruleDesc: '主机网络连接白名单内不得包含高危端口；目的端口和目的IP固定一个；主机源IP为一个IP地址或者少于20个IP地址段，服务端主机端口为1024-65535.',
+    isEnabled: true
+  },
   {index: 4, itemNameForVerify: '检测项4', systemVersion: 'Ubuntu 24 LTS', ruleDesc: '规则说明4', isEnabled: false},
 ]
 const options = ref([
@@ -28,7 +46,7 @@ const options = ref([
 <template>
   <div class="q-gutter-y-md">
     <div class="row">
-      <q-select v-model="model" filled :options="options" label="策略类型" class="col-4" />
+      <q-select v-model="model" filled :options="options" label="策略类型" class="col-4"/>
     </div>
     <q-table
         square
