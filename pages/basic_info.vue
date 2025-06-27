@@ -4,6 +4,7 @@ import { rowClassFn } from "~/utils/tableStyle";
 import { useStationManageApi, useBasicConfigApi, useCityApi } from "~/composables/useApi";
 import type { StationManageParams } from "~/types/api";
 import type { QTableProps } from "quasar";
+import { useRouter } from 'vue-router';
 
 // 直接定义列类型，避免复杂的类型体操
 interface CustomColumn {
@@ -27,14 +28,13 @@ interface CustomColumn {
 }
 
 // 对话框可见性
-const dialogVisible = ref(false);
 const editDialogVisible = ref(false);
 const stationDetailVisible = ref(false);
 
 // API 状态
 const loading = ref(false);
 const { stationState, fetchStationData } = useStationManageApi();
-const { addStation, getStation, updateStation, deleteStation } =
+const { getStation, updateStation, deleteStation } =
   useBasicConfigApi();
 const { fetchCityData } = useCityApi();
 
@@ -45,16 +45,7 @@ const provinces = ref<any[]>([]);
 const cities = ref<any[]>([]);
 const provincesLoading = ref(false);
 const citiesLoading = ref(false);
-const newStation = reactive({
-  stationId: "", // 保留该字段但不再显示在表单中给用户填写，后端会自动生成
-  stationName: "",
-  stationType: "",
-  province: null as string | null,
-  city: null as string | null,
-  voltagelevel: null as number | null,
-  manufactor: "",
-  drawTuoPu: true,
-});
+
 const editStation = reactive({
   stationId: "",
   stationName: "",
@@ -186,6 +177,27 @@ const columns: CustomColumn[] = [
     sortable: true,
     align: "center",
     isDateRange: true,
+  },
+  {
+    name: "manufactor",
+    label: "厂商",
+    field: "manufactor",
+    sortable: true,
+    align: "center",
+  },
+  {
+    name: "config_status",
+    label: "配置状态",
+    field: "config_status",
+    sortable: true,
+    align: "center",
+    format: (val, row) => {
+      // 假设API返回一个数字或字符串来表示状态
+      // 这里可以根据实际情况进行映射
+      if (row.is_configured_fully) return '已完成';
+      if (row.config_step > 1) return `进行中 (${row.config_step}/6)`;
+      return '未开始';
+    }
   },
   {
     name: "actions",
@@ -350,26 +362,6 @@ function getFilterDisplay(col: CustomColumn, value: any): string {
   return String(value);
 }
 
-// 添加新厂站
-async function addNewStation() {
-  loading.value = true;
-  try {
-    // 确保stationId传空字符串给后端，由后端自动生成ID
-    const stationData = { ...newStation, stationId: "" };
-    await addStation(stationData);
-    dialogVisible.value = false;
-    Object.assign(newStation, { // 重置表单
-      stationId: "", stationName: "", stationType: "", province: null,
-      city: null, voltagelevel: null, manufactor: "", drawTuoPu: true,
-    });
-    await loadDataFromServer(); // 重新加载数据
-  } catch (error) {
-    console.error("添加厂站失败:", error);
-  } finally {
-    loading.value = false;
-  }
-}
-
 // 查看厂站详情
 async function viewStationDetail(stationId: string) {
   loading.value = true;
@@ -451,11 +443,6 @@ async function removeStation(stationId: string) {
 }
 
 // --- Watchers for cascading selects ---
-watch(() => newStation.province, async (newProvinceName) => {
-    newStation.city = null; // 省份改变时重置城市
-    await loadCities(newProvinceName);
-});
-
 watch(() => editStation.province, async (newProvinceName, oldProvinceName) => {
     // 仅当省份发生真实改变时（即非首次加载）才重置城市
     if (newProvinceName !== oldProvinceName && editDialogVisible.value) {
@@ -481,7 +468,8 @@ onMounted(async () => {
         <q-btn
           color="primary"
           class="col-auto q-mb-md"
-          @click="dialogVisible = true"
+          to="/station_add_wizard"
+          icon="add"
         >
           添加厂站
         </q-btn>
@@ -640,16 +628,14 @@ onMounted(async () => {
             <q-td key="last_check_time" :props="props">{{
               props.row.last_check_time
             }}</q-td>
+            <q-td key="manufactor" :props="props">{{
+              props.row.manufactor
+            }}</q-td>
+            <q-td key="config_status" :props="props">{{
+              props.row.config_status
+            }}</q-td>
             <q-td key="actions" :props="props" class="q-gutter-x-sm">
-              <q-btn
-                flat
-                round
-                color="info"
-                icon="visibility"
-                @click="viewStationDetail(props.row.station_id)"
-              >
-                <q-tooltip>查看详情</q-tooltip>
-              </q-btn>
+              <!-- 编辑按钮，始终显示 -->
               <q-btn
                 flat
                 round
@@ -657,8 +643,22 @@ onMounted(async () => {
                 icon="edit"
                 @click="openEditDialog(props.row.station_id)"
               >
-                <q-tooltip>编辑</q-tooltip>
+                <q-tooltip>编辑基本信息</q-tooltip>
               </q-btn>
+              
+              <!-- 继续配置按钮，仅在未完成时显示 -->
+              <q-btn
+                v-if="!props.row.is_configured_fully"
+                flat
+                round
+                color="teal"
+                icon="play_arrow"
+                :to="`/station_add_wizard?id=${props.row.station_id}`"
+              >
+                <q-tooltip>继续配置</q-tooltip>
+              </q-btn>
+              
+              <!-- 删除按钮，始终显示 -->
               <q-btn
                 flat
                 round
@@ -673,107 +673,6 @@ onMounted(async () => {
         </template>
       </q-table>
     </q-page>
-
-    <!-- 添加厂站对话框 -->
-    <q-dialog v-model="dialogVisible" persistent>
-      <q-card style="min-width: 500px">
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">添加厂站</div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
-        </q-card-section>
-        <q-card-section>
-          <q-form @submit="addNewStation">
-            <div class="row q-col-gutter-md">
-              <!-- 厂站ID输入框已移除，由后端自动生成 -->
-              <div class="col-12 col-md-6">
-                <q-input
-                  outlined
-                  v-model="newStation.stationName"
-                  label="厂站名称 *"
-                  :rules="[(val) => !!val || '厂站名称不能为空']"
-                />
-              </div>
-              <div class="col-12 col-md-6">
-                <q-select
-                  outlined
-                  v-model="newStation.stationType"
-                  :options="stationTypeOptions"
-                  emit-value
-                  map-options
-                  label="厂站类型 *"
-                  :rules="[(val) => !!val || '厂站类型不能为空']"
-                />
-              </div>
-              <div class="col-12 col-md-6">
-                <q-select
-                  outlined
-                  v-model="newStation.province"
-                  :options="provinces"
-                  option-value="area_name"
-                  option-label="area_name"
-                  map-options
-                  emit-value
-                  label="省份 *"
-                  :loading="provincesLoading"
-                  :rules="[(val) => !!val || '必须选择一个省份']"
-                  clearable
-                />
-              </div>
-              <div class="col-12 col-md-6">
-                <q-select
-                  outlined
-                  v-model="newStation.city"
-                  :options="cities"
-                  option-value="area_name"
-                  option-label="area_name"
-                  map-options
-                  emit-value
-                  label="城市 *"
-                  :loading="citiesLoading"
-                  :disable="!newStation.province"
-                  :rules="[(val) => !!val || '必须选择一个城市']"
-                  clearable
-                />
-              </div>
-              <div class="col-12 col-md-6">
-                <q-select
-                  outlined
-                  v-model="newStation.voltagelevel"
-                  :options="voltageLevelOptions"
-                  emit-value
-                  map-options
-                  label="电压等级 *"
-                  :rules="[(val) => !!val || '电压等级不能为空']"
-                />
-              </div>
-              <div class="col-12 col-md-6">
-                <q-input outlined v-model="newStation.manufactor" label="厂商" />
-              </div>
-              <div class="col-12">
-                <q-toggle v-model="newStation.drawTuoPu" label="生成拓扑图" />
-              </div>
-            </div>
-            <div class="row justify-end q-mt-md">
-              <q-btn
-                flat
-                label="取消"
-                color="grey"
-                v-close-popup
-                class="q-ml-sm"
-              />
-              <q-btn
-                type="submit"
-                label="提交"
-                color="primary"
-                :loading="loading"
-                class="q-ml-sm"
-              />
-            </div>
-          </q-form>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
 
     <!-- 编辑厂站对话框 -->
     <q-dialog v-model="editDialogVisible" persistent>
