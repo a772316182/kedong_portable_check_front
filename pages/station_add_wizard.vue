@@ -7,11 +7,11 @@ import { useQuasar } from 'quasar';
 import StepBasicInfo from '~/components/station_wizard/StepBasicInfo.vue';
 import StepNetworkConfig from '~/components/station_wizard/StepNetworkConfig.vue';
 import StepLedgerMaintenance from '~/components/station_wizard/StepLedgerMaintenance.vue';
+import StepTopologyDrawing from '~/components/station_wizard/StepTopologyDrawing.vue';
 
 // 为了快速搭建框架，暂时将其他步骤定义为内联组件
 const StepNetworkDiscovery = { template: '<div><p class="text-subtitle1">在此阶段，系统将探测指定网段，以发现网络中的活动设备。</p><p>这是后续进行资产识别和网络拓扑绘制的基础。</p><q-stepper-navigation><q-btn @click="$emit(\'next\')" color="primary" label="继续" /><q-btn @click="$emit(\'back\')" flat color="primary" label="返回" class="q-ml-sm" /></q-stepper-navigation></div>', emits: ['next', 'back'] };
 const StepAssetDiscovery = { template: '<div><p class="text-subtitle1">在已配置的网段内，对资产进行更详细的探测和识别。</p><p>系统将尝试识别设备类型、操作系统、开放端口等信息。</p><q-stepper-navigation><q-btn @click="$emit(\'next\')" color="primary" label="继续" /><q-btn @click="$emit(\'back\')" flat color="primary" label="返回" class="q-ml-sm" /></q-stepper-navigation></div>', emits: ['next', 'back'] };
-const StepTopologyDrawing = { template: '<div><p class="text-subtitle1">根据已有的资产和网络信息，自动或手动绘制网络拓扑图。</p><p>拓扑图可以直观地展示设备间的连接关系。</p><q-stepper-navigation><q-btn @click="$emit(\'finish\')" color="primary" label="完成" /><q-btn @click="$emit(\'back\')" flat color="primary" label="返回" class="q-ml-sm" /></q-stepper-navigation></div>', emits: ['finish', 'back'] };
 
 const router = useRouter();
 const route = useRoute();
@@ -241,9 +241,12 @@ onMounted(loadProgress);
         </q-tab-panel>
 
         <q-tab-panel :name="6" class="q-pa-none">
-          <div class="q-pa-md">
-            <div class="text-h6 q-mb-md">拓扑绘制 (模拟)</div>
-            <StepTopologyDrawing />
+          <StepTopologyDrawing v-if="stationId" :station-id="stationId" />
+          <div v-else class="text-center text-grey q-pa-md">
+            <q-icon name="warning" size="md" />
+            <p>请先完成第一步以获取厂站ID</p>
+          </div>
+           <div class="q-pa-md">
             <q-stepper-navigation>
               <q-btn @click="finishWizard" color="positive" label="完成" />
               <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />

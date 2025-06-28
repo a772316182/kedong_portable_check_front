@@ -71,14 +71,14 @@ const router = useRouter();
       </q-expansion-item>
     </q-list>
 
-    <q-list class="full-width">
+    <!-- <q-list class="full-width">
       <q-item v-ripple clickable @click="router.push('/topology')">
         <q-item-section avatar>
           <Icon name="majesticons:file-report" size="24" mode="svg" />
         </q-item-section>
         <q-item-section>拓扑绘制</q-item-section>
       </q-item>
-    </q-list>
+    </q-list> -->
     <q-list class="full-width">
       <q-item v-ripple clickable @click="router.push('/security_report')">
         <q-item-section avatar>
