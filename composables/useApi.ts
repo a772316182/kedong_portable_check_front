@@ -118,21 +118,22 @@ export function useBasicConfigApi() {
     state.value.error = null
     
     try {
-      state.value.data = await $fetch<BasicConfigResponse>('/api/station/basic', {
+      const response = await $fetch<BasicConfigResponse>('/api/station/basic', {
         method: 'POST',
         body: {
           ...params,
           sendType
         }
       })
+      state.value.data = response;
+      return response;
     } catch (error) {
       console.error(`Error calling BasicMessage with sendType ${sendType}:`, error)
       state.value.error = error
+      throw error;
     } finally {
       state.value.loading = false
     }
-
-    return state.value.data
   }
   
   // 添加厂站
@@ -180,18 +181,19 @@ export function useNetConfigApi() {
     state.value.error = null
     
     try {
-      state.value.data = await $fetch<NetConfigResponse>('/api/network/net-config', {
+      const response = await $fetch<NetConfigResponse>('/api/network/net-config', {
         method: 'POST',
         body: params
       })
+      state.value.data = response;
+      return response;
     } catch (error) {
       console.error(`Error calling NetConfig with sendType ${params.sendType}:`, error)
       state.value.error = error
+      throw error;
     } finally {
       state.value.loading = false
     }
-
-    return state.value.data
   }
   
   // 添加网络配置
@@ -240,18 +242,19 @@ export function useListNetworkConfigsApi() {
     state.value.error = null
     
     try {
-      state.value.data = await $fetch<ListNetworkConfigsByAreaResponse>('/api/network/list-network-configs', {
+      const response = await $fetch<ListNetworkConfigsByAreaResponse>('/api/network/list-network-configs', {
         method: 'POST',
         body: params
       })
+      state.value.data = response;
+      return response;
     } catch (error) {
       console.error('Error listing network configs:', error)
       state.value.error = error
+      throw error;
     } finally {
       state.value.loading = false
     }
-
-    return state.value.data
   }
   
   return {
@@ -272,13 +275,16 @@ export function useCreateMonitorObjectApi() {
     state.value.error = null
     
     try {
-      state.value.data = await $fetch<CreateMonitorObjectResponse>('/api/monitor/create', {
+      const response = await $fetch<CreateMonitorObjectResponse>('/api/monitor/create', {
         method: 'POST',
         body: params
       })
+      state.value.data = response;
+      return response;
     } catch (error) {
       console.error('Error creating monitor object:', error)
       state.value.error = error
+      throw error;
     } finally {
       state.value.loading = false
     }
@@ -302,13 +308,16 @@ export function useGetMonitorObjectApi() {
     state.value.error = null
     
     try {
-      state.value.data = await $fetch<GetMonitorObjectResponse>('/api/monitor/get', {
+      const response = await $fetch<GetMonitorObjectResponse>('/api/monitor/get', {
         method: 'POST',
         body: params
       })
+      state.value.data = response;
+      return response;
     } catch (error) {
       console.error('Error getting monitor object:', error)
       state.value.error = error
+      throw error;
     } finally {
       state.value.loading = false
     }
@@ -332,13 +341,16 @@ export function useUpdateMonitorObjectApi() {
     state.value.error = null
     
     try {
-      state.value.data = await $fetch<UpdateMonitorObjectResponse>('/api/monitor/update', {
+      const response = await $fetch<UpdateMonitorObjectResponse>('/api/monitor/update', {
         method: 'POST',
         body: params
       })
+      state.value.data = response;
+      return response;
     } catch (error) {
       console.error('Error updating monitor object:', error)
       state.value.error = error
+      throw error;
     } finally {
       state.value.loading = false
     }
@@ -362,13 +374,16 @@ export function useDeleteMonitorObjectApi() {
     state.value.error = null
     
     try {
-      state.value.data = await $fetch<DeleteMonitorObjectResponse>('/api/monitor/delete', {
+      const response = await $fetch<DeleteMonitorObjectResponse>('/api/monitor/delete', {
         method: 'POST',
         body: params
       })
+      state.value.data = response;
+      return response;
     } catch (error) {
       console.error('Error deleting monitor object:', error)
       state.value.error = error
+      throw error;
     } finally {
       state.value.loading = false
     }
@@ -392,13 +407,16 @@ export function useQueryMonitorObjectsApi() {
     state.value.error = null
     
     try {
-      state.value.data = await $fetch<QueryMonitorObjectsResponse>('/api/monitor/query', {
+      const response = await $fetch<QueryMonitorObjectsResponse>('/api/monitor/query', {
         method: 'POST',
         body: params
       })
+      state.value.data = response;
+      return response;
     } catch (error) {
       console.error('Error querying monitor objects:', error)
       state.value.error = error
+      throw error;
     } finally {
       state.value.loading = false
     }

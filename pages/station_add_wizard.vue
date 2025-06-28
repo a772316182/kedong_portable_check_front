@@ -177,74 +177,80 @@ onMounted(loadProgress);
         <q-step :name="6" title="拓扑绘制" :icon="getStepIcon(6)" :done="isStepDone(6)" />
       </q-stepper>
 
-      <q-card flat bordered class="col">
-        <q-card-section>
-          <q-tab-panels v-model="step" animated>
-            <q-tab-panel :name="1">
-              <StepBasicInfo
-                :initial-data="wizardData.basicInfo"
-                :is-loading="loading"
-                :is-readonly="!!stationId"
-                @completed="handleStep1Complete"
-                @cancel="exitWizard"
-              />
-            </q-tab-panel>
+      <q-tab-panels v-model="step" animated class="col">
+        <q-tab-panel :name="1" class="q-pa-none">
+          <StepBasicInfo
+            :initial-data="wizardData.basicInfo"
+            :is-loading="loading"
+            :is-readonly="!!stationId"
+            @completed="handleStep1Complete"
+            @cancel="exitWizard"
+          />
+        </q-tab-panel>
 
-            <q-tab-panel :name="2">
-              <div class="text-h6 q-mb-md">网段探测 (模拟)</div>
-              <StepNetworkDiscovery />
-               <q-stepper-navigation>
-                <q-btn @click="nextStep(2)" color="primary" label="探测并下一步" />
-                <q-btn @click="skipStep(2)" color="secondary" flat label="跳过此步骤" class="q-ml-sm" />
-                <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />
-              </q-stepper-navigation>
-            </q-tab-panel>
+        <q-tab-panel :name="2" class="q-pa-none">
+          <div class="q-pa-md">
+            <div class="text-h6 q-mb-md">网段探测 (模拟)</div>
+            <StepNetworkDiscovery />
+            <q-stepper-navigation>
+              <q-btn @click="nextStep(2)" color="primary" label="探测并下一步" />
+              <q-btn @click="skipStep(2)" color="secondary" flat label="跳过此步骤" class="q-ml-sm" />
+              <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />
+            </q-stepper-navigation>
+          </div>
+        </q-tab-panel>
 
-            <q-tab-panel :name="3">
-              <StepNetworkConfig v-if="stationId" :station-id="stationId" />
-              <div v-else class="text-center text-grey">
-                <q-icon name="warning" size="md" />
-                <p>请先完成第一步以获取厂站ID</p>
-              </div>
-              <q-stepper-navigation>
-                <q-btn @click="nextStep(3)" color="primary" label="保存并下一步" />
-                <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />
-              </q-stepper-navigation>
-            </q-tab-panel>
-            
-            <q-tab-panel :name="4">
-              <div class="text-h6 q-mb-md">资产探测 (模拟)</div>
-              <StepAssetDiscovery />
-               <q-stepper-navigation>
-                <q-btn @click="nextStep(4)" color="primary" label="探测并下一步" />
-                <q-btn @click="skipStep(4)" color="secondary" flat label="跳过此步骤" class="q-ml-sm" />
-                <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />
-              </q-stepper-navigation>
-            </q-tab-panel>
+        <q-tab-panel :name="3" class="q-pa-none">
+          <StepNetworkConfig v-if="stationId" :station-id="stationId" />
+          <div v-else class="text-center text-grey q-pa-md">
+            <q-icon name="warning" size="md" />
+            <p>请先完成第一步以获取厂站ID</p>
+          </div>
+          <div class="q-pa-md">
+            <q-stepper-navigation>
+              <q-btn @click="nextStep(3)" color="primary" label="保存并下一步" />
+              <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />
+            </q-stepper-navigation>
+          </div>
+        </q-tab-panel>
+        
+        <q-tab-panel :name="4" class="q-pa-none">
+          <div class="q-pa-md">
+            <div class="text-h6 q-mb-md">资产探测 (模拟)</div>
+            <StepAssetDiscovery />
+            <q-stepper-navigation>
+              <q-btn @click="nextStep(4)" color="primary" label="探测并下一步" />
+              <q-btn @click="skipStep(4)" color="secondary" flat label="跳过此步骤" class="q-ml-sm" />
+              <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />
+            </q-stepper-navigation>
+          </div>
+        </q-tab-panel>
 
-             <q-tab-panel :name="5">
-              <StepLedgerMaintenance v-if="stationId" :station-id="stationId" />
-               <div v-else class="text-center text-grey">
-                <q-icon name="warning" size="md" />
-                <p>请先完成第一步以获取厂站ID</p>
-              </div>
-              <q-stepper-navigation>
-                <q-btn @click="nextStep(5)" color="primary" label="保存并下一步" />
-                <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />
-              </q-stepper-navigation>
-            </q-tab-panel>
+        <q-tab-panel :name="5" class="q-pa-none">
+          <StepLedgerMaintenance v-if="stationId" :station-id="stationId" />
+          <div v-else class="text-center text-grey q-pa-md">
+            <q-icon name="warning" size="md" />
+            <p>请先完成第一步以获取厂站ID</p>
+          </div>
+           <div class="q-pa-md">
+            <q-stepper-navigation>
+              <q-btn @click="nextStep(5)" color="primary" label="保存并下一步" />
+              <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />
+            </q-stepper-navigation>
+          </div>
+        </q-tab-panel>
 
-            <q-tab-panel :name="6">
-              <div class="text-h6 q-mb-md">拓扑绘制 (模拟)</div>
-              <StepTopologyDrawing />
-              <q-stepper-navigation>
-                <q-btn @click="finishWizard" color="positive" label="完成" />
-                <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />
-              </q-stepper-navigation>
-            </q-tab-panel>
-          </q-tab-panels>
-        </q-card-section>
-      </q-card>
+        <q-tab-panel :name="6" class="q-pa-none">
+          <div class="q-pa-md">
+            <div class="text-h6 q-mb-md">拓扑绘制 (模拟)</div>
+            <StepTopologyDrawing />
+            <q-stepper-navigation>
+              <q-btn @click="finishWizard" color="positive" label="完成" />
+              <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />
+            </q-stepper-navigation>
+          </div>
+        </q-tab-panel>
+      </q-tab-panels>
     </div>
   </q-page>
 </template> 

@@ -1,11 +1,40 @@
 <script setup lang="ts">
 import { rowClassFn } from "~/utils/tableStyle";
-const selectedRows = ref([]);
-const columns = [
+import type { QTableColumn } from 'quasar';
+
+// --- 类型定义 ---
+interface TableRow {
+  index: number;
+  name: string;
+  networkSegment: string;
+  deviceType: string;
+  ip: string;
+  mac: string;
+  progress: number;
+  error?: boolean;
+  errorMessage?: string;
+}
+
+interface Segment {
+  range: string;
+  selected: boolean;
+}
+
+interface SegmentGroup {
+  name: string;
+  selectedAll: boolean;
+  segments: Segment[];
+}
+
+
+const selectedRows = ref<(number | string)[]>([]);
+
+const columns: QTableColumn[] = [
   {
     name: "selection",
     label: "",
     align: "center",
+    field: '' // field is required by QTableColumn
   },
   {
     name: "index",
@@ -50,7 +79,7 @@ const columns = [
     align: "center",
   },
 ];
-const rows = [
+const rows: TableRow[] = [
   {
     index: 1,
     name: "服务器-A01",
@@ -90,7 +119,7 @@ const rows = [
     errorMessage: "网络不通", // 错误状态
   },
 ];
-const segmentGroups = ref([
+const segmentGroups = ref<SegmentGroup[]>([
   {
     name: "Ⅰ区B网",
     selectedAll: false,
@@ -108,26 +137,26 @@ const segmentGroups = ref([
     ],
   },
 ]);
-function getProgressColor(row) {
+function getProgressColor(row: TableRow) {
   if (row.error) return "red";
   if (row.progress === 0) return "grey";
   return row.progress === 100 ? "green" : "primary";
 }
 
-function getStatusText(row) {
+function getStatusText(row: TableRow) {
   if (row.error) return ""; // 错误状态由badge显示
   if (row.progress === 0) return "未开始";
   return row.progress === 100 ? "已完成" : `进行中 (${row.progress}%)`;
 }
 
 // 修改parseProgress处理异常值
-function parseProgress(value) {
-  const num = parseInt(value);
+function parseProgress(value: number) {
+  const num = parseInt(String(value));
   return isNaN(num) ? 0 : num / 100;
 }
 
 // 切换单行选中状态
-function toggleRowSelection(row) {
+function toggleRowSelection(row: TableRow) {
   const index = selectedRows.value.indexOf(row.index);
   if (index === -1) {
     selectedRows.value.push(row.index);
@@ -137,14 +166,14 @@ function toggleRowSelection(row) {
 }
 
 // 切换整个组的选中状态
-function toggleGroup(group) {
+function toggleGroup(group: SegmentGroup) {
   group.segments.forEach((seg) => {
     seg.selected = group.selectedAll;
   });
 }
 
-// 更新“全选”状态
-function updateGroupSelection(group) {
+// 更新"全选"状态
+function updateGroupSelection(group: SegmentGroup) {
   group.selectedAll = group.segments.every((seg) => seg.selected);
 }
 </script>
@@ -207,11 +236,13 @@ function updateGroupSelection(group) {
               row-key="index"
               :table-row-class-fn="rowClassFn"
               :rows-per-page-options="[5, 10, 20, 50, 0]"
+              selection="multiple"
+              v-model:selected="selectedRows"
             >
               <template #body="props">
-                <q-tr :props="props" @click="toggleRowSelection(props.row)">
-                  <q-td key="selection" :props="props">
-                    <q-checkbox v-model="selectedRows" :val="props.row.index" />
+                <q-tr :props="props">
+                  <q-td>
+                    <q-checkbox v-model="props.selected" />
                   </q-td>
                   <q-td key="index" :props="props">{{ props.row.index }}</q-td>
                   <q-td key="name" :props="props">{{ props.row.name }}</q-td>

@@ -144,7 +144,7 @@ function validateSubnetMask(mask: string): boolean | string {
   if (!match) {
     return '格式错误，应为 "IP-范围"，例如 "192.168.79.1-254"';
   }
-  
+
   const ipParts = match[1].split('.').map(Number);
   const startIpLastOctet = ipParts[3];
   const endRange = Number(match[3]);
@@ -157,7 +157,7 @@ function validateSubnetMask(mask: string): boolean | string {
   if (endRange <= startIpLastOctet) {
     return '结束范围必须大于起始IP的最后一位';
   }
-  
+
   if (endRange > 255) {
       return '结束范围不能大于255';
   }
@@ -182,7 +182,7 @@ async function handleSubmit() {
       subnetMask: currentConfig.subnetMask || '',
     };
 
-    const apiCall = isEdit.value 
+    const apiCall = isEdit.value
         ? updateNetworkConfig({ stationId: props.stationId, secArea: currentConfig.secAreaCode, nets: [netToSubmit] })
         : addNetworkConfig({ stationId: props.stationId, secArea: currentConfig.secAreaCode, nets: [netToSubmit] });
 
@@ -297,9 +297,9 @@ onMounted(loadData);
                     <q-input outlined v-model="currentConfig.devIp" label="设备IP" :rules="[val => !!val || '设备IP不能为空']" />
                     <q-select outlined v-model="currentConfig.secAreaCode" :options="secAreaOptions" emit-value map-options label="安全区" :rules="[val => !!val || '必须选择安全区']" />
                     <q-select outlined v-model="currentConfig.network_type_id" :options="networkTypeOptions" emit-value map-options label="网络类型" :rules="[val => !!val || '必须选择网络类型']" />
-                    <q-input 
-                      outlined 
-                      v-model="currentConfig.subnetMask" 
+                    <q-input
+                      outlined
+                      v-model="currentConfig.subnetMask"
                       label="网段区间"
                       placeholder="例: 192.168.79.1-254"
                       :rules="[validateSubnetMask]"
@@ -314,4 +314,4 @@ onMounted(loadData);
         </q-card>
     </q-dialog>
   </div>
-</template> 
+</template>
