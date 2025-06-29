@@ -82,11 +82,11 @@ function viewTask(task) {
   <div>
     <q-stepper
         v-model="currentStep"
+        flat
+        header-nav
         active-color="primary"
         done-color="positive"
         inactive-color="grey-6"
-        header-nav
-        flat
     >
       <q-step :name="1" title="创建任务" :done="currentStep > 1">
         <div>
