@@ -1,445 +1,177 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import { ref, computed, onMounted } from 'vue';
 
+// --- Page-specific State & Logic ---
+// 状态：表格行选择
+const selectedRows = ref([]);
+// 状态：所有设备的原始数据
+const allDevices = ref<any[]>([]);
 
-const emit = defineEmits(['prev', 'next'])
+// 状态：对话框相关
+const showAutoFetchDialog = ref(false); // “自动获取”对话框
+const isConnected = ref(false);         // “我已接入”复选框
+const showPolicyDialog = ref(false);    // “策略检查”对话框
+const currentDevice = ref(null);        // 当前查看策略的设备
 
-const zone1Checked = ref(false);
-const zone2Checked = ref(false);
-const customPage = ref(null)
-const pagination = ref({
-  page: 1,
-  rowsPerPage: 10,
-  rowsNumber: 0
-})
+// --- 筛选逻辑 (采用组件1的优化方案) ---
+// 1. 将筛选选项数据结构化
+const filterOptions = ref([
+  { id: 'zone1', label: 'Ⅰ区', checked: false, value: 'Ⅰ区' },
+  { id: 'zone2', label: 'Ⅱ区', checked: false, value: 'Ⅱ区' },
+]);
 
-const showDialog = ref(false) // 新增：控制对话框显示的状态
-const isConnected = ref(false) // 新增：复选框状态
+// 2. 使用计算属性动态过滤设备列表
+const filteredDevices = computed(() => {
+  const selectedZones = filterOptions.value
+      .filter(opt => opt.checked)
+      .map(opt => opt.value);
 
-const rows = ref([])
-const totalRows = ref(0)
-
-const devices = ref([
-  {
-    index: 1,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'XXXXXX',
-    count: '90'
-  },
-  {
-    index: 2,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'XXXXXX',
-    count: '90'
-  },
-  {
-    index: 3,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'XXXXXX',
-    count: '90'
-  },
-  {
-    index: 4,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'XXXXXX',
-    count: '90'
-  },
-  {
-    index: 5,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'XXXXXX',
-    count: '90'
-  },
-  {
-    index: 6,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'XXXXXX',
-    count: '90'
-  },
-  {
-    index: 7,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'XXXXXX',
-    count: '90'
-  },
-  {
-    index: 8,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'XXXXXX',
-    count: '90'
-  },
-  {
-    index: 9,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'XXXXXX',
-    count: '90'
-  },
-  {
-    index: 10,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'XXXXXX',
-    count: '90'
-  },
-  {
-    index: 11,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'XXXXXX',
-    count: '90'
-  },
-  {
-    index: 12,
-    name: '山东省调',
-    zone: 'Ⅰ区',
-    ip1: '10.200.114.23',
-    ip2: '10.200.114.23',
-    type: '主机',
-    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
-    system: 'linux',
-    count: '90'
+  // 如果没有选择任何筛选条件，则显示所有设备
+  if (selectedZones.length === 0) {
+    return allDevices.value;
   }
-])
+  // 否则，只返回包含所选区域的设备
+  return allDevices.value.filter(device => selectedZones.includes(device.zone));
+});
 
-const columns = [
-  {name: 'index', label: '编号', field: 'index', align: 'left'},
-  {name: 'name', label: '设备名称', field: 'name', align: 'left'},
-  {name: 'zone', label: '安全区', field: 'zone', align: 'left'},
-  {name: 'ip1', label: '设备IP1', field: 'ip1', align: 'left'},
-  {name: 'ip2', label: '设备IP2', field: 'ip2', align: 'left'},
-  {name: 'type', label: '设备类型', field: 'type', align: 'left'},
-  {name: 'device', label: '站内设备类型', field: 'device', align: 'left'},
-  {name: 'system', label: '操作系统', field: 'system', align: 'left'},
-  {name: 'count', label: '策略数', field: 'count', align: 'left'}
-]
+// 3. 计算每个区域的设备数量
+const getZoneCount = (zoneValue: string) => {
+  return allDevices.value.filter(d => d.zone === zoneValue).length;
+};
 
-const selectedRows = ref([])
 
-function selectAllRows(props) {
-  if (props.selected === true) {
-    props.rows.forEach(row => {
-      if (!selectedRows.value.includes(row)) {
-        selectedRows.value.push(row)
-      }
-    })
-  } else {
-    props.rows.forEach(row => {
-      const index = selectedRows.value.indexOf(row)
-      if (index > -1) {
-        selectedRows.value.splice(index, 1)
-      }
-    })
-  }
-}
+// --- 数据 ---
+const devicesData = [
+  // ... (此处省略了与原组件2中相同的12条设备数据)
+  { index: 1, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
+  { index: 2, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
+  { index: 3, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
+  { index: 4, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
+  { index: 5, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
+  { index: 6, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
+  { index: 7, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
+  { index: 8, name: '山东省调', zone: 'Ⅱ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_金牛站_Ⅱ区_OM', system: 'XXXXXX', count: '80' },
+  { index: 9, name: '山东省调', zone: 'Ⅱ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_金牛站_Ⅱ区_OM', system: 'XXXXXX', count: '80' },
+  { index: 10, name: '山东省调', zone: 'Ⅱ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_金牛站_Ⅱ区_OM', system: 'XXXXXX', count: '80' },
+  { index: 11, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平2站_Ⅱ区_OM', system: 'XXXXXX', count: '95' },
+  { index: 12, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'linux', count: '90' }
+];
 
-const currentPageRange = computed(() => {
-  const start = (pagination.value.page - 1) * pagination.value.rowsPerPage + 1
-  const end = Math.min(pagination.value.page * pagination.value.rowsPerPage, totalRows.value)
-  return {start, end}
-})
+// --- 表格配置 ---
+const columnLabels = {
+  index: '编号',
+  name: '设备名称',
+  zone: '安全区',
+  ip1: '设备IP1',
+  ip2: '设备IP2',
+  type: '设备类型',
+  device: '站内设备类型',
+  system: '操作系统',
+  count: '策略数'
+};
 
+// --- 生命周期钩子 ---
 onMounted(() => {
-  rows.value = devices.value
-  totalRows.value = devices.value.length
-  pagination.value.rowsNumber = devices.value.length
-})
+  // 页面加载后，用模拟数据填充设备列表
+  allDevices.value = devicesData;
+});
 
-function goToPage() {
-  if (!customPage.value) return
-  const pageNum = parseInt(customPage.value)
-  const maxPage = Math.ceil(totalRows.value / pagination.value.rowsPerPage)
-  if (pageNum >= 1 && pageNum <= maxPage) {
-    pagination.value.page = pageNum
-    customPage.value = null
-  }
-}
-
-// 新增：处理开始按钮点击事件
+// --- 方法 ---
+// 处理“自动获取”对话框中的“开始”按钮点击
 function handleStart() {
   if (isConnected.value) {
-    // 执行获取策略的逻辑
-    showDialog.value = false
+    // 此处可以添加实际的获取策略逻辑
+    console.log('开始获取策略...');
+    showAutoFetchDialog.value = false; // 关闭对话框
   } else {
-    // 可以添加提示用户需要先勾选复选框的逻辑
+    // 可选：提示用户需要先勾选
+    console.warn('请先勾选 "我已接入"');
   }
 }
 
-// 新增状态
-const showPolicyDialog = ref(false)
-const currentDevice = ref(null)
-
-// 新增方法：处理点击策略数
-function handlePolicyClick(device) {
-  currentDevice.value = device
-  showPolicyDialog.value = true
+// 处理表格中“策略数”的点击事件
+function handlePolicyClick(device: any) {
+  currentDevice.value = device;
+  showPolicyDialog.value = true;
 }
-
 </script>
 
 <template>
   <div class="row no-wrap">
-    <!-- 左侧过滤 -->
-    <div style="width: 300px; background: #f8f8f8; padding: 16px;">
-      <table style="width: 100%; border-collapse: collapse;">
-        <!-- Table Header -->
-        <thead>
-        <tr style="font-weight: bold; text-align: left;">
-          <th style="padding: 8px 0;">监测装置</th>
-          <th style="padding: 8px 0;">资产数量</th>
-        </tr>
-        </thead>
+    <div class="q-pa-md" style="width: 240px; background: #f7f7f7;">
+      <div class="text-h6 q-mb-md">筛选条件</div>
+      <q-list bordered separator>
+        <q-item class="bg-grey-2 text-weight-medium">
+          <q-item-section>安全区</q-item-section>
+          <q-item-section side>资产数量</q-item-section>
+        </q-item>
 
-        <!-- Table Body -->
-        <tbody>
-        <tr>
-          <td style="padding: 8px 0;">
-            <q-checkbox v-model="zone1Checked" label="Ⅰ区装置1.1.1.1"/>
-          </td>
-          <td style="padding: 8px 0;">1</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px 0;">
-            <q-checkbox v-model="zone2Checked" label="Ⅱ区装置1.1.1.1"/>
-          </td>
-          <td style="padding: 8px 0;">1</td>
-        </tr>
-        </tbody>
-      </table>
+        <q-item v-for="option in filterOptions" :key="option.id" v-ripple tag="label">
+          <q-item-section side>
+            <q-checkbox v-model="option.checked" />
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>{{ option.label }}</q-item-label>
+          </q-item-section>
+
+          <q-item-section side>
+            <q-badge color="grey-6" :label="getZoneCount(option.value)" />
+          </q-item-section>
+        </q-item>
+      </q-list>
     </div>
 
-
-    <!-- 中间内容 -->
     <div class="col q-pa-md">
       <q-card flat>
-        <q-card-section>
-          <q-btn label="自动获取" color="primary" @click="showDialog = true"/>
-        </q-card-section>
-
-        <!-- 对话框 -->
-        <q-dialog v-model="showDialog" persistent>
+        <q-dialog v-model="showAutoFetchDialog" persistent>
           <q-card style="min-width: 400px">
             <q-card-section>
               <div class="text-h6">请将检查设备接入监测装置，用于获取主机策略</div>
             </q-card-section>
 
             <q-card-section class="q-pt-none">
-              <q-checkbox v-model="isConnected" label="我已接入"/>
+              <q-checkbox v-model="isConnected" label="我已接入" />
             </q-card-section>
 
             <q-card-actions align="right">
-              <q-btn v-close-popup flat label="取消" color="primary"/>
-              <q-btn flat label="开始" color="primary" @click="handleStart"/>
+              <q-btn v-close-popup flat label="取消" color="primary" />
+              <q-btn flat label="开始" color="primary" @click="handleStart" />
             </q-card-actions>
           </q-card>
         </q-dialog>
 
         <q-card-section>
-          <q-table
-              v-model:pagination="pagination"
-              v-model:selected="selectedRows"
-              square
-              no-data-label="暂无数据"
-              flat
-              bordered
-              :rows="rows.slice(
-            (pagination.page - 1) * pagination.rowsPerPage,
-            pagination.page * pagination.rowsPerPage
-        )"
-              :columns="columns"
+          <common-enhanced-table
+              v-model:selection="selectedRows"
+              title="主机策略表"
+              :rows="filteredDevices"
+              :column-labels="columnLabels"
               row-key="index"
-              :table-row-class-fn="rowClassFn"
-              hide-pagination
-              style="height: 500px;"
-              virtual-scroll
-              class="custom-table"
-              selection="multiple"
+              enable-selection
           >
-            <template #header="props">
-              <q-tr :props="props" class="custom-header">
-                <q-th auto-width>
-                  <q-checkbox
-                      v-model="props.selected"
-                      indeterminate-value="some"
-                      @update:model-value="selectAllRows(props)"
-                  />
-                </q-th>
-                <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                  {{ col.label }}
-                </q-th>
-              </q-tr>
+            <template #top-right>
+              <q-btn label="自动获取" color="primary" @click="showAutoFetchDialog = true" />
             </template>
-
-            <template #body="props">
-              <q-tr :props="props">
-                <q-td auto-width>
-                  <q-checkbox v-model="props.selected"/>
-                </q-td>
-                <q-td key="index">{{ props.row.index }}</q-td>
-                <q-td key="name">{{ props.row.name }}</q-td>
-                <q-td key="zone">{{ props.row.zone }}</q-td>
-                <q-td key="ip1">{{ props.row.ip1 }}</q-td>
-                <q-td key="ip2">{{ props.row.ip2 }}</q-td>
-                <q-td key="type">{{ props.row.type }}</q-td>
-                <q-td key="device">{{ props.row.device }}</q-td>
-                <q-td key="system">{{ props.row.system }}</q-td>
-                <!-- <q-td key="count">{{ props.row.count }}</q-td> -->
-                <q-td key="count">
-                  <a href="javascript:void(0)" @click="handlePolicyClick(props.row)">{{ props.row.count }}</a>
-                </q-td>
-              </q-tr>
+            <template #cell-count="{ row }">
+              <a href="javascript:void(0)" @click="handlePolicyClick(row)">{{ row.count }}</a>
             </template>
-          </q-table>
-
-          <div class="row items-center justify-start q-mt-md">
-            <div class="text-caption q-mr-md">
-              第 {{ currentPageRange.start }}-{{ currentPageRange.end }} 条，共 {{ totalRows }} 条
-            </div>
-
-            <q-pagination
-                v-model="pagination.page"
-                :max="Math.ceil(totalRows / pagination.rowsPerPage)"
-                :max-pages="6"
-                direction-links
-                boundary-links
-                boundary-numbers
-                size="sm"
-                flat
-                color="black"
-                active-color="primary"
-                class="my-pagination-custom q-mr-md"
-            />
-
-            <div class="text-caption custom-page-size q-mr-md">
-              {{ pagination.rowsPerPage }} 条/页
-            </div>
-
-            <div class="row items-center">
-              <span class="q-mr-sm">跳至</span>
-              <q-input
-                  v-model.number="customPage"
-                  type="number"
-                  dense
-                  style="width: 60px;"
-                  class="custom-jump-input"
-                  @keyup.enter="goToPage"
-              />
-              <span class="q-ml-sm">页</span>
-            </div>
-          </div>
+          </common-enhanced-table>
         </q-card-section>
       </q-card>
-
     </div>
-    <PolicyDialog v-model="showPolicyDialog"/>
+
+    <strategy-check-verification-host-dialog v-model="showPolicyDialog" :device="currentDevice" />
   </div>
 </template>
 
 <style scoped>
-.custom-header {
-  /* background-color: #2e7d32 !important; */
-  background-color: #006A6A !important;
-  color: white !important;
+/* 可以根据需要添加样式 */
+a {
+  color: #1976d2; /* Quasar primary color */
+  text-decoration: none;
 }
-
-.custom-header th {
-  font-weight: bold;
-  color: white !important;
-}
-
-::v-deep(.my-pagination-custom .q-pagination__content .q-btn[aria-label*="页"]),
-.custom-page-size,
-::v-deep(.custom-jump-input .q-field__control) {
-  /* border: 1px solid #2e7d32 !important; */
-  border: 1px solid #3BB5A3 !important;
-  border-radius: 4px !important;
-}
-
-::v-deep(.my-pagination-custom .q-pagination__content .q-btn[aria-label*="页"]) {
-  /* background: #e8f5e9 !important;
-  color: #2e7d32 !important; */
-  background: #E0F2F1 !important;
-  color: #3BB5A3 !important;
-  min-width: 28px !important;
-  min-height: 28px !important;
-}
-
-.custom-page-size {
-  padding: 4px 8px;
-  /* background-color: #e8f5e9 !important; */
-  background-color: #E0F2F1 !important;
-  color: black !important;
-  min-height: 28px;
-  display: flex;
-  align-items: center;
-}
-
-::v-deep(.custom-jump-input .q-field__control) {
-  /* background-color: #e8f5e9 !important; */
-  background-color: #E0F2F1 !important;
-  height: 28px !important;
-  min-height: unset !important;
-}
-
-::v-deep(.custom-jump-input .q-field__native) {
-  color: black !important;
-  padding: 0 8px;
-  height: 26px !important;
-}
-
-::v-deep(.custom-jump-input) {
-  height: 28px !important;
+a:hover {
+  text-decoration: underline;
 }
 </style>

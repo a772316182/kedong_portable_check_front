@@ -2,7 +2,7 @@
 import {ref} from 'vue'
 
 
-const activeStep = ref(0)
+const activeStep = ref(1)
 
 function handleStepChange(newStep: number) {
   activeStep.value = newStep
@@ -16,43 +16,44 @@ function handleStepChange(newStep: number) {
       <q-stepper
           v-model="activeStep"
           flat
-          bordered
           header-nav
           active-color="primary"
           done-color="positive"
           inactive-color="grey-6"
       >
         <q-step
-            v-for="(label, index) in ['创建任务', '策略检查', '检查结果']"
-            :key="index"
-            :name="index"
-            :title="label"
-            :done="activeStep > index"/>
+            :name="1"
+            title="创建任务"
+            :done="activeStep > 1">
+          <strategy-check-create-task
+              @next="handleStepChange(activeStep + 1)"
+              @prev="handleStepChange(activeStep - 1)"
+              @reset="handleStepChange(0)"
+              @view-verification="handleStepChange(1)"
+          />
+        </q-step>
+        <q-step
+            :name="2"
+            title="策略检查"
+            :done="activeStep > 2">
+          <strategy-check-verification
+              @next="handleStepChange(activeStep + 1)"
+              @prev="handleStepChange(activeStep - 1)"
+              @reset="handleStepChange(0)"
+              @view-verification="handleStepChange(1)"
+          />
+        </q-step>
+        <q-step :name="3" title="检查结果" :done="activeStep > 3">
+          <strategy-check-result
+              @next="handleStepChange(activeStep + 1)"
+              @prev="handleStepChange(activeStep - 1)"
+              @reset="handleStepChange(0)"
+              @view-verification="handleStepChange(1)"
+          />
+        </q-step>
       </q-stepper>
     </div>
 
-    <strategy-check-create-task
-        v-if="activeStep === 0"
-        @next="handleStepChange(activeStep + 1)"
-        @prev="handleStepChange(activeStep - 1)"
-        @reset="handleStepChange(0)"
-        @view-verification="handleStepChange(1)"
-    />
 
-    <strategy-check-verification
-        v-else-if="activeStep === 1"
-        @next="handleStepChange(activeStep + 1)"
-        @prev="handleStepChange(activeStep - 1)"
-        @reset="handleStepChange(0)"
-        @view-verification="handleStepChange(1)"
-    />
-
-    <strategy-check-result
-        v-else-if="activeStep === 2"
-        @next="handleStepChange(activeStep + 1)"
-        @prev="handleStepChange(activeStep - 1)"
-        @reset="handleStepChange(0)"
-        @view-verification="handleStepChange(1)"
-    />
   </q-page>
 </template>

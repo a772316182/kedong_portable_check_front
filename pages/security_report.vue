@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import {ref, computed, onMounted} from 'vue'
+// 2. 保留与业务逻辑和数据获取相关的状态
+const dialog = ref(false);
+const rows = ref<any[]>([]);
 
-const dialog = ref(false)
-const customPage = ref(null)
-const pagination = ref({
-  page: 1,
-  rowsPerPage: 10,
-  rowsNumber: 0
-})
-
+// 3. 保留数据生成逻辑
 const generateTestData = () => {
-  const data = []
+  const data = [];
   for (let i = 1; i <= 250; i++) {
     data.push({
       index: i,
@@ -18,211 +13,66 @@ const generateTestData = () => {
       stationName: '富国站',
       createTime: '2024-09-09 00:00:00',
       operator: i % 2 === 0 ? '张三' : '李四',
-      actions: ''
-    })
+    });
   }
-  return data
-}
-
-const columns = [
-  {name: 'index', label: '编号', field: 'index', align: 'left'},
-  {name: 'reportName', label: '报告名称', field: 'reportName', align: 'left'},
-  {name: 'stationName', label: '厂站名称', field: 'stationName', align: 'left'},
-  {name: 'createTime', label: '创建时间', field: 'createTime', align: 'left'},
-  {name: 'operator', label: '操作人', field: 'operator', align: 'left'},
-  {name: 'actions', label: '操作', field: 'actions', align: 'left'}
-]
-
-const rows = ref([])
-const totalRows = ref(0)
-
-const currentPageRange = computed(() => {
-  const start = (pagination.value.page - 1) * pagination.value.rowsPerPage + 1
-  const end = Math.min(pagination.value.page * pagination.value.rowsPerPage, totalRows.value)
-  return {start, end}
-})
+  return data;
+};
 
 onMounted(() => {
-  const data = generateTestData()
-  rows.value = data
-  totalRows.value = data.length
-  pagination.value.rowsNumber = data.length
-})
+  rows.value = generateTestData();
+});
 
-function goToPage() {
-  if (!customPage.value) return
-  const pageNum = parseInt(customPage.value)
-  const maxPage = Math.ceil(totalRows.value / pagination.value.rowsPerPage)
-  if (pageNum >= 1 && pageNum <= maxPage) {
-    pagination.value.page = pageNum
-    customPage.value = null
-  }
+// 4. 为 GenericTable 定义 props，替换旧的 `columns` 数组
+const labels = {
+  index: '编号',
+  reportName: '报告名称',
+  stationName: '厂站名称',
+  createTime: '创建时间',
+  operator: '操作人',
+  actions: '操作',
+};
+
+// 5. 定义业务操作方法
+function viewReport(item: any) {
+  console.log('View item:', item);
+  alert(`正在查看: ${item.reportName}`);
+}
+
+function downloadReport(item: any) {
+  console.log('Download item:', item);
+  alert(`正在下载: ${item.reportName}`);
+}
+
+function deleteReport(item: any) {
+  console.log('Delete item:', item);
+  alert(`正在删除: ${item.reportName}`);
 }
 </script>
-<!-- :row-class="rowClassFn" -->
+
 <template>
   <q-page class="q-pa-md">
     <q-card flat>
       <q-card-section>
-        <q-btn label="生成报告" color="primary" @click="dialog = true"/>
-      </q-card-section>
-
-      <q-card-section>
-        <q-table
-            v-model:pagination="pagination"
-            square
-            no-data-label="暂无数据"
-            flat
-            bordered
-            :rows="rows.slice(
-            (pagination.page - 1) * pagination.rowsPerPage,
-            pagination.page * pagination.rowsPerPage
-          )"
-            :columns="columns"
+        <common-enhanced-table
+            title="报告列表"
+            :rows="rows"
+            :column-labels="labels"
             row-key="index"
-            :table-row-class-fn="rowClassFn"
-            hide-pagination
-            style="height: 500px;"
-            virtual-scroll
-            class="custom-table"
+            :non-sortable-columns="['index', 'institution', 'actions']"
+            :non-searchable-columns="['index', 'actions']"
         >
-          <template #body="props">
-            <q-tr :props="props" :class="rowClassFn(props.row)">
-              <q-td key="index">{{ props.row.index }}</q-td>
-              <q-td key="reportName">{{ props.row.reportName }}</q-td>
-              <q-td key="stationName">{{ props.row.stationName }}</q-td>
-              <q-td key="createTime">{{ props.row.createTime }}</q-td>
-              <q-td key="operator">{{ props.row.operator }}</q-td>
-              <q-td key="actions">
-                <q-icon name="visibility" class="q-mr-sm cursor-pointer"/>
-                <q-icon name="file_download" class="q-mr-sm cursor-pointer"/>
-                <q-icon name="delete" class="cursor-pointer"/>
-              </q-td>
-            </q-tr>
+          <template #top-right>
+            <q-btn label="生成报告" color="primary" @click="dialog = true"/>
+
           </template>
-          <template #header="props">
-            <q-tr :props="props" class="custom-header">
-              <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                {{ col.label }}
-              </q-th>
-            </q-tr>
+          <template #cell-actions="{ row }">
+            <q-btn v-close-popup flat dense label="查看" color="indigo-10" @click="viewReport(row)"/>
+            <q-btn v-close-popup flat dense label="下载" color="primary" @click="downloadReport(row)"/>
+            <q-btn v-close-popup flat dense label="删除" color="red-10" @click="deleteReport(row)"/>
           </template>
-        </q-table>
-
-        <div class="row items-center justify-start q-mt-md">
-          <div class="text-caption q-mr-md">
-            第 {{ currentPageRange.start }}-{{ currentPageRange.end }} 条，共 {{ totalRows }} 条
-          </div>
-
-          <q-pagination
-              v-model="pagination.page"
-              :max="Math.ceil(totalRows / pagination.rowsPerPage)"
-              :max-pages="6"
-              direction-links
-              boundary-links
-              boundary-numbers
-              size="sm"
-              flat
-              color="black"
-              active-color="primary"
-              class="my-pagination-custom q-mr-md"
-          />
-
-          <div class="text-caption custom-page-size q-mr-md">
-            {{ pagination.rowsPerPage }} 条/页
-          </div>
-
-          <div class="row items-center">
-            <span class="q-mr-sm">跳至</span>
-            <q-input
-                v-model.number="customPage"
-                type="number"
-                dense
-                style="width: 60px;"
-                class="custom-jump-input"
-                @keyup.enter="goToPage"
-            />
-            <span class="q-ml-sm">页</span>
-          </div>
-        </div>
+        </common-enhanced-table>
       </q-card-section>
     </q-card>
 
-    <!-- 生成报告对话框 -->
-    <ReportGenerateDialog v-model="dialog"/>
   </q-page>
 </template>
-
-<style scoped>
-/* 主表格样式 */
-.custom-header {
-  /* background-color: #2e7d32 !important; */
-  background-color: #006A6A !important;
-  color: white !important;
-}
-
-.custom-header th {
-  font-weight: bold;
-  color: white !important;
-}
-
-/* .even-row {
-  background-color: #e8f5e9 !important;
-}
-
-.odd-row {
-  background-color: #f5f5f5 !important;
-} */
-
-/* 分页样式 */
-
-::v-deep(.my-pagination-custom .q-pagination__content .q-btn[aria-label*="页"]),
-.custom-page-size,
-::v-deep(.custom-jump-input .q-field__control) {
-  /* border: 1px solid #2e7d32 !important; */
-  border: 1px solid #3BB5A3 !important;
-  border-radius: 4px !important;
-}
-
-::v-deep(.my-pagination-custom .q-pagination__content .q-btn[aria-label*="页"]) {
-  /* background: #e8f5e9 !important;
-  color: #2e7d32 !important; */
-  background: #E0F2F1 !important;
-  color: #3BB5A3 !important;
-  min-width: 28px !important;
-  min-height: 28px !important;
-}
-
-.custom-page-size {
-  padding: 4px 8px;
-  /* background-color: #e8f5e9 !important; */
-  background-color: #E0F2F1 !important;
-  color: black !important;
-  min-height: 28px;
-  display: flex;
-  align-items: center;
-}
-
-::v-deep(.custom-jump-input .q-field__control) {
-  /* background-color: #e8f5e9 !important; */
-  background-color: #E0F2F1 !important;
-  height: 28px !important;
-  min-height: unset !important;
-}
-
-::v-deep(.custom-jump-input .q-field__native) {
-  color: black !important;
-  padding: 0 8px;
-  height: 26px !important;
-}
-
-::v-deep(.custom-jump-input) {
-  height: 28px !important;
-}
-
-/*
-::v-deep(.my-pagination-custom .q-btn.active) {
-  background-color: #2e7d32 !important;
-  color: white !important;
-} */
-</style>

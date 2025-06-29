@@ -126,11 +126,14 @@ function goToPage() {
     <!-- 策略切换按钮 -->
     <div class="row q-gutter-sm q-mb-md">
       <q-btn label="主机策略维护" :color="activePolicy === 'host' ? 'primary' : 'grey'" @click="activePolicy = 'host'"/>
-      <q-btn label="纵向策略维护" :color="activePolicy === 'vertical' ? 'primary' : 'grey'"
+      <q-btn
+label="纵向策略维护" :color="activePolicy === 'vertical' ? 'primary' : 'grey'"
              @click="activePolicy = 'vertical'"/>
-      <q-btn label="隔离策略维护" :color="activePolicy === 'isolation' ? 'primary' : 'grey'"
+      <q-btn
+label="隔离策略维护" :color="activePolicy === 'isolation' ? 'primary' : 'grey'"
              @click="activePolicy = 'isolation'"/>
-      <q-btn label="防火墙策略维护" :color="activePolicy === 'firewall' ? 'primary' : 'grey'"
+      <q-btn
+label="防火墙策略维护" :color="activePolicy === 'firewall' ? 'primary' : 'grey'"
              @click="activePolicy = 'firewall'"/>
     </div>
 
@@ -149,60 +152,3 @@ function goToPage() {
   </div>
 
 </template>
-
-<style scoped>
-.custom-header {
-  /* background-color: #2e7d32 !important; */
-  background-color: #006A6A !important;
-  color: white !important;
-}
-
-.custom-header th {
-  font-weight: bold;
-  color: white !important;
-}
-
-::v-deep(.my-pagination-custom .q-pagination__content .q-btn[aria-label*="页"]),
-.custom-page-size,
-::v-deep(.custom-jump-input .q-field__control) {
-  /* border: 1px solid #2e7d32 !important; */
-  border: 1px solid #3BB5A3 !important;
-  border-radius: 4px !important;
-}
-
-::v-deep(.my-pagination-custom .q-pagination__content .q-btn[aria-label*="页"]) {
-  /* background: #e8f5e9 !important;
-  color: #2e7d32 !important; */
-  background: #E0F2F1 !important;
-  color: #3BB5A3 !important;
-  min-width: 28px !important;
-  min-height: 28px !important;
-}
-
-.custom-page-size {
-  padding: 4px 8px;
-  /* background-color: #e8f5e9 !important; */
-  background-color: #E0F2F1 !important;
-  color: black !important;
-  min-height: 28px;
-  display: flex;
-  align-items: center;
-}
-
-::v-deep(.custom-jump-input .q-field__control) {
-  /* background-color: #e8f5e9 !important; */
-  background-color: #E0F2F1 !important;
-  height: 28px !important;
-  min-height: unset !important;
-}
-
-::v-deep(.custom-jump-input .q-field__native) {
-  color: black !important;
-  padding: 0 8px;
-  height: 26px !important;
-}
-
-::v-deep(.custom-jump-input) {
-  height: 28px !important;
-}
-</style>

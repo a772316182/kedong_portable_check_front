@@ -193,7 +193,8 @@ onMounted(() => {
         <div class="text-h6 text-white" style="flex: 1; text-align: center;">
           主机策略- {{ currentDeviceName }}
         </div>
-        <q-btn icon="close" flat round dense style="position: absolute; top: 4px; right: 4px; color: white;"
+        <q-btn
+icon="close" flat round dense style="position: absolute; top: 4px; right: 4px; color: white;"
                @click="closeDialog"/>
       </q-card-section>
 

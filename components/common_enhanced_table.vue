@@ -1,104 +1,122 @@
-<script setup>
-import {ref, computed, reactive, watch} from 'vue';
+<script setup lang="ts">
+import type {QTableProps} from 'quasar';
 
-// 1. Props 定义，功能默认开启
-const props = withDefaults(defineProps({
-  // --- 核心数据 ---
-  title: String,
-  rows: Array,
-  columns: Array,
-  rowKey: String,
-  loading: Boolean,
-
-  // --- 功能开关 (现在默认开启) ---
-  enableSelection: Boolean,
-  enableSearch: Boolean,
-  enableSorting: Boolean,
-  enablePagination: Boolean,
-  virtualScroll: Boolean, // 虚拟滚动默认关闭，因为它适用于大数据量特殊场景
-
-  // --- 初始状态 ---
-  initialSelected: Array,
-  initialPagination: Object,
-}), {
-  title: '',
-  rowKey: 'id',
-  loading: false,
-  enableSelection: true,
-  enableSearch: true,
-  enableSorting: true,
-  enablePagination: true,
-  virtualScroll: false,
-  initialSelected: () => [],
-  initialPagination: () => ({page: 1, rowsPerPage: 10}),
-});
-
-// 2. Emits 定义
-const emit = defineEmits(['update:selected']);
-
-// 3. 内部状态管理
-const pagination = ref({
-  ...props.initialPagination,
-});
-const customPageJump = ref(null);
-const selectedRows = ref(props.initialSelected);
-const searchTerms = reactive({});
-const sortState = reactive({column: null, direction: 'asc'});
-
-// 初始化搜索词
-if (props.enableSearch) {
-  props.columns?.forEach(col => {
-    if (col.searchable) {
-      searchTerms[col.name] = '';
-    }
-  });
+interface Props {
+  title?: string;
+  rows: Record<string, any>[];
+  rowKey: string;
+  // 用于隐藏不想在表格中展示的列
+  hiddenColumns?: string[];
+  // 用于将字段名映射为更友好的列标题
+  columnLabels?: Record<string, string>;
+  // 控制哪些列不可排序或不可搜索
+  nonSortableColumns?: string[];
+  nonSearchableColumns?: string[];
+  // 开启多选
+  enableSelection?: boolean;
 }
 
-// 4. 核心逻辑：计算属性
-const filteredAndSortedRows = computed(() => {
-  let processedRows = [...props.rows];
+const props = withDefaults(defineProps<Props>(), {
+  title: '',
+  rows: () => [],
+  hiddenColumns: () => [],
+  columnLabels: () => ({}),
+  nonSortableColumns: () => [],
+  nonSearchableColumns: () => [],
+  enableSelection: false,
+});
 
-  // a. 应用搜索
-  if (props.enableSearch) {
-    const activeSearchTerms = Object.entries(searchTerms).filter(([, value]) => value);
-    if (activeSearchTerms.length > 0) {
-      processedRows = processedRows.filter(row =>
-          activeSearchTerms.every(([key, value]) =>
-              String(row[key]).toLowerCase().includes(value.toLowerCase())
-          )
-      );
-    }
+const emit = defineEmits(['update:selection']);
+
+// --- 内部状态管理 ---
+const search = reactive<Record<string, string>>({});
+const sortState = reactive<{ column: string | null; direction: 'asc' | 'desc' }>({
+  column: null,
+  direction: 'asc',
+});
+const pagination = ref({
+  page: 1,
+  rowsPerPage: 50,
+});
+const customPage = ref(1);
+const selected = ref<Record<string, any>[]>([]);
+
+const rowsPerPageOptions = [
+  {label: '5 条/页', value: 5},
+  {label: '10 条/页', value: 10},
+  {label: '20 条/页', value: 20},
+  {label: '50 条/页', value: 50},
+  {label: '全部', value: 0},
+];
+
+
+const generatedColumns = computed<QTableProps['columns']>(() => {
+  // 如果没有提供列标签，则不生成任何列
+  if (Object.keys(props.columnLabels).length === 0) return [];
+
+  // 【修复】: 使用 columnLabels 的键作为列的真实来源。
+  // 这允许我们创建像 'actions' 这样不存在于 row 数据中的“虚拟列”。
+  const allDefinedKeys = Object.keys(props.columnLabels);
+
+  // 过滤掉需要在表格中隐藏的列
+  const visibleKeys = allDefinedKeys.filter(key => !props.hiddenColumns.includes(key));
+
+  return visibleKeys.map(key => ({
+    name: key,
+    label: props.columnLabels[key] || key.charAt(0).toUpperCase() + key.slice(1),
+    field: key,
+    align: 'left',
+    isCustomSortable: !props.nonSortableColumns.includes(key),
+    isCustomSearchable: !props.nonSearchableColumns.includes(key),
+  }));
+});
+
+
+// --- 核心计算属性：搜索、排序和分页 ---
+
+// 1. 搜索和排序
+const filteredAndSortedRows = computed(() => {
+  let result = [...props.rows];
+
+  // 过滤
+  const searchKeys = Object.keys(search).filter(key => search[key]);
+  if (searchKeys.length > 0) {
+    result = result.filter(row =>
+        searchKeys.every(key =>
+            String(row[key]).toLowerCase().includes(search[key].toLowerCase())
+        )
+    );
   }
 
-  // b. 应用排序
-  if (props.enableSorting && sortState.column) {
-    const {column, direction} = sortState;
-    processedRows.sort((a, b) => {
-      let valA = a[column];
-      let valB = b[column];
+  // 排序
+  if (sortState.column) {
+    const col = sortState.column;
+    const dir = sortState.direction;
+    result.sort((a, b) => {
+      const valA = a[col];
+      const valB = b[col];
 
-      if (typeof valA === 'string' && !isNaN(Date.parse(valA)) && typeof valB === 'string' && !isNaN(Date.parse(valB))) {
-        valA = new Date(valA).getTime();
-        valB = new Date(valB).getTime();
-      } else if (typeof valA === 'number' && typeof valB === 'number') {
-        // it's a number
-      } else {
-        valA = String(valA);
-        valB = String(valB);
+      if (typeof valA === 'number' && typeof valB === 'number') {
+        return dir === 'asc' ? valA - valB : valB - valA;
+      }
+      // 尝试解析为日期
+      const dateA = new Date(valA).getTime();
+      const dateB = new Date(valB).getTime();
+      if (!isNaN(dateA) && !isNaN(dateB)) {
+        return dir === 'asc' ? dateA - dateB : dateB - dateA;
       }
 
-      if (valA < valB) return direction === 'asc' ? -1 : 1;
-      if (valA > valB) return direction === 'asc' ? 1 : -1;
-      return 0;
+      // 字符串比较
+      return String(valA).localeCompare(String(valB)) * (dir === 'asc' ? 1 : -1);
     });
   }
 
-  return processedRows;
+  return result;
 });
 
-// c. 应用分页
+// 2. 分页
 const paginatedRows = computed(() => {
-  if (!props.enablePagination || !pagination.value.rowsPerPage) {
+  if (pagination.value.rowsPerPage === 0) {
     return filteredAndSortedRows.value;
   }
   const start = (pagination.value.page - 1) * pagination.value.rowsPerPage;
@@ -106,25 +124,26 @@ const paginatedRows = computed(() => {
   return filteredAndSortedRows.value.slice(start, end);
 });
 
-const totalRows = computed(() => filteredAndSortedRows.value.length);
-const maxPages = computed(() => {
-  if (!pagination.value.rowsPerPage) return 1;
-  return Math.ceil(totalRows.value / pagination.value.rowsPerPage)
-});
-const paginationInfo = computed(() => {
-  const start = totalRows.value === 0 ? 0 : (pagination.value.page - 1) * pagination.value.rowsPerPage + 1;
-  const end = Math.min(pagination.value.page * pagination.value.rowsPerPage, totalRows.value);
-  return `第 ${start}-${end} 条，共 ${totalRows.value} 条`;
+
+// --- 分页相关计算属性 ---
+const totalPages = computed(() => {
+  if (pagination.value.rowsPerPage === 0) return 1;
+  return Math.ceil(filteredAndSortedRows.value.length / pagination.value.rowsPerPage);
 });
 
-// 5. 方法
-watch(selectedRows, (newValue) => {
-  emit('update:selected', newValue);
+const currentPageRange = computed(() => {
+  const total = filteredAndSortedRows.value.length;
+  if (total === 0) return {start: 0, end: 0};
+
+  const start = (pagination.value.page - 1) * pagination.value.rowsPerPage + 1;
+  const end = Math.min(start + pagination.value.rowsPerPage - 1, total);
+
+  return {start, end};
 });
 
-function handleSortClick(col) {
-  if (!col.sortable) return;
-  const columnName = col.name;
+
+// --- 方法 ---
+function handleSortClick(columnName: string) {
   if (sortState.column === columnName) {
     sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
   } else {
@@ -133,182 +152,221 @@ function handleSortClick(col) {
   }
 }
 
-function getSortIcon(colName) {
+function getSortIcon(colName: string) {
   if (sortState.column !== colName) return 'unfold_more';
   return sortState.direction === 'asc' ? 'arrow_upward' : 'arrow_downward';
 }
 
 function goToPage() {
-  if (customPageJump.value === null) return;
-  const pageNum = Number(customPageJump.value);
-  if (pageNum >= 1 && pageNum <= maxPages.value) {
-    pagination.value.page = pageNum;
-    customPageJump.value = null;
+  const page = Number(customPage.value);
+  if (page > 0 && page <= totalPages.value) {
+    pagination.value.page = page;
   }
 }
+
+// --- 侦听器 ---
+// 当内部选择变化时，emit到父组件
+watch(selected, (newValue) => {
+  emit('update:selection', newValue);
+});
+
+// 当父组件传入的行数据变化时，重置分页到第一页
+watch(() => props.rows, () => {
+  pagination.value.page = 1;
+});
 </script>
 
 <template>
-  <q-card flat bordered>
-    <q-card-section>
-      <slot name="top">
-        <div v-if="title" class="text-h6">{{ title }}</div>
-      </slot>
-    </q-card-section>
-
-    <q-card-section class="q-pa-none">
-      <q-table
-          v-model:selected="selectedRows"
-          :rows="paginatedRows"
-          :columns="columns"
-          :row-key="rowKey"
-          :loading="loading"
-          :selection="enableSelection ? 'multiple' : 'none'"
-          :virtual-scroll="virtualScroll"
-          hide-pagination
-          square
-          flat
-          bordered
-          no-data-label="暂无数据"
-          class="universal-table"
-      >
-        <template #header="props">
-          <q-tr :props="props" class="custom-header">
-            <q-th v-if="enableSelection" auto-width>
-              <q-checkbox v-model="props.selected"/>
-            </q-th>
-            <q-th v-for="col in props.cols" :key="col.name" :props="props" @click="handleSortClick(col)">
-              <div class="row items-center no-wrap justify-center">
-                <span>{{ col.label }}</span>
-                <q-btn
-                    v-if="enableSearch && col.searchable"
-                    dense flat round icon="search" size="sm" class="q-ml-xs"
-                    @click.stop
-                >
-                  <q-popup-edit v-slot="scope" v-model="searchTerms[col.name]" auto-save>
-                    <q-input
-                        v-model="scope.value"
-                        dense autofocus label="搜索..."
-                        @keyup.enter="scope.set"
-                    />
-                  </q-popup-edit>
-                </q-btn>
-                <q-icon
-                    v-if="enableSorting && col.sortable"
-                    :name="getSortIcon(col.name)"
-                    size="sm"
-                    class="q-ml-xs"
-                />
-              </div>
-            </q-th>
-          </q-tr>
-        </template>
-
-        <template #body="props">
-          <q-tr :props="props">
-            <q-td v-if="enableSelection">
-              <q-checkbox v-model="props.selected"/>
-            </q-td>
-            <q-td v-for="col in props.cols" :key="col.name" :props="props">
-              <slot :name="`body-cell-${col.name}`" :row="props.row" :value="props.row[col.name]">
-                {{ props.row[col.name] }}
-              </slot>
-            </q-td>
-          </q-tr>
-        </template>
-
-        <template #no-data>
-          <slot name="no-data">
-            <div class="full-width row flex-center text-grey q-gutter-sm q-pa-lg">
-              <q-icon size="2em" name="sentiment_dissatisfied"/>
-              <span>暂无可用数据</span>
-            </div>
-          </slot>
-        </template>
-      </q-table>
-    </q-card-section>
-
-    <q-card-section v-if="enablePagination" class="row items-center justify-start q-mt-md">
-      <div class="text-caption q-mr-md">
-        {{ paginationInfo }}
+  <div>
+    <div class="row items-center justify-between q-mb-md">
+      <div class="text-h6">{{ title }}</div>
+      <!-- 直接添加一个不可见的按钮，让row在top-right不插入按钮时，也能保持和插入按钮时一样的高度，避免复杂的height计算逻辑 -->
+      <q-btn flat disable/>
+      <div>
+        <slot name="top-right"/>
       </div>
+    </div>
+
+    <q-table
+        v-model:pagination="pagination"
+        v-model:selected="selected"
+        :table-row-class-fn="rowClassFn"
+        square
+        no-data-label="暂无数据"
+        flat
+        bordered
+        :rows="paginatedRows"
+        :columns="generatedColumns"
+        :row-key="rowKey"
+        hide-bottom
+        :selection="enableSelection ? 'multiple' : 'none'"
+    >
+      <template #header="props">
+        <q-tr :props="props">
+          <q-th v-if="enableSelection" auto-width>
+            <q-checkbox v-model="props.selected"/>
+          </q-th>
+
+          <q-th
+              v-for="col in props.cols"
+              :key="col.name"
+              :props="props"
+              :class="`text-${col.align || 'left'}`"
+          >
+            <div class="row items-center no-wrap justify-between">
+              <span class="no-wrap">{{ col.label }}</span>
+              <div class="row items-center no-wrap">
+                <template v-if="col.isCustomSearchable">
+                  <q-btn dense flat round icon="search" size="sm" @click.stop>
+                    <q-popup-edit
+                        v-slot="scope"
+                        v-model="search[col.name]"
+                        anchor="top left"
+                        self="bottom right"
+                        auto-save
+                    >
+                      <q-input
+                          v-model="scope.value"
+                          dense
+                          autofocus
+                          label="搜索..."
+                          @keyup.enter="scope.set"
+                      />
+                    </q-popup-edit>
+                  </q-btn>
+                </template>
+
+                <template v-if="col.isCustomSortable">
+                  <q-btn
+                      dense
+                      flat
+                      round
+                      :icon="getSortIcon(col.name)"
+                      size="sm"
+                      @click="handleSortClick(col.name)"
+                  />
+                </template>
+              </div>
+            </div>
+          </q-th>
+        </q-tr>
+      </template>
+
+      <template #body="props">
+        <q-tr :props="props">
+          <q-td v-if="enableSelection" auto-width>
+            <q-checkbox v-model="props.selected"/>
+          </q-td>
+
+          <q-td v-for="col in generatedColumns" :key="col.name" :props="props">
+            <slot :name="`cell-${col.name}`" :row="props.row" :value="props.row[col.field]">
+              {{ props.row[col.field] }}
+            </slot>
+          </q-td>
+        </q-tr>
+      </template>
+    </q-table>
+
+    <div v-if="pagination.rowsPerPage > 0" class="row items-center justify-start q-mt-md">
+      <div class="text-caption q-mr-md">
+        第 {{ currentPageRange.start }}-{{ currentPageRange.end }} 条，共 {{ filteredAndSortedRows.length }} 条
+      </div>
+
       <q-pagination
           v-model="pagination.page"
-          :max="maxPages"
+          :max="totalPages"
           :max-pages="6"
           direction-links
           boundary-links
+          boundary-numbers
           size="sm"
           flat
-          color="grey"
+          color="black"
           active-color="primary"
-          class="pagination-custom q-mr-md"
+          class="my-pagination-custom q-mr-md"
       />
-      <div class="text-caption page-size-display q-mr-md">
-        {{ pagination.rowsPerPage }} 条/页
-      </div>
-      <div class="row items-center">
-        <span class="q-mr-sm text-caption">跳至</span>
-        <q-input
-            v-model.number="customPageJump"
-            type="number"
+
+      <div class="row items-center q-gutter-x-md">
+        <q-select
+            v-model="pagination.rowsPerPage"
+            :options="rowsPerPageOptions"
             dense
-            style="width: 60px;"
-            class="page-jump-input"
-            @keyup.enter="goToPage"
+            borderless
+            emit-value
+            map-options
+            options-dense
+            style="min-width: 80px"
         />
-        <span class="q-ml-sm text-caption">页</span>
+
+        <div class="row items-center no-wrap">
+          <span class="q-mr-sm text-caption">跳至</span>
+          <q-input
+              v-model.number="customPage"
+              type="number"
+              dense
+              style="width: 60px"
+              class="custom-jump-input"
+              @keyup.enter="goToPage"
+          />
+          <span class="q-ml-sm text-caption">页</span>
+          <q-btn class="q-ml-sm text-caption" flat dense @click="goToPage">确定</q-btn>
+        </div>
       </div>
-    </q-card-section>
-  </q-card>
+    </div>
+  </div>
 </template>
 
+
 <style scoped>
-/* 样式与之前版本保持一致 */
-.custom-header {
-  background-color: #006A6A !important;
+.q-table th {
+  font-weight: bold;
+}
+
+.my-pagination-custom .q-btn {
+  border-radius: 4px;
+}
+
+.custom-jump-input .q-field__control {
+  padding: 0 8px;
 }
 
 .custom-header th {
-  color: white !important;
   font-weight: bold;
-  cursor: pointer;
+  color: white !important;
 }
 
-.custom-header th:hover {
-  background-color: #004D40;
-}
-
-.pagination-custom .q-btn,
-.page-size-display,
-.page-jump-input .q-field__control {
+::v-deep(.my-pagination-custom .q-pagination__content .q-btn[aria-label*="页"]),
+.custom-page-size,
+::v-deep(.custom-jump-input .q-field__control) {
+  /* border: 1px solid #2e7d32 !important; */
   border: 1px solid #3BB5A3 !important;
   border-radius: 4px !important;
+}
+
+::v-deep(.my-pagination-custom .q-pagination__content .q-btn[aria-label*="页"]) {
+  /* background: #e8f5e9 !important;
+  color: #2e7d32 !important; */
   background: #E0F2F1 !important;
-  color: #006A6A !important;
-  min-height: 28px !important;
-  height: 28px !important;
-}
-
-.pagination-custom .q-btn {
+  color: #3BB5A3 !important;
   min-width: 28px !important;
-}
-
-.pagination-custom .q-btn.q-btn--active {
-  background: #006A6A !important;
-  color: white !important;
-}
-
-.page-size-display {
-  padding: 0 8px;
-  display: inline-flex;
-  align-items: center;
-}
-
-.page-jump-input .q-field__control,
-.page-jump-input .q-field__native {
-  height: 28px !important;
   min-height: 28px !important;
+}
+
+
+::v-deep(.custom-jump-input .q-field__control) {
+  /* background-color: #e8f5e9 !important; */
+  background-color: #E0F2F1 !important;
+  height: 28px !important;
+  min-height: unset !important;
+}
+
+::v-deep(.custom-jump-input .q-field__native) {
+  color: black !important;
   padding: 0 8px;
+  height: 26px !important;
+}
+
+::v-deep(.custom-jump-input) {
+  height: 28px !important;
 }
 </style>

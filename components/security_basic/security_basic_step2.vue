@@ -2,55 +2,16 @@
 import {rowClassFn} from "~/utils/tableStyle";
 
 const selectedRows = ref([]);
-const columns = [
-  {
-    name: "selection",
-    label: "",
-    align: "center",
-  },
-  {
-    name: "index",
-    label: "编号",
-    field: "index",
-    align: "center",
-  },
-  {
-    name: "name",
-    label: "设备名称",
-    field: "name",
-    align: "left",
-  },
-  {
-    name: "networkSegment",
-    label: "所属网段",
-    field: "networkSegment",
-    align: "left",
-  },
-  {
-    name: "deviceType",
-    label: "设备类型",
-    field: "deviceType",
-    align: "center",
-  },
-  {
-    name: "ip",
-    label: "设备IP",
-    field: "ip",
-    align: "center",
-  },
-  {
-    name: "mac",
-    label: "MAC地址",
-    field: "mac",
-    align: "center",
-  },
-  {
-    name: "progress",
-    label: "核查进度",
-    field: "progress",
-    align: "center",
-  },
-];
+const columns = ref({
+  index: "编号",
+  name: "设备名称",
+  networkSegment: "所属网段",
+  deviceType: "设备类型",
+  ip: "设备IP",
+  mac: "MAC地址",
+  progress: "核查进度",
+})
+
 const rows = [
   {
     index: 1,
@@ -152,112 +113,88 @@ function updateGroupSelection(group) {
 </script>
 
 <template>
-  <div class="q-pa-md">
-    <div class="row q-gutter-md">
-      <!-- 左侧：白色分区选择框 -->
-      <div
-          class="bg-white q-pa-md"
-          style="
+  <div class="row q-gutter-md">
+    <!-- 左侧：白色分区选择框 -->
+    <div
+        class="bg-white q-pa-md"
+        style="
           width: 300px;
           border: 1px solid #ccc;
           border-radius: 8px;
           max-height: 600px;
           overflow-y: auto;
         "
+    >
+      <div
+          v-for="(group, index) in segmentGroups"
+          :key="index"
+          class="q-mb-md"
       >
-        <div
-            v-for="(group, index) in segmentGroups"
-            :key="index"
-            class="q-mb-md"
-        >
-          <div class="row items-center q-mb-sm">
-            <q-checkbox
-                v-model="group.selectedAll"
-                label="全选"
-                @update:model-value="toggleGroup(group)"
-            />
-            <div class="q-ml-sm text-bold">{{ group.name }}</div>
-          </div>
-          <div class="q-ml-lg">
-            <q-checkbox
-                v-for="(segment, idx) in group.segments"
-                :key="idx"
-                v-model="segment.selected"
-                :label="segment.range"
-                @update:model-value="updateGroupSelection(group)"
-            />
-          </div>
+        <div class="row items-center q-mb-sm">
+          <q-checkbox
+              v-model="group.selectedAll"
+              label="全选"
+              @update:model-value="toggleGroup(group)"
+          />
+          <div class="q-ml-sm text-bold">{{ group.name }}</div>
+        </div>
+        <div class="q-ml-lg">
+          <q-checkbox
+              v-for="(segment, idx) in group.segments"
+              :key="idx"
+              v-model="segment.selected"
+              :label="segment.range"
+              @update:model-value="updateGroupSelection(group)"
+          />
         </div>
       </div>
+    </div>
 
-      <!-- 右侧：原来的q-table -->
-      <div class="col">
-        <q-page class="q-pa-md q-gutter-y-md">
-          <div class="q-gutter-y-md">
-            <div class="q-mt-md row justify-left items-center q-gutter-x-md">
+    <!-- 右侧：原来的q-table -->
+    <div class="col">
+      <div class="q-gutter-y-md">
+        <common-enhanced-table
+            title="基础检查表"
+            :rows="rows"
+            :column-labels="columns"
+            row-key="index"
+        >
+          <template #top-right>
+            <div class="q-gutter-md">
               <q-btn label="批量核查" color="primary"/>
-              <q-btn label="取消检查" color="primary"/>
+              <q-btn label="取消检查" color="yellow-10"/>
             </div>
-            <q-table
-                square
-                no-data-label="暂无数据"
-                flat
-                bordered
-                title="基础检查表"
-                :rows="rows"
-                :columns="columns"
-                row-key="index"
-                :table-row-class-fn="rowClassFn"
-                :rows-per-page-options="[5, 10, 20, 50, 0]"
-            >
-              <template #body="props">
-                <q-tr :props="props" @click="toggleRowSelection(props.row)">
-                  <q-td key="selection" :props="props">
-                    <q-checkbox v-model="selectedRows" :val="props.row.index"/>
-                  </q-td>
-                  <q-td key="index" :props="props">{{ props.row.index }}</q-td>
-                  <q-td key="name" :props="props">{{ props.row.name }}</q-td>
-                  <q-td key="networkSegment" :props="props">{{
-                      props.row.networkSegment
-                    }}
-                  </q-td>
-                  <q-td key="deviceType" :props="props">{{
-                      props.row.deviceType
-                    }}
-                  </q-td>
-                  <q-td key="ip" :props="props">{{ props.row.ip }}</q-td>
-                  <q-td key="mac" :props="props">{{ props.row.mac }}</q-td>
-                  <q-td key="progress" :props="props">
-                    <div v-if="props.row.error">
-                      <q-badge color="red">{{
-                          props.row.errorMessage
-                        }}
-                      </q-badge>
-                    </div>
-                    <template v-else>
-                      <q-linear-progress
-                          :value="parseProgress(props.row.progress)"
-                          :color="getProgressColor(props.row)"
-                          size="md"
-                          class="q-mt-sm"
-                      />
-                      <div class="text-center">
-                        {{ getStatusText(props.row) }}
-                      </div>
-                    </template>
-                  </q-td>
-                </q-tr>
-              </template>
-            </q-table>
-          </div>
-        </q-page>
+          </template>
+          <template #cell-selection="{row}">
+            <q-checkbox v-model="selectedRows" :val="row.index"/>
+          </template>
+          <template #cell-progress="{row}">
+            <div v-if="row.error">
+              <q-badge color="red">{{
+                  row.errorMessage
+                }}
+              </q-badge>
+            </div>
+            <div v-else>
+              <q-linear-progress
+                  :value="parseProgress(row.progress)"
+                  :color="getProgressColor(row)"
+                  size="md"
+                  class="q-mt-sm"
+              />
+              <div class="text-center">
+                {{ getStatusText(row) }}
+              </div>
+            </div>
+          </template>
+        </common-enhanced-table>
       </div>
     </div>
+  </div>
 
-    <!-- 页面底部导航按钮 -->
-    <div class="q-mt-md row justify-center items-center q-gutter-x-md">
-      <q-btn label="上一步" color="primary" @click="$emit('back')"/>
-      <q-btn label="下一步" color="primary" @click="$emit('next')"/>
-    </div>
+  <!-- 页面底部导航按钮 -->
+  <div class="q-mt-md row justify-center items-center q-gutter-x-md">
+    <q-btn label="上一步" color="primary" @click="$emit('back')"/>
+    <q-btn label="下一步" color="primary" @click="$emit('next')"/>
   </div>
 </template>

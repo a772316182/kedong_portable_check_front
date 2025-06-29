@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import {rowClassFn} from "~/utils/tableStyle";
 
 const model = ref('主机策略')
 
-const columns = [
-  {name: 'index', label: '序号', field: 'index', sortable: true},
-  {name: 'isEnabled', label: '是否启用', field: 'isEnabled', sortable: true, align: 'left'},
-  {name: 'itemNameForVerify', label: '核查项目', field: 'itemNameForVerify', sortable: true, align: 'left'},
-  {name: 'systemVersion', label: '系统版本', field: 'systemVersion', sortable: true, align: 'center'},
-  {name: 'ruleDesc', label: '规则说明', field: 'ruleDesc', sortable: true, align: 'left'},
-  {name: 'actions', label: '操作', field: 'actions', align: 'center'}
-]
-const rows = [
+const labels = {
+  index: '序号',
+  isEnabled: '是否启用',
+  itemNameForVerify: '核查项目',
+  systemVersion: '系统版本',
+  ruleDesc: '规则说明',
+  actions: '操作',
+};
+const rows = ref([
   {
     index: 1,
     itemNameForVerify: '检测项1',
@@ -34,13 +33,25 @@ const rows = [
     isEnabled: true
   },
   {index: 4, itemNameForVerify: '检测项4', systemVersion: 'Ubuntu 24 LTS', ruleDesc: '规则说明4', isEnabled: false},
-]
+])
 const options = ref([
   {label: '主机策略', value: '主机策略'},
   {label: '纵向策略', value: '纵向策略'},
   {label: '隔离策略', value: '隔离策略'},
   {label: '防火墙策略', value: '防火墙策略'},
 ])
+
+// 5. 定义操作方法 (可选，用于演示)
+function editItem(item) {
+  alert(`编辑: ${item.itemNameForTesting}`);
+}
+
+function deleteItem(item) {
+  if (confirm(`确认删除 "${item.itemNameForTesting}"?`)) {
+    rows.value = rows.value.filter(r => r.index !== item.index);
+    alert('删除成功');
+  }
+}
 </script>
 
 <template>
@@ -48,41 +59,22 @@ const options = ref([
     <div class="row">
       <q-select v-model="model" filled :options="options" label="策略类型" class="col-4"/>
     </div>
-    <q-table
-        square
-        no-data-label="暂无数据"
-        flat bordered
+    <common-enhanced-table
         title="告警验证配置"
         :rows="rows"
-        :columns="columns"
         row-key="index"
-        :table-row-class-fn="rowClassFn"
-        :rows-per-page-options="[5, 10, 20, 50, 0]"
+        :column-labels="labels"
+        :non-sortable-columns="['actions']"
+        :non-searchable-columns="['index', 'actions', 'isEnabled']"
     >
-      <template #body="props">
-        <q-tr :props="props">
-          <q-td key="index" :props="props">
-            {{ props.row.index }}
-          </q-td>
-          <q-td key="isEnabled" :props="props">
-            <q-toggle v-model="props.row.isEnabled"/>
-          </q-td>
-          <q-td key="itemNameForVerify" :props="props">
-            {{ props.row.itemNameForVerify }}
-          </q-td>
-          <q-td key="systemVersion" :props="props">
-            {{ props.row.systemVersion }}
-          </q-td>
-          <q-td key="ruleDesc" :props="props">
-            {{ props.row.ruleDesc }}
-          </q-td>
-          <q-td key="actions" :props="props">
-            <q-btn flat color="primary">编辑</q-btn>
-            <q-btn flat color="red-10">删除</q-btn>
-          </q-td>
-        </q-tr>
+      <template #cell-isEnabled="{ row }">
+        <q-toggle v-model="row.isEnabled"/>
       </template>
-    </q-table>
+      <template #cell-actions="{ row }">
+        <q-btn flat dense color="primary" @click="editItem(row)">编辑</q-btn>
+        <q-btn flat dense color="red-10" @click="deleteItem(row)">删除</q-btn>
+      </template>
+    </common-enhanced-table>
   </div>
 </template>
 
