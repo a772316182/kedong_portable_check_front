@@ -50,7 +50,7 @@ function deleteReport(item: any) {
 </script>
 
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md  q-gutter-y-md">
     <q-card flat>
       <q-card-section>
         <common-enhanced-table

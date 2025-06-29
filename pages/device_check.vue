@@ -75,7 +75,7 @@ function viewTask(task: any) {
 </script>
 
 <template>
-  <div>
+  <q-page class="q-pa-md q-gutter-y-md">
     <q-stepper
         v-model="currentStep"
         flat
@@ -150,5 +150,5 @@ function viewTask(task: any) {
           @save="saveRectificationNotice"
       />
     </q-dialog>
-  </div>
+  </q-page>
 </template>

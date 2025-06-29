@@ -75,9 +75,7 @@ const labels = {
 </script>
 
 <template>
-  <div class="col q-pa-md">
-    <q-card flat>
-      <q-card-section>
+  <div>
         <common-enhanced-table
             title="验证结果表"
             :rows="rows"
@@ -90,8 +88,6 @@ const labels = {
             <common-status-chip :label="row.result"/>
           </template>
         </common-enhanced-table>
-      </q-card-section>
-    </q-card>
 
     <div class="row justify-center q-gutter-sm q-mt-md">
       <q-btn color="primary" flat label="上一步" @click="emit('prev')"/>

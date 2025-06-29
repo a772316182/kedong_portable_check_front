@@ -79,7 +79,7 @@ function viewTask(task) {
 </script>
 
 <template>
-  <div>
+  <q-page class="q-pa-md q-gutter-y-md">
     <q-stepper
         v-model="currentStep"
         flat
@@ -88,10 +88,7 @@ function viewTask(task) {
         done-color="positive"
         inactive-color="grey-6"
     >
-      <q-step :name="1" title="创建任务" :done="currentStep > 1">
-        <div>
-          <q-page class="q-pa-md q-gutter-y-md">
-            <div class="q-gutter-y-md">
+      <q-step :name="1" title="创建任务" :done="currentStep > 1" icon="list_alt">
               <common-enhanced-table
                   title="任务列表"
                   :rows="rows"
@@ -131,33 +128,20 @@ function viewTask(task) {
                   <q-btn flat color="red-10">删除</q-btn>
                 </template>
               </common-enhanced-table>
-            </div>
-          </q-page>
-
-        </div>
       </q-step>
-      <q-step :name=2 title="基础检查" :done="currentStep > 2">
-        <div>
-          <q-page class="q-pa-md">
-            <!-- 这里放置第二步的内容组件 -->
+      <q-step :name=2 title="基础检查" :done="currentStep > 2"  icon="rule">
             <security-basic-step2
                 :task="selectedTask"
                 @back="currentStep = 1"
                 @next="currentStep = 3"
             />
-          </q-page>
-        </div>
       </q-step>
-      <q-step :name="3" title="检查结果" :done="currentStep > 3">
-        <div>
-          <q-page class="q-pa-md">
+      <q-step :name="3" title="检查结果" :done="currentStep > 3" icon="check_circle">
             <security-basic-step3
                 :task="selectedTask"
                 @back="currentStep = 2"
                 @next="currentStep = 1"
             />
-          </q-page>
-        </div>
       </q-step>
     </q-stepper>
     <q-dialog v-model="dialogVisible">
@@ -166,5 +150,5 @@ function viewTask(task) {
           @save="saveSecurityBasic"
       />
     </q-dialog>
-  </div>
+  </q-page>
 </template>
