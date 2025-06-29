@@ -48,14 +48,38 @@ service PSC{
   rpc DevCheck(devCheckRequest) returns (devCheckResponse){}
   // 更改设备Ip
   rpc ChangeIp(changeIpRequest) returns (changeIpResponse){}
+  // 开始资产扫描
+  rpc StartAssetScan(StartAssetScanRequest) returns (StartAssetScanResponse);
 
 rpc CreateMonitorObject(CreateMonitorObjectRequest) returns (MonitorObjectResponse);
   rpc DeleteMonitorObject(DeleteMonitorObjectRequest) returns (MonitorObjectResponse);
   rpc UpdateMonitorObject(UpdateMonitorObjectRequest) returns (MonitorObjectResponse);
   rpc GetMonitorObject(GetMonitorObjectRequest) returns (GetMonitorObjectResponse);
   rpc QueryMonitorObjects(QueryMonitorObjectsRequest) returns (QueryMonitorObjectsResponse);
+  
+rpc QueryAssetScanResults(QueryAssetScanResultsRequest) returns (QueryAssetScanResultsResponse);
+
+}
+// 在 service PSC { ... } 中添加:
+
+// 在文件末尾添加新的消息定义:
+message QueryAssetScanResultsRequest {
+    string network_config_id = 1;
 }
 
+message AssetScanResult {
+    string ip = 1;
+    string mac = 2;
+    string port = 3;
+    string services = 4;
+    string devtype = 5;
+}
+
+message QueryAssetScanResultsResponse {
+    int32 retNum = 1;
+    string errMessage = 2;
+    repeated AssetScanResult results = 3;
+}
 message CreateMonitorObjectRequest {
   string guid = 1;
   string id = 2;
@@ -700,4 +724,16 @@ message acceptCheckStopRequest{
 message acceptCheckStopResponse{
   int32   retNum=1;   // 返回值 成功返回0，失败返回错误码
   string  errMessage=2 ;  // 返回错误信息
+}
+
+// 资产扫描请求
+message StartAssetScanRequest {
+  string station_id = 1; // 厂站 GUID
+  string network_config_id = 2; // 网段配置表的 ID
+}
+
+// 资产扫描响应
+message StartAssetScanResponse {
+  int32  retNum = 1;
+  string errMessage = 2;
 }

@@ -9,9 +9,9 @@ import StepNetworkConfig from '~/components/station_wizard/StepNetworkConfig.vue
 import StepLedgerMaintenance from '~/components/station_wizard/StepLedgerMaintenance.vue';
 import StepTopologyDrawing from '~/components/station_wizard/StepTopologyDrawing.vue';
 import StepNetworkDiscovery from '~/components/station_wizard/StepNetworkDiscovery.vue';
+import StepAssetDiscovery from '~/components/station_wizard/StepAssetDiscovery.vue';
 
-// 为了快速搭建框架，暂时将其他步骤定义为内联组件
-const StepAssetDiscovery = { template: '<div><p class="text-subtitle1">在已配置的网段内，对资产进行更详细的探测和识别。</p><p>系统将尝试识别设备类型、操作系统、开放端口等信息。</p><q-stepper-navigation><q-btn @click="$emit(\'next\')" color="primary" label="继续" /><q-btn @click="$emit(\'back\')" flat color="primary" label="返回" class="q-ml-sm" /></q-stepper-navigation></div>', emits: ['next', 'back'] };
+// const StepAssetDiscovery = { template: '<div><p class="text-subtitle1">在已配置的网段内，对资产进行更详细的探测和识别。</p><p>系统将尝试识别设备类型、操作系统、开放端口等信息。</p><q-stepper-navigation><q-btn @click="$emit(\'next\')" color="primary" label="继续" /><q-btn @click="$emit(\'back\')" flat color="primary" label="返回" class="q-ml-sm" /></q-stepper-navigation></div>', emits: ['next', 'back'] };
 
 const router = useRouter();
 const route = useRoute();
@@ -217,14 +217,16 @@ onMounted(loadProgress);
         </q-tab-panel>
         
         <q-tab-panel :name="4" class="q-pa-none">
-          <div class="q-pa-md">
-            <div class="text-h6 q-mb-md">资产探测 (模拟)</div>
-            <StepAssetDiscovery />
-            <q-stepper-navigation>
-              <q-btn @click="nextStep(4)" color="primary" label="探测并下一步" />
-              <q-btn @click="skipStep(4)" color="secondary" flat label="跳过此步骤" class="q-ml-sm" />
-              <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />
-            </q-stepper-navigation>
+           <StepAssetDiscovery
+             v-if="stationId"
+             :station-id="stationId"
+             @next="nextStep(4)"
+             @back="prevStep"
+             @skip="skipStep(4)"
+           />
+           <div v-else class="text-center text-grey q-pa-md">
+             <q-icon name="warning" size="md" />
+             <p>请先完成前面的步骤以获取厂站ID</p>
           </div>
         </q-tab-panel>
 
@@ -248,7 +250,7 @@ onMounted(loadProgress);
             <q-icon name="warning" size="md" />
             <p>请先完成第一步以获取厂站ID</p>
           </div>
-           <div class="q-pa-md">
+          <div class="q-pa-md">
             <q-stepper-navigation>
               <q-btn @click="finishWizard" color="positive" label="完成" />
               <q-btn @click="prevStep" flat color="primary" label="返回" class="q-ml-sm" />

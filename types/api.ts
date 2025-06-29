@@ -218,6 +218,36 @@ export interface QueryMonitorObjectsResponse {
   data: QueryMonitorObjectsData;
 }
 
+// StartAssetScan API
+export interface StartAssetScanParams {
+  station_id: string;
+  network_config_id: string;
+}
+
+export interface StartAssetScanResponse {
+  retNum: number;
+  errMessage: string;
+}
+
+// QueryAssetScanResults API
+export interface QueryAssetScanResultsParams {
+  network_config_id: string;
+}
+
+export interface AssetScanResult {
+  ip: string;
+  mac: string;
+  port: string;
+  services: string;
+  devtype: string;
+}
+
+export interface QueryAssetScanResultsResponse {
+  retNum: number;
+  errMessage: string;
+  results: AssetScanResult[];
+}
+
 // 可以根据需要添加更多的API类型定义 
 
 // Example Service API

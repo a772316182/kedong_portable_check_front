@@ -8,7 +8,10 @@ import type {
   QueryMonitorObjectsParams, QueryMonitorObjectsResponse,
   BasicConfigParams, BasicConfigResponse,
   NetConfigParams, NetConfigResponse,
-  ListNetworkConfigsByAreaParams, ListNetworkConfigsByAreaResponse
+  ListNetworkConfigsByAreaParams, ListNetworkConfigsByAreaResponse,
+  StartAssetScanParams,
+  StartAssetScanResponse,
+  QueryAssetScanResultsParams, QueryAssetScanResultsResponse
 } from '~/types/api'
 
 /**
@@ -439,6 +442,72 @@ export function useQueryMonitorObjectsApi() {
     queryState: state,
     queryMonitorObjects,
     resetQueryState: reset
+  }
+}
+
+/**
+ * Start Asset Scan API
+ */
+export function useStartAssetScanApi() {
+  const { state, reset } = useApiState<StartAssetScanResponse>()
+  
+  async function startAssetScan(params: StartAssetScanParams) {
+    state.value.loading = true
+    state.value.error = null
+    
+    try {
+      const response = await $fetch<StartAssetScanResponse>('/api/station/start-asset-scan', {
+        method: 'POST',
+        body: params
+      })
+      state.value.data = response;
+      return response;
+    } catch (error) {
+      console.error('Error starting asset scan:', error)
+      state.value.error = error
+      throw error;
+    } finally {
+      state.value.loading = false
+    }
+  }
+  
+  return {
+    scanState: state,
+    startAssetScan,
+    resetScanState: reset
+  }
+}
+
+/**
+ * Query Asset Scan Results API
+ */
+export function useQueryAssetScanResultsApi() {
+  const { state, reset } = useApiState<QueryAssetScanResultsResponse>()
+  
+  async function queryAssetScanResults(params: QueryAssetScanResultsParams) {
+    state.value.loading = true
+    state.value.error = null
+    
+    try {
+      const response = await $fetch<QueryAssetScanResultsResponse>('/api/station/asset-scan-results', {
+        method: 'POST',
+        body: params
+      })
+      state.value.data = response;
+      return response;
+    } catch (error) {
+      console.error('Error querying asset scan results:', error)
+      state.value.error = error
+      throw error;
+    } finally {
+      state.value.loading = false
+    }
+  }
+  
+  return {
+    resultsState: state,
+    queryAssetScanResults,
+    resetResultsState: reset
   }
 }
 
