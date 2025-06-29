@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { ApiState, CityApiParams, CityApiResponse, StationManageParams, StationManageResponse } from '~/types/api'
+import type { ApiState, CityApiParams, CityApiResponse, StationManageParams, StationManageResponse, ExampleApiParams, ExampleApiResponse } from '~/types/api'
 import type { 
   CreateMonitorObjectParams, CreateMonitorObjectResponse,
   GetMonitorObjectParams, GetMonitorObjectResponse,
@@ -185,6 +185,19 @@ export function useNetConfigApi() {
         method: 'POST',
         body: params
       })
+      
+      // 检查 messageContent 是否为字符串，如果是，则尝试解析
+      // 这可以兼容后端返回字符串或数组两种情况
+      if (response && typeof response.messageContent === 'string') {
+        try {
+          response.messageContent = JSON.parse(response.messageContent || '[]')
+        } catch(e) {
+          console.error("Failed to parse messageContent from net-config api", e);
+          // 解析失败时，将其置为空数组或根据业务决定如何处理
+          response.messageContent = [];
+        }
+      }
+
       state.value.data = response;
       return response;
     } catch (error) {
@@ -426,6 +439,39 @@ export function useQueryMonitorObjectsApi() {
     queryState: state,
     queryMonitorObjects,
     resetQueryState: reset
+  }
+}
+
+/**
+ * Example Service API
+ */
+export function useExampleApi() {
+  const { state, reset } = useApiState<ExampleApiResponse>()
+  
+  async function callUnary(params: ExampleApiParams) {
+    state.value.loading = true
+    state.value.error = null
+    
+    try {
+      const response = await $fetch<ExampleApiResponse>('/api/example/unary', {
+        method: 'POST',
+        body: params
+      })
+      state.value.data = response;
+      return response;
+    } catch (error) {
+      console.error('Error calling unary:', error)
+      state.value.error = error
+      throw error;
+    } finally {
+      state.value.loading = false
+    }
+  }
+  
+  return {
+    exampleState: state,
+    callUnary,
+    resetExampleState: reset
   }
 }
 

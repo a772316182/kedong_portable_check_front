@@ -219,3 +219,14 @@ export interface QueryMonitorObjectsResponse {
 }
 
 // 可以根据需要添加更多的API类型定义 
+
+// Example Service API
+export interface ExampleApiParams {
+  message: string;
+  number: number;
+}
+
+export interface ExampleApiResponse {
+  message: string;
+  number: number;
+} 
