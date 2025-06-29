@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue';
 
 // --- Page-specific State & Logic ---
 const emit = defineEmits(['prev', 'next']);

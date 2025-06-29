@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-// 1. Import our reusable GenericTable component
 
 // 2. Keep state related to the page's business logic
 const dialog = ref(false);

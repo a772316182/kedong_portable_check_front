@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {ref} from 'vue'
 
 const activePolicy = ref('host') // 默认显示主机策略
 const emit = defineEmits(['prev', 'next'])

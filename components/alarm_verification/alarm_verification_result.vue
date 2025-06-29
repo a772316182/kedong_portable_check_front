@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
 // 1. Import our powerful and reusable GenericTable component
 
 // --- Page-specific State & Logic ---

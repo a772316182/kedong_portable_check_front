@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {rowClassFn} from "~/utils/tableStyle";
 
 const columns = {
   index: "编号",

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {rowClassFn} from "~/utils/tableStyle";
 
 const selectedRows = ref([]);
 const columns = ref({

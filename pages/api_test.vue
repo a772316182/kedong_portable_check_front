@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {ref} from 'vue'
 import type {CityApiParams, StationManageParams} from '~/types/api'
 import {useCityApi, useStationManageApi} from '~/composables/useApi'
 

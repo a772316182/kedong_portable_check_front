@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import {ref} from "vue";
-import {rowClassFn} from "~/utils/tableStyle";
 
 // 定义 emit
 const emit = defineEmits(["save", "cancel"]);
