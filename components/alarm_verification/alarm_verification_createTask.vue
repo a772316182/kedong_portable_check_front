@@ -83,8 +83,13 @@ function deleteTask(item: any) {
           </template>
           <template #cell-area="{ row }">
             <div class="row q-gutter-x-sm items-center no-wrap">
-              <q-chip dense color="green-1" text-color="green-10">安全1区</q-chip>
-              <q-chip dense color="blue-1" text-color="blue-10">安全2区</q-chip>
+              <common-status-chip :is-auto-color="false" label="安全1区" color="indigo-10"/>
+              <common-status-chip :is-auto-color="false" label="安全2区" color="green-10"/>
+            </div>
+          </template>
+          <template #cell-operator="{ row }">
+            <div class="row q-gutter-x-sm items-center no-wrap">
+              <common-status-chip :label="row.operator"/>
             </div>
           </template>
 

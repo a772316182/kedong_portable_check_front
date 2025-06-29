@@ -108,29 +108,20 @@ function viewTask(task) {
                   </q-btn>
                 </template>
                 <template #cell-checkItem="{row}">
-                  <q-badge
+                  <common-status-chip
                       v-for="(item, index) in row.checkItem"
                       :key="index"
-                      color="green-1"
-                      text-color="green-7"
-                      class="q-pa-sm"
+                      :label="item"
                   >
-                    {{ item }}
-                  </q-badge>
+                  </common-status-chip>
                 </template>
                 <template #cell-taskStatus="{row}">
-                  <span
-                      :class="{
-                        'text-green': row.taskStatus === '进行中',
-                        'text-black': row.taskStatus === '已完成'}"
-                  >
-                    {{ row.taskStatus }}
-                  </span>
+                  <common-status-chip :label="row.taskStatus"/>
                 </template>
                 <template #cell-actions="{row}">
                   <q-btn
                       flat
-                      :color="row.taskStatus === '进行中' ? 'indigo-10' : 'primary'"
+                      :color="row.taskStatus === '进行中' ? 'red-10' : 'primary'"
                       :label="
                           row.taskStatus === '进行中' ? '暂停' : '查看'
                         "

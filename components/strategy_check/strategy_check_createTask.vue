@@ -61,20 +61,22 @@ const labels = {
           </template>
           <template #cell-area="{ row }">
             <div class="row q-gutter-xs items-center no-wrap">
-              <q-chip
+              <common-status-chip
                   v-for="policy in row.area.split('  ').filter(p => p)"
                   :key="policy"
-                  color="green-1"
-                  size="sm"
-              >
-                {{ policy }}
-              </q-chip>
+                  :label="policy"
+              />
+            </div>
+          </template>
+          <template #cell-operator="{ row }">
+            <div class="row q-gutter-xs items-center no-wrap">
+              <common-status-chip :label="row.operator"/>
             </div>
           </template>
 
           <template #cell-actions="{ row }">
             <q-btn
-                :color="row.operator === '进行中' ? 'indigo-10' : 'yellow-10'"
+                :color="row.operator === '进行中' ? 'indigo-10' : 'red-10'"
                 flat
                 dense
                 @click="showVerification"

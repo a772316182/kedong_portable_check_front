@@ -188,6 +188,9 @@ const labels = {
             <template #top-right>
               <q-btn label="批量验收选择的告警" color="primary"/>
             </template>
+            <template #cell-status="{row}">
+              <common-status-chip :label="row.status"/>
+            </template>
           </common-enhanced-table>
         </q-card-section>
       </q-card>

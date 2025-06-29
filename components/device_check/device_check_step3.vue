@@ -52,9 +52,7 @@ const rows = [
             :column-labels="columns"
             row-key="index">
           <template #cell-checkResult="{row}">
-            <span :class="{ 'text-red': row.checkResult === '不合格' }">
-              {{ row.checkResult }}
-            </span>
+            <common-status-chip :label="row.checkResult"/>
           </template>
         </common-enhanced-table>
       </div>

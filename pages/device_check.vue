@@ -85,54 +85,47 @@ function viewTask(task: any) {
         inactive-color="grey-6"
     >
       <q-step :name="1" title="创建任务" :done="currentStep > 1" icon="list_alt">
-          <common-enhanced-table
-              title="任务列表"
-              :rows="rows"
-              :column-labels="labels"
-              :column-alignments="alignments"
-              row-key="index"
-              :non-sortable-columns="['checkItem', 'taskStatus', 'actions']"
-              :non-searchable-columns="['index', 'checkItem', 'taskStatus', 'actions']"
-          >
-            <template #top-right>
-              <q-btn color="primary" label="创建核查任务" @click="generateNoticeSlip"/>
+        <common-enhanced-table
+            title="任务列表"
+            :rows="rows"
+            :column-labels="labels"
+            :column-alignments="alignments"
+            row-key="index"
+            :non-sortable-columns="['checkItem', 'taskStatus', 'actions']"
+            :non-searchable-columns="['index', 'checkItem', 'taskStatus', 'actions']"
+        >
+          <template #top-right>
+            <q-btn color="primary" label="创建核查任务" @click="generateNoticeSlip"/>
 
-            </template>
-            <template #cell-checkItem="{ row }">
-              <div class="q-gutter-xs row">
-                <q-badge
-                    v-for="item in row.checkItem"
-                    :key="item"
-                    color="green-10"
-                    :label="item"
-                />
-              </div>
-            </template>
-
-            <template #cell-taskStatus="{ row }">
-              <q-chip
-                  dense
-                  size="sm"
-                  :color="row.taskStatus === '进行中' ? 'blue-1' : 'green-1'"
-                  :text-color="row.taskStatus === '进行中' ? 'primary' : 'green-8'"
-                  :label="row.taskStatus"
+          </template>
+          <template #cell-checkItem="{ row }">
+            <div class="q-gutter-xs row">
+              <common-status-chip
+                  v-for="item in row.checkItem"
+                  :key="item"
+                  :label="item"
               />
-            </template>
+            </div>
+          </template>
 
-            <template #cell-actions="{ row }">
-              <q-btn
-                  flat dense
-                  color="indigo-10"
-                  :label="
+          <template #cell-taskStatus="{ row }">
+            <common-status-chip :label="row.taskStatus"/>
+          </template>
+
+          <template #cell-actions="{ row }">
+            <q-btn
+                flat dense
+                :color="row.taskStatus === '进行中' ? 'red-10' : 'primary'"
+                :label="
                           row.taskStatus === '进行中' ? '暂停' : '查看'
                         "
-                  @click="viewTask(row)"
-              />
-              <q-btn dense flat color="primary">下载</q-btn>
-              <q-btn dense flat color="red-10">删除</q-btn>
-            </template>
+                @click="viewTask(row)"
+            />
+            <q-btn dense flat color="primary">下载</q-btn>
+            <q-btn dense flat color="red-10">删除</q-btn>
+          </template>
 
-          </common-enhanced-table>
+        </common-enhanced-table>
       </q-step>
 
       <q-step :name="2" title="基础检查" :done="currentStep > 2" icon="rule">

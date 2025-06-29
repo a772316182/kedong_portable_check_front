@@ -156,6 +156,8 @@ function updateGroupSelection(group) {
             title="基础检查表"
             :rows="rows"
             :column-labels="columns"
+            enable-selection
+            v-model:selection="selectedRows"
             row-key="index"
         >
           <template #top-right>
@@ -163,9 +165,6 @@ function updateGroupSelection(group) {
               <q-btn label="批量核查" color="primary"/>
               <q-btn label="取消检查" color="yellow-10"/>
             </div>
-          </template>
-          <template #cell-selection="{row}">
-            <q-checkbox v-model="selectedRows" :val="row.index"/>
           </template>
           <template #cell-progress="{row}">
             <div v-if="row.error">

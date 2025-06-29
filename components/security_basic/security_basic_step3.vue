@@ -96,27 +96,19 @@ const rows = [
       row-key="index"
   >
     <template #cell-baselineCheck="{row}">
-      <span :class="{ 'text-red': row.baselineCheck === '不合格' }">
-        {{ row.baselineCheck }}
-      </span>
+      <common-status-chip :label="row.baselineCheck"/>
     </template>
     <template #cell-vulnerabilityScan="{row}">
-      <span :class="{'text-red': row.vulnerabilityScan === '不合格'}">
-        {{ row.vulnerabilityScan }}
-      </span>
+      <common-status-chip :label="row.vulnerabilityScan"/>
     </template>
     <template #cell-highRiskPorts="{row}">
-      <span :class="{ 'text-red': row.highRiskPorts === '不合格'}">
-        {{ row.highRiskPorts }}
-      </span>
+      <common-status-chip :label="row.highRiskPorts"/>
     </template>
     <template #cell-weakPasswordScan="{row}">
-      <span :class="{ 'text-red': row.weakPasswordScan === '不合格'}">
-        {{ row.weakPasswordScan }}
-      </span>
+      <common-status-chip :label="row.weakPasswordScan"/>
     </template>
     <template #cell-illegalConnection="{row}">
-      <span :class="{'text-red': row.illegalConnection === '不合格'                }">{{ row.illegalConnection }}</span>
+      <common-status-chip :label="row.illegalConnection"/>
     </template>
   </common-enhanced-table>
   <!-- 页面底部导航按钮 -->

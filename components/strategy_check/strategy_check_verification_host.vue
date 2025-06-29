@@ -15,8 +15,8 @@ const currentDevice = ref(null);        // 当前查看策略的设备
 // --- 筛选逻辑 (采用组件1的优化方案) ---
 // 1. 将筛选选项数据结构化
 const filterOptions = ref([
-  { id: 'zone1', label: 'Ⅰ区', checked: false, value: 'Ⅰ区' },
-  { id: 'zone2', label: 'Ⅱ区', checked: false, value: 'Ⅱ区' },
+  {id: 'zone1', label: 'Ⅰ区', checked: false, value: 'Ⅰ区'},
+  {id: 'zone2', label: 'Ⅱ区', checked: false, value: 'Ⅱ区'},
 ]);
 
 // 2. 使用计算属性动态过滤设备列表
@@ -42,18 +42,138 @@ const getZoneCount = (zoneValue: string) => {
 // --- 数据 ---
 const devicesData = [
   // ... (此处省略了与原组件2中相同的12条设备数据)
-  { index: 1, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
-  { index: 2, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
-  { index: 3, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
-  { index: 4, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
-  { index: 5, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
-  { index: 6, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
-  { index: 7, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'XXXXXX', count: '90' },
-  { index: 8, name: '山东省调', zone: 'Ⅱ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_金牛站_Ⅱ区_OM', system: 'XXXXXX', count: '80' },
-  { index: 9, name: '山东省调', zone: 'Ⅱ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_金牛站_Ⅱ区_OM', system: 'XXXXXX', count: '80' },
-  { index: 10, name: '山东省调', zone: 'Ⅱ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_金牛站_Ⅱ区_OM', system: 'XXXXXX', count: '80' },
-  { index: 11, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平2站_Ⅱ区_OM', system: 'XXXXXX', count: '95' },
-  { index: 12, name: '山东省调', zone: 'Ⅰ区', ip1: '10.200.114.23', ip2: '10.200.114.23', type: '主机', device: '济南地调_和平3站_Ⅱ区_SVR_1234', system: 'linux', count: '90' }
+  {
+    index: 1,
+    name: '山东省调',
+    zone: 'Ⅰ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
+    system: 'XXXXXX',
+    count: '90'
+  },
+  {
+    index: 2,
+    name: '山东省调',
+    zone: 'Ⅰ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
+    system: 'XXXXXX',
+    count: '90'
+  },
+  {
+    index: 3,
+    name: '山东省调',
+    zone: 'Ⅰ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
+    system: 'XXXXXX',
+    count: '90'
+  },
+  {
+    index: 4,
+    name: '山东省调',
+    zone: 'Ⅰ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
+    system: 'XXXXXX',
+    count: '90'
+  },
+  {
+    index: 5,
+    name: '山东省调',
+    zone: 'Ⅰ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
+    system: 'XXXXXX',
+    count: '90'
+  },
+  {
+    index: 6,
+    name: '山东省调',
+    zone: 'Ⅰ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
+    system: 'XXXXXX',
+    count: '90'
+  },
+  {
+    index: 7,
+    name: '山东省调',
+    zone: 'Ⅰ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
+    system: 'XXXXXX',
+    count: '90'
+  },
+  {
+    index: 8,
+    name: '山东省调',
+    zone: 'Ⅱ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_金牛站_Ⅱ区_OM',
+    system: 'XXXXXX',
+    count: '80'
+  },
+  {
+    index: 9,
+    name: '山东省调',
+    zone: 'Ⅱ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_金牛站_Ⅱ区_OM',
+    system: 'XXXXXX',
+    count: '80'
+  },
+  {
+    index: 10,
+    name: '山东省调',
+    zone: 'Ⅱ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_金牛站_Ⅱ区_OM',
+    system: 'XXXXXX',
+    count: '80'
+  },
+  {
+    index: 11,
+    name: '山东省调',
+    zone: 'Ⅰ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_和平2站_Ⅱ区_OM',
+    system: 'XXXXXX',
+    count: '95'
+  },
+  {
+    index: 12,
+    name: '山东省调',
+    zone: 'Ⅰ区',
+    ip1: '10.200.114.23',
+    ip2: '10.200.114.23',
+    type: '主机',
+    device: '济南地调_和平3站_Ⅱ区_SVR_1234',
+    system: 'linux',
+    count: '90'
+  }
 ];
 
 // --- 表格配置 ---
@@ -107,7 +227,7 @@ function handlePolicyClick(device: any) {
 
         <q-item v-for="option in filterOptions" :key="option.id" v-ripple tag="label">
           <q-item-section side>
-            <q-checkbox v-model="option.checked" />
+            <q-checkbox v-model="option.checked"/>
           </q-item-section>
 
           <q-item-section>
@@ -115,7 +235,7 @@ function handlePolicyClick(device: any) {
           </q-item-section>
 
           <q-item-section side>
-            <q-badge color="grey-6" :label="getZoneCount(option.value)" />
+            <q-badge color="grey-6" :label="getZoneCount(option.value)"/>
           </q-item-section>
         </q-item>
       </q-list>
@@ -130,12 +250,12 @@ function handlePolicyClick(device: any) {
             </q-card-section>
 
             <q-card-section class="q-pt-none">
-              <q-checkbox v-model="isConnected" label="我已接入" />
+              <q-checkbox v-model="isConnected" label="我已接入"/>
             </q-card-section>
 
             <q-card-actions align="right">
-              <q-btn v-close-popup flat label="取消" color="primary" />
-              <q-btn flat label="开始" color="primary" @click="handleStart" />
+              <q-btn v-close-popup flat label="取消" color="primary"/>
+              <q-btn flat label="开始" color="primary" @click="handleStart"/>
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -150,17 +270,17 @@ function handlePolicyClick(device: any) {
               enable-selection
           >
             <template #top-right>
-              <q-btn label="自动获取" color="primary" @click="showAutoFetchDialog = true" />
+              <q-btn label="自动获取" color="primary" @click="showAutoFetchDialog = true"/>
             </template>
             <template #cell-count="{ row }">
-              <a href="javascript:void(0)" @click="handlePolicyClick(row)">{{ row.count }}</a>
+              <q-btn outline color="primary" @click="handlePolicyClick(row)">{{ row.count }}</q-btn>
             </template>
           </common-enhanced-table>
         </q-card-section>
       </q-card>
     </div>
 
-    <strategy-check-verification-host-dialog v-model="showPolicyDialog" :device="currentDevice" />
+    <strategy-check-verification-host-dialog v-model="showPolicyDialog" :device="currentDevice"/>
   </div>
 </template>
 
@@ -170,6 +290,7 @@ a {
   color: #1976d2; /* Quasar primary color */
   text-decoration: none;
 }
+
 a:hover {
   text-decoration: underline;
 }

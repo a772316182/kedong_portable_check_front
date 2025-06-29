@@ -85,7 +85,11 @@ const labels = {
             row-key="index"
             :non-sortable-columns="['index', 'institution', 'actions']"
             :non-searchable-columns="['index', 'actions']"
-        />
+        >
+          <template #cell-result="{row}">
+            <common-status-chip :label="row.result"/>
+          </template>
+        </common-enhanced-table>
       </q-card-section>
     </q-card>
 
