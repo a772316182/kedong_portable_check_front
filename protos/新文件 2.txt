@@ -1,0 +1,23 @@
+@psc.proto @fscan_parser_modify4.py @manager.py @station_add_wizard.vue  stationserver2.5下面其实是我后端对应的代码，现在我想要为适当的修改后端的代码为前端第四步提供资产扫描的功能,然后就是希望厂站和对应的厂站id和网段id进行绑定，也就是在资产探测的页面显示和第三步网段配置一样的表格，但是多了一列探测状态是否完成，所以scan_ip_segment方法的参数我认为应该是guid，network_id，input_ip，对于session参数我认为i可以在内部自己获取，无需传递，你需要分析是否合理，
+guid,character varying,50,YES,
+id,character varying,100,NO,
+devip,character varying,15,YES,
+securityarea,integer,,YES,
+network,character varying,15,YES,
+subnet_mask,character varying,300,YES,
+state,numeric,,YES,
+这是对应的网段信息表
+guid,character varying,50,NO,
+indexid,character varying,128,YES,
+id,integer,,NO,nextval('asset_scan_id_seq'::regclass)
+ip,character varying,60,YES,
+mac,character varying,60,YES,
+port,character varying,10240,YES,
+services,character varying,10240,YES,
+network_segment,character varying,60,YES,
+str_time,character varying,100,YES,
+dispaly,numeric,,YES,
+devtype,character varying,1024,YES,
+securityarea,numeric,,YES,
+这个是对应的资产扫描的结果表indexid对应网段信息表的id
+如果你已经理解了我的需求就可以开始修改前后端的代码了，如果存在不确定的地方先和我确认之后再进行代码的编写
