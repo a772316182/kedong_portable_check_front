@@ -825,4 +825,4 @@ onMounted(async () => {
 }
 /* 强制列表头居中 */
 .q-table th:nth-child(n+3):nth-child(-n+9) > div > .row { justify-content: center !important; }
-</style> 
+</style>

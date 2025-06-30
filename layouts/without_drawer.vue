@@ -13,7 +13,7 @@
 </template>
 
 <style scoped>
-.images{
+.images {
   background-image: url('assets/bg.jpg'); /* 替换为你的背景图像路径 */
   background-size: cover;
   background-position: center;

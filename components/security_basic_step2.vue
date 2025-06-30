@@ -255,22 +255,36 @@ function updateGroupSelection(group: SegmentGroup) {
                   <q-td key="ip" :props="props">{{ props.row.ip }}</q-td>
                   <q-td key="mac" :props="props">{{ props.row.mac }}</q-td>
                   <q-td key="progress" :props="props">
-                    <div v-if="props.row.error">
-                      <q-badge color="red">{{
-                        props.row.errorMessage
-                      }}</q-badge>
-                    </div>
-                    <template v-else>
+                    <div
+                      class="row items-center justify-center no-wrap"
+                      style="gap: 8px"
+                    >
                       <q-linear-progress
+                        stripe
+                        rounded
+                        size="20px"
                         :value="parseProgress(props.row.progress)"
                         :color="getProgressColor(props.row)"
-                        size="md"
-                        class="q-mt-sm"
-                      />
-                      <div class="text-center">
+                        class="col"
+                      >
+                        <div class="absolute-full flex flex-center">
+                          <q-badge
+                            v-if="props.row.error"
+                            color="red"
+                            text-color="white"
+                            :label="props.row.errorMessage"
+                          />
+                          <span
+                            v-else-if="props.row.progress > 0"
+                            class="text-white"
+                            >{{ props.row.progress }}%</span
+                          >
+                        </div>
+                      </q-linear-progress>
+                      <div class="text-caption">
                         {{ getStatusText(props.row) }}
                       </div>
-                    </template>
+                    </div>
                   </q-td>
                 </q-tr>
               </template>
@@ -287,3 +301,5 @@ function updateGroupSelection(group: SegmentGroup) {
     </div>
   </div>
 </template>
+
+<style scoped></style>

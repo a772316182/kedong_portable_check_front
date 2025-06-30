@@ -24,89 +24,89 @@ import type {
  * @returns 包含状态和操作方法的对象
  */
 export function useApiState<T = any>(initialState: Partial<ApiState<T>> = {}) {
-  const state = ref<ApiState<T>>({
-    loading: false,
-    data: null,
-    error: null,
-    ...initialState
-  })
+    const state = ref<ApiState<T>>({
+        loading: false,
+        data: null,
+        error: null,
+        ...initialState
+    })
 
-  // 重置API状态
-  function reset() {
-    state.value.data = null
-    state.value.error = null
-    state.value.loading = false
-  }
+    // 重置API状态
+    function reset() {
+        state.value.data = null
+        state.value.error = null
+        state.value.loading = false
+    }
 
-  return {
-    state,
-    reset
-  }
+    return {
+        state,
+        reset
+    }
 }
 
 /**
  * 城市API调用
  */
 export function useCityApi() {
-  const { state, reset } = useApiState<CityApiResponse>()
-  
-  // 获取城市数据
-  async function fetchCityData(params: CityApiParams) {
-    state.value.loading = true
-    state.value.error = null
-    
-    try {
-      state.value.data = await $fetch<CityApiResponse>('/api/city', {
-        method: 'GET',
-        query: params
-      })
-      console.log(state.value.data)
-    } catch (error) {
-      console.error('Error fetching city data:', error)
-      state.value.error = error
-    } finally {
-      state.value.loading = false
+    const {state, reset} = useApiState<CityApiResponse>()
+
+    // 获取城市数据
+    async function fetchCityData(params: CityApiParams) {
+        state.value.loading = true
+        state.value.error = null
+
+        try {
+            state.value.data = await $fetch<CityApiResponse>('/api/city', {
+                method: 'GET',
+                query: params
+            })
+            console.log(state.value.data)
+        } catch (error) {
+            console.error('Error fetching city data:', error)
+            state.value.error = error
+        } finally {
+            state.value.loading = false
+        }
     }
-  }
-  
-  return {
-    cityState: state,
-    fetchCityData,
-    resetCityState: reset
-  }
+
+    return {
+        cityState: state,
+        fetchCityData,
+        resetCityState: reset
+    }
 }
 
 /**
  * 厂站管理API调用
  */
 export function useStationManageApi() {
-  const { state, reset } = useApiState<StationManageResponse>()
-  
-  // 获取厂站管理数据
-  async function fetchStationData(params: StationManageParams) {
-    state.value.loading = true
-    state.value.error = null
-    
-    try {
-      state.value.data = await $fetch<StationManageResponse>('/api/station/manage', {
-        method: 'POST',
-        body: params
-      })
-      console.log(state.value.data)
+    const {state, reset} = useApiState<StationManageResponse>()
 
-    } catch (error) {
-      console.error('Error fetching station data:', error)
-      state.value.error = error
-    } finally {
-      state.value.loading = false
+    // 获取厂站管理数据
+    async function fetchStationData(params: StationManageParams) {
+        state.value.loading = true
+        state.value.error = null
+
+        try {
+            state.value.data = await $fetch<StationManageResponse>('/api/station/manage', {
+                method: 'POST',
+                body: params
+            })
+            console.log(state.value.data)
+
+        } catch (error) {
+            console.error('Error fetching station data:', error)
+            state.value.error = error
+        } finally {
+            state.value.loading = false
+        }
     }
-  }
-  
-  return {
-    stationState: state,
-    fetchStationData,
-    resetStationState: reset
-  }
+
+    return {
+        stationState: state,
+        fetchStationData,
+        resetStationState: reset
+    }
 }
 
 /**

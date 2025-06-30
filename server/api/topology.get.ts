@@ -1,5 +1,7 @@
 import { defineEventHandler, getQuery } from 'h3';
 import { pscClient } from '~/utils/pscClient';
+import type { GetTopologyResponse } from '~/types/api';
+import type { RpcError } from 'grpc-web';
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
@@ -14,7 +16,7 @@ export default defineEventHandler(async (event) => {
   }
 
   return new Promise((resolve) => {
-    pscClient.GetTopology({ station_id: stationId }, (err, response) => {
+    pscClient.GetTopology({ station_id: stationId }, (err: RpcError | null, response: GetTopologyResponse | null) => {
       if (err) {
         console.error('gRPC Error on GetTopology:', err);
         resolve({

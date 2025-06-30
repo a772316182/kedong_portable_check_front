@@ -5,6 +5,8 @@ const tab_name = ref('import_template')
 <template>
   <div>
     <q-page class="q-pa-md q-gutter-y-md">
+      <q-card flat>
+        <q-card-section>
       <div class="row q-gutter-x-md">
         <q-btn color="primary" @click="tab_name='baseline'">基线核查配置</q-btn>
         <q-btn color="primary" @click="tab_name='alert'">告警验证配置</q-btn>
@@ -35,6 +37,8 @@ const tab_name = ref('import_template')
           </q-tab-panel>
         </q-tab-panels>
       </div>
+        </q-card-section>
+      </q-card>
     </q-page>
   </div>
 </template>

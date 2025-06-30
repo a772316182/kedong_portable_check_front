@@ -1,5 +1,5 @@
-import { defineEventHandler, readBody } from 'h3'
-import { pscClient } from '../../../utils/pscClient'
+import {defineEventHandler, readBody} from 'h3'
+import {pscClient} from '../../../utils/pscClient'
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
@@ -34,18 +34,17 @@ export default defineEventHandler(async (event) => {
                 console.error('Error from gRPC call StationManage:', err)
                 return reject(err)
             }
-            
+
             // The proto file indicates `messageContent` is a JSON string.
             // It's better to parse it here before sending to the frontend.
             try {
                 if (resp && resp.messageContent) {
                     const parsedContent = JSON.parse(resp.messageContent)
-                    resolve({ ...resp, messageContent: parsedContent })
+                    resolve({...resp, messageContent: parsedContent})
                 } else {
                     resolve(resp)
                 }
-            }
-            catch (parseError) {
+            } catch (parseError) {
                 console.error('Failed to parse messageContent from StationManage response:', parseError)
                 // If parsing fails, we can either reject or resolve with the original response.
                 // Resolving with the original response is safer for the frontend.

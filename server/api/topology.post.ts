@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody } from 'h3';
 import { pscClient } from '~/utils/pscClient';
-import type { SaveTopologyParams } from '~/types/api';
+import type { SaveTopologyParams, SaveTopologyResponse } from '~/types/api';
+import type { RpcError } from 'grpc-web';
 
 export default defineEventHandler(async (event) => {
   try {
@@ -15,7 +16,7 @@ export default defineEventHandler(async (event) => {
     }
 
     return new Promise((resolve) => {
-      pscClient.SaveTopology({ station_id: stationId, topology_json }, (err, response) => {
+      pscClient.SaveTopology({ station_id: stationId, topology_json }, (err: RpcError | null, response: SaveTopologyResponse | null) => {
         if (err) {
           console.error('gRPC Error on SaveTopology:', err);
           resolve({
