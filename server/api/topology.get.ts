@@ -1,16 +1,34 @@
-import { defineEventHandler } from 'h3';
-import fs from 'fs/promises';
-import path from 'path';
+import { defineEventHandler, getQuery } from 'h3';
+import { pscClient } from '~/utils/pscClient';
 
-export default defineEventHandler(async () => {
-    try {
-        const filePath = path.join(process.cwd(), 'pages/topology.json');
-        const fileContent = await fs.readFile(filePath, 'utf-8');
-        return JSON.parse(fileContent);
-    } catch (error) {
-        console.error('Error reading topology file:', error);
-        // @ts-ignore
-        event.res.statusCode = 500;
-        return { success: false, error: 'Failed to load topology.' };
-    }
+export default defineEventHandler(async (event) => {
+  const query = getQuery(event);
+  const stationId = query.stationId as string;
+
+  if (!stationId) {
+    return {
+      retNum: 1,
+      errMessage: 'stationId is required',
+      topology_json: ''
+    };
+  }
+
+  return new Promise((resolve) => {
+    pscClient.GetTopology({ station_id: stationId }, (err, response) => {
+      if (err) {
+        console.error('gRPC Error on GetTopology:', err);
+        resolve({
+          retNum: 1,
+          errMessage: `gRPC Error: ${err.message}`,
+          topology_json: ''
+        });
+      } else {
+        resolve({
+          retNum: response?.retNum,
+          errMessage: response?.errMessage,
+          topology_json: response?.topology_json
+        });
+      }
+    });
+  });
 }); 

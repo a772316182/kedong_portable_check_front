@@ -248,6 +248,34 @@ export interface QueryAssetScanResultsResponse {
   results: AssetScanResult[];
 }
 
+// Topology API
+export interface TopologyData {
+  nodes: { [id: string]: { name: string; ips: string[]; ports: string[]; x?: number; y?: number; type?: string; image?: string, domain?: number } };
+  edges: { [id:string]: { source: string; target: string } };
+  subnets: string[];
+  ports: { ip: string; port: string }[];
+}
+
+export interface GetTopologyParams {
+  stationId: string;
+}
+
+export interface GetTopologyResponse {
+  retNum: number;
+  errMessage: string;
+  topology_json: string; // A JSON string of the TopologyData object
+}
+
+export interface SaveTopologyParams {
+  stationId: string;
+  topology_json: string; // A JSON string of the TopologyData object
+}
+
+export interface SaveTopologyResponse {
+  retNum: number;
+  errMessage: string;
+}
+
 // 可以根据需要添加更多的API类型定义 
 
 // Example Service API

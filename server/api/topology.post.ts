@@ -1,17 +1,40 @@
 import { defineEventHandler, readBody } from 'h3';
-import fs from 'fs/promises';
-import path from 'path';
+import { pscClient } from '~/utils/pscClient';
+import type { SaveTopologyParams } from '~/types/api';
 
 export default defineEventHandler(async (event) => {
-    try {
-        const body = await readBody(event);
-        const filePath = path.join(process.cwd(), 'pages/topology.json');
-        await fs.writeFile(filePath, JSON.stringify(body, null, 2), 'utf-8');
-        return { success: true };
-    } catch (error) {
-        console.error('Error writing topology file:', error);
-        // @ts-ignore
-        event.res.statusCode = 500;
-        return { success: false, error: 'Failed to save topology.' };
+  try {
+    const body = await readBody<SaveTopologyParams>(event);
+    const { stationId, topology_json } = body;
+
+    if (!stationId || !topology_json) {
+      return {
+        retNum: 1,
+        errMessage: 'stationId and topology_json are required',
+      };
     }
+
+    return new Promise((resolve) => {
+      pscClient.SaveTopology({ station_id: stationId, topology_json }, (err, response) => {
+        if (err) {
+          console.error('gRPC Error on SaveTopology:', err);
+          resolve({
+            retNum: 1,
+            errMessage: `gRPC Error: ${err.message}`,
+          });
+        } else {
+          resolve({
+            retNum: response?.retNum,
+            errMessage: response?.errMessage,
+          });
+        }
+      });
+    });
+  } catch (error: any) {
+    console.error('Error reading request body:', error);
+    return {
+      retNum: 1,
+      errMessage: `Failed to process request: ${error.message}`,
+    };
+  }
 }); 

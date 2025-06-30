@@ -3,7 +3,8 @@ import { reactive, ref, onMounted, defineProps } from "vue";
 import { useQuasar } from 'quasar';
 import { type Nodes, type Edges, type Layouts, type VNetworkGraphInstance, VNetworkGraph, type EventHandlers, type ViewMode, type NodeEvent, type EdgeEvent } from "v-network-graph";
 import graphData from "../../pages/data";
-// import topoData from "../../pages/topology.json"; // Will be loaded from API
+import { useTopologyApi } from '~/composables/useApi';
+import type { TopologyData } from "~/types/api";
 
 const props = defineProps<{
   stationId: string;
@@ -11,13 +12,8 @@ const props = defineProps<{
 
 
 const $q = useQuasar();
+const { getTopology, saveTopology, getState, saveState } = useTopologyApi();
 const isBoxSelectionMode = ref(false)
-interface Topology {
-  nodes: { [id: string]: { name: string; ips: string[]; ports: string[]; x?: number; y?: number; type?: string } };
-  edges: { [id: string]: { source: string; target: string } };
-  subnets: string[];
-  ports: { ip: string; port: string }[];
-}
 
 const graph = ref<VNetworkGraphInstance>()
 const selectionBox = reactive({
@@ -90,7 +86,7 @@ function calculateLayout(nodeIds: string[]) {
   });
 }
 
-function initializeGraph(topology: Topology) {
+function initializeGraph(topology: TopologyData) {
   Object.keys(nodes).forEach(k => delete nodes[k]);
   Object.keys(edges).forEach(k => delete edges[k]);
   Object.keys(layouts.nodes).forEach(k => delete layouts.nodes[k]);
@@ -255,61 +251,44 @@ function cancelEdit() {
   newNodeName.value = '';
 }
 
-async function saveTopology() {
+async function handleSaveTopology() {
   try {
-    const newNodes: {
-      [id: string]: {
-        name: string,
-        ips: string[],
-        ports: string[],
-        x?: number,
-        y?: number,
-        type: string,
-        domain: number
-      }
-    } = {};
-    
-    // This is a stand-in for fetching original node data if needed.
-    // In our case, we'll create new nodes or use what's in the graph.
-    const originalNodes: { [id: string]: any } = {};
-
+    const layoutedNodes: { [id: string]: any } = {};
     for (const [nodeId, nodeData] of Object.entries(nodes)) {
-      const originalNode = originalNodes[nodeId];
-      const nodeName = nodeData.name || nodeId;
-      const layout = layouts.nodes[nodeId];
-
-      newNodes[nodeId] = {
-        name: nodeName,
-        ips: originalNode ? originalNode.ips : [nodeName],
-        ports: originalNode ? originalNode.ports : [],
-        x: layout?.x,
-        y: layout?.y,
-        type: nodeData.type || 'UNKNOWN',
-        domain: 1
-      };
+        const layout = layouts.nodes[nodeId];
+        layoutedNodes[nodeId] = {
+            ...nodeData, // name, image, type
+            ips: [nodeData.name || nodeId], // Simplified, assumes name is IP or unique ID
+            ports: [], // Placeholder, needs logic if port data is available
+            x: layout?.x,
+            y: layout?.y,
+        };
     }
-
-    const newTopology: Topology = {
-      nodes: newNodes,
-      edges: edges,
-      subnets: [], // Placeholder
-      ports: [] // Placeholder
+    
+    const currentTopologyState: TopologyData = {
+        nodes: layoutedNodes,
+        edges: edges,
+        subnets: [], // Placeholder
+        ports: [] // Placeholder
     };
 
-    await $fetch(`/api/topology`, {
-      method: 'POST',
-      query: { stationId: props.stationId },
-      body: newTopology
+    const response = await saveTopology({
+      stationId: props.stationId,
+      topology_json: JSON.stringify(currentTopologyState)
     });
 
-    $q.notify({
-      color: 'positive',
-      message: '拓扑保存成功！'
-    });
-  } catch (error) {
+    if (response.retNum === 0) {
+      $q.notify({
+        color: 'positive',
+        message: '拓扑保存成功！'
+      });
+    } else {
+      throw new Error(response.errMessage || '保存失败');
+    }
+  } catch (error: any) {
     $q.notify({
       color: 'negative',
-      message: '拓扑保存失败。'
+      message: `拓扑保存失败: ${error.message}`
     });
     console.error(error);
   }
@@ -317,27 +296,30 @@ async function saveTopology() {
 
 async function loadTopology() {
   try {
-    const reloadedTopo = await $fetch<Topology>(`/api/topology`, {
-        query: { stationId: props.stationId }
-    });
-    if(reloadedTopo && reloadedTopo.nodes) {
+    const response = await getTopology({ stationId: props.stationId });
+    if(response && response.retNum === 0 && response.topology_json) {
+        const reloadedTopo = JSON.parse(response.topology_json);
         initializeGraph(reloadedTopo);
         $q.notify({
         color: 'positive',
         message: '拓扑加载成功！'
         });
+    } else if (response.retNum !== 0) {
+       throw new Error(response.errMessage || '获取拓扑数据失败');
     } else {
+        initializeGraph({ nodes: {}, edges: {}, subnets: [], ports: [] });
         $q.notify({
             color: 'info',
             message: '该厂站暂无拓扑数据，已为您初始化。'
         });
     }
-  } catch (error) {
+  } catch (error: any) {
     $q.notify({
       color: 'negative',
-      message: '拓扑加载失败。'
+      message: `拓扑加载失败: ${error.message}`
     });
     console.error(error);
+    initializeGraph({ nodes: {}, edges: {}, subnets: [], ports: [] });
   }
 }
 </script>
@@ -408,10 +390,10 @@ async function loadTopology() {
                 />
               </div>
               <div class="col-auto">
-                <q-btn color="positive" label="保存拓扑" @click="saveTopology" />
+                <q-btn color="positive" label="保存拓扑" @click="handleSaveTopology" :loading="saveState.loading" />
               </div>
               <div class="col-auto">
-                <q-btn color="info" label="重新加载" @click="loadTopology" />
+                <q-btn color="info" label="重新加载" @click="loadTopology" :loading="getState.loading" />
               </div>
             </div>
             <div class="row q-mt-sm">

@@ -59,6 +59,9 @@ rpc CreateMonitorObject(CreateMonitorObjectRequest) returns (MonitorObjectRespon
   
 rpc QueryAssetScanResults(QueryAssetScanResultsRequest) returns (QueryAssetScanResultsResponse);
 
+  // 拓扑图获取与保存
+  rpc GetTopology(GetTopologyRequest) returns (GetTopologyResponse);
+  rpc SaveTopology(SaveTopologyRequest) returns (SaveTopologyResponse);
 }
 // 在 service PSC { ... } 中添加:
 
@@ -80,6 +83,31 @@ message QueryAssetScanResultsResponse {
     string errMessage = 2;
     repeated AssetScanResult results = 3;
 }
+
+// 拓扑图获取请求
+message GetTopologyRequest {
+  string station_id = 1; // 厂站 GUID
+}
+
+// 拓扑图获取响应
+message GetTopologyResponse {
+  int32 retNum = 1;
+  string errMessage = 2;
+  string topology_json = 3; // a JSON string of the topology object
+}
+
+// 拓扑图保存请求
+message SaveTopologyRequest {
+  string station_id = 1; // 厂站 GUID
+  string topology_json = 2; // a JSON string of the topology object from the frontend
+}
+
+// 拓扑图保存响应
+message SaveTopologyResponse {
+  int32 retNum = 1;
+  string errMessage = 2;
+}
+
 message CreateMonitorObjectRequest {
   string guid = 1;
   string id = 2;

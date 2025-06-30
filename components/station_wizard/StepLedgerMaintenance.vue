@@ -95,10 +95,10 @@ const deviceTypeOptions = [
   { label: '网络设备', value: 1 },
   { label: '安全设备', value: 2 },
   { label: '主机设备', value: 3 },
+  { label: '路由器', value: 13 },
   { label: '其它设备', value: 4 },
 ];
 const subSystemTypeOptions = [
-  { label: '路由器', value: '路由器' },
   { label: '交换机', value: '交换机' },
   { label: '防火墙', value: '防火墙' },
   { label: '服务器', value: '服务器' },

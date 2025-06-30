@@ -11,7 +11,11 @@ import type {
   ListNetworkConfigsByAreaParams, ListNetworkConfigsByAreaResponse,
   StartAssetScanParams,
   StartAssetScanResponse,
-  QueryAssetScanResultsParams, QueryAssetScanResultsResponse
+  QueryAssetScanResultsParams, QueryAssetScanResultsResponse,
+  GetTopologyParams,
+  GetTopologyResponse,
+  SaveTopologyParams,
+  SaveTopologyResponse
 } from '~/types/api'
 
 /**
@@ -508,6 +512,61 @@ export function useQueryAssetScanResultsApi() {
     resultsState: state,
     queryAssetScanResults,
     resetResultsState: reset
+  }
+}
+
+/**
+ * Topology API
+ */
+export function useTopologyApi() {
+  const { state: getState, reset: resetGet } = useApiState<GetTopologyResponse>()
+  const { state: saveState, reset: resetSave } = useApiState<SaveTopologyResponse>()
+
+  async function getTopology(params: GetTopologyParams) {
+    getState.value.loading = true
+    getState.value.error = null
+    try {
+      const response = await $fetch<GetTopologyResponse>('/api/topology', {
+        method: 'GET',
+        query: params
+      })
+      getState.value.data = response;
+      return response;
+    } catch (error) {
+      console.error('Error getting topology:', error)
+      getState.value.error = error
+      throw error;
+    } finally {
+      getState.value.loading = false
+    }
+  }
+
+  async function saveTopology(params: SaveTopologyParams) {
+    saveState.value.loading = true
+    saveState.value.error = null
+    try {
+      const response = await $fetch<SaveTopologyResponse>('/api/topology', {
+        method: 'POST',
+        body: params
+      })
+      saveState.value.data = response;
+      return response;
+    } catch (error) {
+      console.error('Error saving topology:', error)
+      saveState.value.error = error
+      throw error;
+    } finally {
+      saveState.value.loading = false
+    }
+  }
+
+  return {
+    getState,
+    saveState,
+    getTopology,
+    saveTopology,
+    resetGet,
+    resetSave,
   }
 }
 
