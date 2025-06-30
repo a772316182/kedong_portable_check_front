@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useQuasar } from 'quasar'
-import type { QTableProps } from 'quasar'
 import { useQueryAssetScanResultsApi } from '~/composables/useApi'
-import type { AssetScanResult } from '~/types/api'
+import CommonEnhancedTable from '~/components/common_enhanced_table.vue'
 
 const props = defineProps<{
   modelValue: boolean
@@ -18,13 +17,13 @@ const emit = defineEmits<{
 const $q = useQuasar()
 const { resultsState, queryAssetScanResults } = useQueryAssetScanResultsApi()
 
-const columns: QTableProps['columns'] = [
-  { name: 'ip', label: 'IP地址', field: 'ip', align: 'left', sortable: true },
-  { name: 'mac', label: 'MAC地址', field: 'mac', align: 'left' },
-  { name: 'port', label: '开放端口', field: 'port', align: 'left' },
-  { name: 'services', label: '服务', field: 'services', align: 'left' },
-  { name: 'devtype', label: '推测设备类型', field: 'devtype', align: 'left' },
-]
+const columnLabels = computed(() => ({
+  ip: 'IP地址',
+  mac: 'MAC地址',
+  port: '开放端口',
+  services: '服务',
+  devtype: '推测设备类型',
+}))
 
 async function fetchResults() {
   if (!props.networkConfigId) return
@@ -54,14 +53,11 @@ watch(() => props.modelValue, (newValue) => {
       </q-card-section>
 
       <q-card-section>
-        <q-table
+        <common-enhanced-table
           :rows="resultsState.data?.results || []"
-          :columns="columns"
+          :column-labels="columnLabels"
           row-key="ip"
           :loading="resultsState.loading"
-          flat
-          bordered
-          no-data-label="该网段下未发现任何资产。"
         />
       </q-card-section>
 
