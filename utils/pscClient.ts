@@ -1,12 +1,12 @@
 import path from 'path'
-import { loadSync } from '@grpc/proto-loader'
-import { credentials, loadPackageDefinition } from '@grpc/grpc-js'
+import {loadSync, type PackageDefinition} from '@grpc/proto-loader'
+import {credentials, type GrpcObject, loadPackageDefinition} from '@grpc/grpc-js'
 
 // 1. proto 文件路径
-const PROTO_PATH = path.resolve(process.cwd(), 'protos/psc.proto')
+const PROTO_PATH: string = path.resolve(process.cwd(), 'protos/psc.proto')
 
 // 2. 使用 proto-loader 同步加载
-const packageDefinition = loadSync(PROTO_PATH, {
+const packageDefinition: PackageDefinition = loadSync(PROTO_PATH, {
     keepCase: true,
     longs: String,
     enums: String,
@@ -15,8 +15,7 @@ const packageDefinition = loadSync(PROTO_PATH, {
 })
 
 // 3. 根据定义生成包
-const grpcObject: any = loadPackageDefinition(packageDefinition)
-
+const grpcObject: GrpcObject = loadPackageDefinition(packageDefinition)
 // 4. 取出 PSC 服务（package=plantStationControl）
 const PSC = grpcObject.plantStationControl.PSC
 

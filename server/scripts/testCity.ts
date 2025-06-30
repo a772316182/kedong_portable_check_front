@@ -1,7 +1,7 @@
-import { pscClient } from '../../utils/pscClient'
+import {pscClient} from '../../utils/pscClient'
 
 // 构造请求参数：areaPid = 0 （中国）
-const req = { areaPid: 0 }
+const req = {areaPid: 0}
 
 pscClient.City(req, (err: any, resp: any) => {
     if (err) {

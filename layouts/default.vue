@@ -2,6 +2,7 @@
 const leftDrawerOpen = ref(false)
 const username = ref('张三')
 const router = useRouter()
+const route = useRoute()
 </script>
 
 
@@ -46,7 +47,11 @@ const router = useRouter()
     </q-drawer>
 
     <q-page-container>
-      <q-page padding>
+      <q-breadcrumbs class="q-ma-md">
+        <q-breadcrumbs-el label="Home" icon="home" to="/dashboard"/>
+        <q-breadcrumbs-el :label="route.query.title"/>
+      </q-breadcrumbs>
+      <q-page>
         <slot/>
       </q-page>
     </q-page-container>

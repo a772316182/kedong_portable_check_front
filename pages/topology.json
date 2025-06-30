@@ -25,18 +25,6 @@
       "type": "ROUTER",
       "domain": 1
     },
-    "router_r2": {
-      "name": "r2",
-      "ips": [
-        "192.168.4.1",
-        "192.168.5.1"
-      ],
-      "ports": [],
-      "x": 591.623,
-      "y": 54.308,
-      "type": "ROUTER",
-      "domain": 1
-    },
     "host1": {
       "name": "192.168.1.2",
       "ips": [
@@ -279,18 +267,6 @@
     "edge9": {
       "source": "node12",
       "target": "node9"
-    },
-    "edge10": {
-      "source": "router_r2",
-      "target": "router_r0"
-    },
-    "edge11": {
-      "source": "router_r2",
-      "target": "host7"
-    },
-    "edge12": {
-      "source": "router_r2",
-      "target": "host8"
     },
     "edge13": {
       "source": "node13",
