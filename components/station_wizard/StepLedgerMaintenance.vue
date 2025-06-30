@@ -383,13 +383,13 @@ onMounted(fetchAssets);
                     </div>
                     <div v-if="searchFilters[col.name]" class="q-mt-xs self-start">
                       <q-chip
-                          dense
-                          removable
-                          @remove="clearFilter(col.name)"
-                          :label="getFilterDisplay(col, searchFilters[col.name])"
-                          color="primary"
-                          text-color="white"
-                          class="q-ma-none"
+                        dense
+                        removable
+                        @remove="clearFilter(col.name)"
+                        :label="getFilterDisplay(col, searchFilters[col.name])"
+                        color="primary"
+                        text-color="white"
+                        class="q-ma-none"
                       />
                     </div>
                   </div>

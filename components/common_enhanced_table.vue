@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type {QTableProps} from 'quasar';
+import type {QTableColumn, QTableProps} from 'quasar';
 
 interface Props {
   title?: string;
@@ -55,7 +55,7 @@ const generatedColumns = computed<QTableProps['columns']>(() => {
   if (Object.keys(props.columnLabels).length === 0) return [];
 
   // 【修复】: 使用 columnLabels 的键作为列的真实来源。
-  // 这允许我们创建像 'actions' 这样不存在于 row 数据中的“虚拟列”。
+  // 这允许我们创建像 'actions' 这样不存在于 row 数据中的"虚拟列"。
   const allDefinedKeys = Object.keys(props.columnLabels);
 
   // 过滤掉需要在表格中隐藏的列
@@ -164,6 +164,15 @@ function goToPage() {
   }
 }
 
+const getCellValue = (row: any, col: QTableColumn | undefined) => {
+  if (!col || !col.field) return '';
+  const field = col.field;
+  if (typeof field === 'function') {
+    return field(row);
+  }
+  return row[field];
+};
+
 // --- 侦听器 ---
 // 当内部选择变化时，emit到父组件
 watch(selected, (newValue) => {
@@ -213,39 +222,52 @@ watch(() => props.rows, () => {
               :props="props"
               :class="`text-${col.align || 'left'}`"
           >
-            <div class="row items-center no-wrap justify-between">
-              <span class="no-wrap">{{ col.label }}</span>
-              <div class="row items-center no-wrap">
-                <template v-if="col.isCustomSearchable">
-                  <q-btn dense flat round icon="search" size="sm" @click.stop>
-                    <q-popup-edit
-                        v-slot="scope"
-                        v-model="search[col.name]"
-                        anchor="top left"
-                        self="bottom right"
-                        auto-save
-                    >
-                      <q-input
-                          v-model="scope.value"
-                          dense
-                          autofocus
-                          label="搜索..."
-                          @keyup.enter="scope.set"
-                      />
-                    </q-popup-edit>
-                  </q-btn>
-                </template>
+            <div class="column items-center no-wrap" style="width: 100%;">
+              <div class="row items-center no-wrap justify-between" style="width: 100%;">
+                <span class="no-wrap">{{ col.label }}</span>
+                <div class="row items-center no-wrap">
+                  <template v-if="col.isCustomSearchable">
+                    <q-btn dense flat round icon="search" size="sm" @click.stop>
+                      <q-popup-edit
+                          v-slot="scope"
+                          v-model="search[col.name]"
+                          anchor="top left"
+                          self="bottom right"
+                          auto-save
+                      >
+                        <q-input
+                            v-model="scope.value"
+                            dense
+                            autofocus
+                            label="搜索..."
+                            @keyup.enter="scope.set"
+                        />
+                      </q-popup-edit>
+                    </q-btn>
+                  </template>
 
-                <template v-if="col.isCustomSortable">
-                  <q-btn
-                      dense
-                      flat
-                      round
-                      :icon="getSortIcon(col.name)"
-                      size="sm"
-                      @click="handleSortClick(col.name)"
-                  />
-                </template>
+                  <template v-if="col.isCustomSortable">
+                    <q-btn
+                        dense
+                        flat
+                        round
+                        :icon="getSortIcon(col.name)"
+                        size="sm"
+                        @click="handleSortClick(col.name)"
+                    />
+                  </template>
+                </div>
+              </div>
+              <div v-if="search[col.name]" class="q-mt-xs self-start" style="width: 100%;">
+                <q-chip
+                    dense
+                    removable
+                    @remove="search[col.name] = ''"
+                    :label="String(search[col.name])"
+                    color="primary"
+                    text-color="white"
+                    class="q-ma-none"
+                />
               </div>
             </div>
           </q-th>
@@ -259,8 +281,8 @@ watch(() => props.rows, () => {
           </q-td>
 
           <q-td v-for="col in generatedColumns" :key="col.name" :props="props">
-            <slot :name="`cell-${col.name}`" :row="props.row" :value="props.row[col.field]">
-              {{ props.row[col.field] }}
+            <slot :name="`cell-${col.name}`" :row="props.row" :value="getCellValue(props.row, col)">
+              {{ getCellValue(props.row, col) }}
             </slot>
           </q-td>
         </q-tr>
