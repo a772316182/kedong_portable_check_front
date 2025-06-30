@@ -9,7 +9,9 @@ export default defineEventHandler(async (event) => {
         pscClient.QueryMonitorObjects({
             search_params: body.search_params || {},
             page: body.page || 1,
-            page_size: body.page_size || 10
+            page_size: body.page_size || 10,
+            sort_by: body.pagination?.sortBy,
+            sort_desc: body.pagination?.descending,
         }, (err: any, resp: any) => {
             if (err) {
                 console.error('Error from gRPC call QueryMonitorObjects:', err)

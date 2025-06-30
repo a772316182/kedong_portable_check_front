@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue';
 import { useQuasar } from 'quasar';
-import type { QTableProps } from 'quasar';
 import {
   useQueryMonitorObjectsApi,
   useCreateMonitorObjectApi,
@@ -9,51 +8,12 @@ import {
   useDeleteMonitorObjectApi,
   useGetMonitorObjectApi
 } from '~/composables/useApi';
-import type { QueryMonitorObjectsParams } from '~/types/api';
-import { rowClassFn } from '~/utils/tableStyle';
+import type { QueryMonitorObjectsParams, QueryMonitorObjectsSearchParams, MonitorObjectData } from '~/types/api';
+import CommonEnhancedTable from '~/components/common_enhanced_table.vue';
 
-// 本地定义 MonitorObject 接口，与 basic_info.vue 中的定义保持一致
-interface MonitorObject {
-  id?: string;
-  guid: string;
-  devname: string;
-  ip: string;
-  mac: string;
-  devtype: number | null;
-  bay_level_device: boolean;
-  subsystype: string;
-  securityarea: number | null;
-  ip2?: string;
-  mac2?: string;
-  factory?: string;
-  systype?: string;
-  devversion?: string;
-  businesssys?: string;
-  hostname?: string;
-  username?: string;
-  passwd?: string;
-  draw_topology?: boolean;
-  remark?: string;
-  asset_flag?: string;
-  snmp_read_pwd?: string;
-  snmp_write_pwd?: string;
-  index?: number;
-}
-
-// 自定义列类型以支持搜索等属性
-interface CustomColumn {
-  name: string;
-  label: string;
-  field: string | ((row: any) => any);
-  align?: 'left' | 'right' | 'center';
-  sortable?: boolean;
-  format?: (val: any, row: any) => any;
-  style?: string;
-  // custom props
-  searchable?: boolean;
-  hasOptions?: boolean;
-  options?: { label: string; value: any }[];
-}
+// 本地定义 MonitorObject 接口，与 types/api.ts 中的 MonitorObjectData 保持一致
+// 并且额外添加一个可选的 index 字段用于前端编号
+type MonitorObject = MonitorObjectData & { index?: number };
 
 const props = defineProps<{
   stationId: string;
@@ -71,24 +31,9 @@ const { getMonitorObject } = useGetMonitorObjectApi();
 const loading = ref(false);
 const editorLoading = ref(false);
 const rows = ref<MonitorObject[]>([]);
+const totalRows = ref(0); // 用于服务端分页
 const editorVisible = ref(false);
 const editingAsset = ref<Partial<MonitorObject>>({});
-
-const searchFilters = reactive<{ [key: string]: any }>({
-  devname: '',
-  ip: '',
-  devtype: null,
-  securityarea: null,
-  // Add other filterable fields here if needed
-});
-
-const pagination = ref({
-  sortBy: 'devname',
-  descending: false,
-  page: 1,
-  rowsPerPage: 10, // Can be changed by user
-  rowsNumber: 0
-});
 
 // --- Options for Selects ---
 const deviceTypeOptions = [
@@ -114,55 +59,68 @@ const osTypeOptions = [
   { label: 'Other', value: 'Other' },
 ];
 
-// --- Table Columns ---
-const columns: CustomColumn[] = [
-  { name: 'index', label: '编号', field: 'index', align: 'center', style: 'width: 60px' },
-  { name: 'devname', label: '设备名称', field: 'devname', align: 'left', sortable: true, searchable: true },
-  { name: 'ip', label: '设备IP1', field: 'ip', align: 'left', sortable: true, searchable: true },
-  { name: 'ip2', label: '设备IP2', field: 'ip2', align: 'left', sortable: true, searchable: true },
-  { name: 'devtype', label: '设备类型', field: 'devtype', format: (val: number) => deviceTypeOptions.find(o => o.value === val)?.label || '未知', align: 'center', sortable: true, searchable: true, hasOptions: true, options: deviceTypeOptions },
-  { name: 'subsystype', label: '站内设备类型', field: 'subsystype', align: 'center', sortable: true },
-  { name: 'securityarea', label: '安全区', field: 'securityarea', format: (val: number) => securityAreaOptions.find(o => o.value === val)?.label || '未知', align: 'center', sortable: true, searchable: true, hasOptions: true, options: securityAreaOptions },
-  { name: 'systype', label: '操作系统', field: 'systype', align: 'center', sortable: true },
-  { name: 'username', label: '用户名', field: 'username', align: 'center', sortable: true },
-  { name: 'mac', label: 'MAC地址', field: 'mac', align: 'center', sortable: true },
-  { name: 'mac2', label: 'MAC地址2', field: 'mac2', align: 'center', sortable: true },
-  { name: 'businesssys', label: '业务系统', field: 'businesssys', align: 'center', sortable: true },
-  { name: 'devversion', label: '设备型号', field: 'devversion', align: 'center', sortable: true },
-  { name: 'bay_level_device', label: '是否间隔层设备', field: 'bay_level_device', format: (val: boolean) => (val ? '是' : '否'), align: 'center', sortable: true },
-  { name: 'factory', label: '设备厂商', field: 'factory', align: 'center', sortable: true },
-  { name: 'actions', label: '操作', field: 'actions', align: 'center', style: 'width: 100px' },
-];
+// --- Table Columns Definition for CommonEnhancedTable ---
+const columnLabels = computed(() => ({
+  index: '编号',
+  devname: '设备名称',
+  ip: '设备IP1',
+  ip2: '设备IP2',
+  devtype: '设备类型',
+  subsystype: '站内设备类型',
+  securityarea: '安全区',
+  systype: '操作系统',
+  username: '用户名',
+  mac: 'MAC地址',
+  mac2: 'MAC地址2',
+  businesssys: '业务系统',
+  devversion: '设备型号',
+  bay_level_device: '是否间隔层设备',
+  factory: '设备厂商',
+  actions: '操作',
+}));
+
+// 定义哪些列不可搜索和排序
+const nonSearchableColumns = ['index', 'bay_level_device', 'actions'];
+const nonSortableColumns = ['index', 'subsystype', 'mac', 'mac2', 'businesssys', 'devversion', 'factory', 'actions'];
+
 
 const title = computed(() => editingAsset.value.id ? '编辑设备' : '添加新设备');
 
 // --- CRUD Functions ---
-async function fetchAssets() {
+async function fetchAssets(requestPayload: any) {
   loading.value = true;
   try {
-    const search_params: { [key: string]: any } = {
-      guid: props.stationId,
-    };
-    // Build search_params dynamically
-    Object.keys(searchFilters).forEach(key => {
-      if (searchFilters[key]) {
-        search_params[key] = searchFilters[key];
+    const { page, rowsPerPage, sortBy, descending } = requestPayload.pagination;
+    
+    // 清理 search 对象，移除空值
+    const search_params: { [key: string]: any } = { guid: props.stationId };
+    for (const key in requestPayload.search) {
+      if (Object.prototype.hasOwnProperty.call(requestPayload.search, key)) {
+        const value = requestPayload.search[key];
+        if (value) {
+          search_params[key] = value;
+        }
       }
-    });
+    }
 
     const params: QueryMonitorObjectsParams = {
       search_params,
-      page: pagination.value.page,
-      page_size: pagination.value.rowsPerPage,
+      page,
+      page_size: rowsPerPage,
+      pagination: {
+        sortBy,
+        descending
+      }
     };
 
     const response = await queryMonitorObjects(params);
     if (response && response.status_code === 0 && response.data) {
+      // 添加前端编号
       rows.value = response.data.records.map((record, index) => ({
         ...record,
-        index: (pagination.value.page - 1) * pagination.value.rowsPerPage + index + 1,
-      })) as MonitorObject[];
-      pagination.value.rowsNumber = response.data.total;
+        index: (page - 1) * rowsPerPage + index + 1,
+      }));
+      totalRows.value = response.data.total;
     } else {
       throw new Error(response?.message || "加载资产列表失败");
     }
@@ -173,29 +131,11 @@ async function fetchAssets() {
   }
 }
 
-function handleRequest(requestProps: { pagination: QTableProps['pagination'] }) {
-  const { page, rowsPerPage, sortBy, descending } = requestProps.pagination || pagination.value;
-  pagination.value.page = page || 1;
-  pagination.value.rowsPerPage = rowsPerPage || 10;
-  pagination.value.sortBy = sortBy || 'devname';
-  pagination.value.descending = descending || false;
-  fetchAssets();
+// 这个函数现在是通用表格 @request 事件的处理器
+function handleRequest(payload: any) {
+  fetchAssets(payload);
 }
 
-function clearFilter(colName: string) {
-  if (colName in searchFilters) {
-    searchFilters[colName] = colName === 'devtype' || colName === 'securityarea' ? null : '';
-    fetchAssets();
-  }
-}
-
-function getFilterDisplay(col: CustomColumn, value: any): string {
-  if (col.hasOptions && col.options) {
-    const option = col.options.find(opt => opt.value === value);
-    return option ? option.label : String(value);
-  }
-  return String(value);
-}
 
 function initNewAsset(): Partial<MonitorObject> {
   return {
@@ -251,7 +191,8 @@ async function saveAsset() {
     if (response && response.status_code === 0) {
       $q.notify({ type: 'positive', message: '保存成功！' });
       editorVisible.value = false;
-      fetchAssets(); // Refresh list
+      handleRequest({ pagination: { page: 1, rowsPerPage: 10, sortBy: null, descending: false }, search: {} });
+
     } else {
       throw new Error(response?.message || '保存失败');
     }
@@ -273,7 +214,7 @@ function removeAsset(asset: MonitorObject) {
       const response = await deleteMonitorObject({ id: asset.id! });
       if (response && response.status_code === 0) {
         $q.notify({ type: 'positive', message: '删除成功！' });
-        fetchAssets(); // Refresh list
+        handleRequest({ pagination: { page: 1, rowsPerPage: 10, sortBy: null, descending: false }, search: {} });
       } else {
         throw new Error(response?.message || '删除失败');
       }
@@ -285,7 +226,10 @@ function removeAsset(asset: MonitorObject) {
   });
 }
 
-onMounted(fetchAssets);
+onMounted(() => {
+  // 首次加载数据
+  handleRequest({ pagination: { page: 1, rowsPerPage: 10, sortBy: null, descending: false }, search: {} });
+});
 
 </script>
 
@@ -299,136 +243,44 @@ onMounted(fetchAssets);
         </p>
 
         <div class="q-mt-lg" style="width: 1100px; min-width: 1100px; max-width: 1100px;">
-          <q-table
-              square
-              no-data-label="暂无数据"
-              flat
-              bordered
+          <common-enhanced-table
               title="资产列表"
               :rows="rows"
-              :columns="columns"
               row-key="id"
               :loading="loading"
-              v-model:pagination="pagination"
+              server-side
+              :rows-number="totalRows"
+              :column-labels="columnLabels"
+              :non-searchable-columns="nonSearchableColumns"
+              :non-sortable-columns="nonSortableColumns"
               @request="handleRequest"
-              :table-row-class-fn="rowClassFn"
-              binary-state-sort
-              :rows-per-page-options="[5, 10, 20, 50, 0]"
           >
-            <template #top-left>
-              <q-btn color="primary" icon="add" label="新增资产" @click="openEditor(null)" />
-            </template>
             <template #top-right>
-              <div class="text-caption text-grey">点击表头可进行筛选和排序</div>
+              <q-btn color="primary" icon="add" label="新增资产" @click="openEditor(null)"/>
+            </template>
+            
+            <template #cell-devtype="{ value }">
+              {{ deviceTypeOptions.find(o => o.value === value)?.label || '未知' }}
+            </template>
+            
+            <template #cell-securityarea="{ value }">
+               {{ securityAreaOptions.find(o => o.value === value)?.label || '未知' }}
+            </template>
+            
+            <template #cell-bay_level_device="{ value }">
+              {{ value ? '是' : '否' }}
             </template>
 
-            <template #header="props">
-              <q-tr :props="props">
-                <q-th
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                    class="q-pa-sm"
-                >
-                  <div class="column items-center" style="width: 100%;">
-                    <div class="row items-center no-wrap justify-center" style="width: 100%;">
-                      <span class="text-subtitle2">{{ col.label }}</span>
-                      <div class="q-ml-sm">
-                        <template v-if="col.searchable && !col.hasOptions">
-                          <q-btn dense flat round icon="search" size="sm" @click.stop>
-                            <q-popup-edit
-                                v-model="searchFilters[col.name]"
-                                v-slot="scope"
-                                auto-save
-                            >
-                              <q-input
-                                  dense
-                                  autofocus
-                                  v-model="scope.value"
-                                  label="搜索"
-                                  @keyup.enter="() => { searchFilters[col.name] = scope.value; fetchAssets(); scope.set(); }"
-                              />
-                            </q-popup-edit>
-                          </q-btn>
-                        </template>
-                        <template v-if="col.searchable && col.hasOptions">
-                          <q-btn dense flat round icon="filter_list" size="sm" @click.stop>
-                            <q-menu anchor="bottom right" self="top right">
-                              <q-list style="min-width: 150px">
-                                <q-item>
-                                  <q-item-section>
-                                    <q-select
-                                        outlined
-                                        dense
-                                        v-model="searchFilters[col.name]"
-                                        :options="col.options"
-                                        option-label="label"
-                                        option-value="value"
-                                        map-options
-                                        emit-value
-                                        label="筛选"
-                                        clearable
-                                        @update:model-value="fetchAssets"
-                                    />
-                                  </q-item-section>
-                                </q-item>
-                              </q-list>
-                            </q-menu>
-                          </q-btn>
-                        </template>
-                        <template v-if="col.sortable">
-                          <q-btn dense flat round icon="unfold_more" size="sm" />
-                        </template>
-                      </div>
-                    </div>
-                    <div v-if="searchFilters[col.name]" class="q-mt-xs self-start">
-                      <q-chip
-                        dense
-                        removable
-                        @remove="clearFilter(col.name)"
-                        :label="getFilterDisplay(col, searchFilters[col.name])"
-                        color="primary"
-                        text-color="white"
-                        class="q-ma-none"
-                      />
-                    </div>
-                  </div>
-                </q-th>
-              </q-tr>
+            <template #cell-actions="{ row }">
+              <q-btn flat round color="primary" icon="edit" @click="openEditor(row)">
+                <q-tooltip>编辑</q-tooltip>
+              </q-btn>
+              <q-btn flat round color="negative" icon="delete" @click="removeAsset(row)">
+                <q-tooltip>删除</q-tooltip>
+              </q-btn>
             </template>
-
-            <template #body="props">
-              <q-tr :props="props">
-                <q-td key="index" :props="props">{{ props.row.index }}</q-td>
-                <q-td key="devname" :props="props">{{ props.row.devname }}</q-td>
-                <q-td key="ip" :props="props">{{ props.row.ip }}</q-td>
-                <q-td key="ip2" :props="props">{{ props.row.ip2 }}</q-td>
-                <q-td key="devtype" :props="props">
-                  {{ deviceTypeOptions.find(o => o.value === props.row.devtype)?.label || '未知' }}
-                </q-td>
-                <q-td key="subsystype" :props="props">{{ props.row.subsystype }}</q-td>
-                <q-td key="securityarea" :props="props">
-                  {{ securityAreaOptions.find(o => o.value === props.row.securityarea)?.label || '未知' }}
-                </q-td>
-                <q-td key="systype" :props="props">{{ props.row.systype }}</q-td>
-                <q-td key="username" :props="props">{{ props.row.username }}</q-td>
-                <q-td key="mac" :props="props">{{ props.row.mac }}</q-td>
-                <q-td key="mac2" :props="props">{{ props.row.mac2 }}</q-td>
-                <q-td key="businesssys" :props="props">{{ props.row.businesssys }}</q-td>
-                <q-td key="devversion" :props="props">{{ props.row.devversion }}</q-td>
-                <q-td key="bay_level_device" :props="props">{{ props.row.bay_level_device ? '是' : '否' }}</q-td>
-                <q-td key="factory" :props="props">{{ props.row.factory }}</q-td>
-                <q-td key="actions" :props="props" class="q-gutter-x-sm">
-                  <q-btn flat round color="primary" icon="edit" @click="openEditor(props.row)">
-                    <q-tooltip>编辑</q-tooltip>
-                  </q-btn>
-                  <q-btn flat round color="negative" icon="delete" @click="removeAsset(props.row)">
-                    <q-tooltip>删除</q-tooltip>
-                  </q-btn>
-                </q-td>
-              </q-tr>
-            </template>
-          </q-table>
+            
+          </common-enhanced-table>
         </div>
       </div>
     </div>

@@ -140,10 +140,10 @@ export interface MonitorObjectData {
   ip: string;
   ip2?: string;
   devname: string;
-  devtype: number;
+  devtype: number | null;
   systype?: string;
   subsystype: string;
-  securityarea: number;
+  securityarea: number | null;
   mac?: string;
   mac2?: string;
   hostname?: string;
@@ -157,6 +157,7 @@ export interface MonitorObjectData {
   snmp_write_pwd?: string;
   businesssys?: string;
   bay_level_device?: boolean;
+  draw_topology?: boolean;
   ips?: boolean;
 }
 
@@ -211,18 +212,22 @@ export interface DeleteMonitorObjectResponse {
 // QueryMonitorObjects
 export interface QueryMonitorObjectsSearchParams {
   devname?: string;
-  devtype?: number;
+  devtype?: number | null;
   subsystype?: string;
-  securityarea?: number;
+  securityarea?: number | null;
   ip?: string;
   ip2?: string;
   guid?: string; // Station ID for filtering
 }
 
 export interface QueryMonitorObjectsParams {
-  search_params?: QueryMonitorObjectsSearchParams;
-  page: number;
-  page_size: number;
+  search_params?: { [key: string]: string };
+  page?: number;
+  page_size?: number;
+  pagination?: {
+    sortBy?: string | null;
+    descending?: boolean;
+  }
 }
 
 export interface QueryMonitorObjectsData {

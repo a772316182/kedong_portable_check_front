@@ -1,3 +1,3 @@
-export function rowClassFn(row: { index: number }) {
-    return row.index % 2 === 0 ? '' : 'bg-teal-1'
+export function rowClassFn({ rowIndex }: { rowIndex: number }) {
+    return rowIndex % 2 !== 0 ? 'bg-teal-1' : ''
 }

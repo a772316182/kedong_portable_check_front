@@ -180,6 +180,8 @@ message QueryMonitorObjectsRequest {
   SearchParams search_params = 1;
   int32 page = 2;
   int32 page_size = 3;
+  string sort_by = 4;
+  string sort_order = 5; // "asc" or "desc"
 }
 
 message MonitorObjectResponse {

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type {QTableColumn, QTableProps} from 'quasar';
+import {useQuasar} from "quasar";
+import { rowClassFn } from '~/utils/tableStyle';
 
 interface Props {
   title?: string;
   rows: Record<string, any>[];
   rowKey: string;
+  loading?: boolean;
   // 用于隐藏不想在表格中展示的列
   hiddenColumns?: string[];
   // 用于将字段名映射为更友好的列标题
@@ -29,6 +32,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   title: '',
   rows: () => [],
+  loading: false,
   hiddenColumns: () => [],
   columnLabels: () => ({}),
   nonSortableColumns: () => [],
@@ -42,13 +46,14 @@ const emit = defineEmits(['update:selection', 'request']);
 
 // --- 内部状态管理 ---
 const search = reactive<Record<string, string>>({});
-const sortState = reactive<{ column: string | null; direction: 'asc' | 'desc' }>({
-  column: null,
-  direction: 'asc',
-});
+
+// pagination 状态现在由 q-table 的 v-model:pagination 控制
 const pagination = ref({
+  sortBy: null as string | null, // q-table 需要这个
+  descending: false, // q-table 需要这个
   page: 1,
-  rowsPerPage: 10, // 默认值修改为10
+  rowsPerPage: 10,
+  rowsNumber: props.rowsNumber, // q-table 需要这个
 });
 const customPage = ref(1);
 const selected = ref<Record<string, any>[]>([]);
@@ -66,11 +71,7 @@ const generatedColumns = computed<QTableProps['columns']>(() => {
   // 如果没有提供列标签，则不生成任何列
   if (Object.keys(props.columnLabels).length === 0) return [];
 
-  // 【修复】: 使用 columnLabels 的键作为列的真实来源。
-  // 这允许我们创建像 'actions' 这样不存在于 row 数据中的"虚拟列"。
   const allDefinedKeys = Object.keys(props.columnLabels);
-
-  // 过滤掉需要在表格中隐藏的列
   const visibleKeys = allDefinedKeys.filter(key => !props.hiddenColumns.includes(key));
 
   return visibleKeys.map(key => ({
@@ -78,19 +79,17 @@ const generatedColumns = computed<QTableProps['columns']>(() => {
     label: props.columnLabels[key] || key.charAt(0).toUpperCase() + key.slice(1),
     field: key,
     align: 'left',
-    // 在服务端模式下，所有列的排序都由父组件控制
-    sortable: props.serverSide ? true : !props.nonSortableColumns.includes(key),
-    // 自定义属性，用于模板判断
-    isCustomSortable: !props.nonSortableColumns.includes(key),
+    // 在服务端模式下，所有列的排序都由父组件控制, sortable必须为true
+    // 在客户端模式下，根据nonSortableColumns判断
+    sortable: props.serverSide ? !props.nonSortableColumns.includes(key) : !props.nonSortableColumns.includes(key),
     isCustomSearchable: !props.nonSearchableColumns.includes(key),
   }));
 });
 
 
-// --- 核心计算属性：搜索、排序和分页 ---
-
-// 1. 客户端搜索和排序
-const filteredAndSortedRows = computed(() => {
+// --- 核心计算属性 ---
+// 客户端搜索和排序
+const clientSideProcessedRows = computed(() => {
   // 服务端模式下，直接返回父组件传入的数据，不进行任何处理
   if (props.serverSide) {
     return props.rows;
@@ -108,35 +107,22 @@ const filteredAndSortedRows = computed(() => {
     );
   }
 
-  // 客户端排序 (包含null值处理)
-  if (sortState.column) {
-    const col = sortState.column;
-    const dir = sortState.direction === 'asc' ? 1 : -1;
-
+  // 客户端排序
+  const { sortBy, descending } = pagination.value;
+  if (sortBy) {
+    const dir = descending ? -1 : 1;
     result.sort((a, b) => {
-      const valA = a[col];
-      const valB = b[col];
-
-      // 新增：将 null, undefined, '' 等空值排在最后
+      const valA = a[sortBy];
+      const valB = b[sortBy];
       const aIsNull = valA === null || valA === undefined || valA === '';
       const bIsNull = valB === null || valB === undefined || valB === '';
       if (aIsNull && !bIsNull) return 1;
       if (!aIsNull && bIsNull) return -1;
       if (aIsNull && bIsNull) return 0;
-
-      // 数字比较
-      if (typeof valA === 'number' && typeof valB === 'number') {
-        return (valA - valB) * dir;
-      }
-
-      // 日期比较
+      if (typeof valA === 'number' && typeof valB === 'number') return (valA - valB) * dir;
       const dateA = new Date(valA).getTime();
       const dateB = new Date(valB).getTime();
-      if (!isNaN(dateA) && !isNaN(dateB)) {
-        return (dateA - dateB) * dir;
-      }
-
-      // 字符串比较
+      if (!isNaN(dateA) && !isNaN(dateB)) return (dateA - dateB) * dir;
       return String(valA).localeCompare(String(valB)) * dir;
     });
   }
@@ -144,25 +130,10 @@ const filteredAndSortedRows = computed(() => {
   return result;
 });
 
-// 2. 客户端分页
-const paginatedRows = computed(() => {
-  // 服务端模式下，父组件已经处理好分页，直接展示
-  if (props.serverSide) {
-    return props.rows;
-  }
-  // 客户端模式
-  if (pagination.value.rowsPerPage === 0) {
-    return filteredAndSortedRows.value;
-  }
-  const start = (pagination.value.page - 1) * pagination.value.rowsPerPage;
-  const end = start + pagination.value.rowsPerPage;
-  return filteredAndSortedRows.value.slice(start, end);
-});
-
 
 // --- 分页相关计算属性 ---
 const totalRows = computed(() => {
-  return props.serverSide ? props.rowsNumber : filteredAndSortedRows.value.length;
+  return props.serverSide ? props.rowsNumber : clientSideProcessedRows.value.length;
 });
 
 const totalPages = computed(() => {
@@ -173,48 +144,52 @@ const totalPages = computed(() => {
 const currentPageRange = computed(() => {
   const total = totalRows.value;
   if (total === 0) return {start: 0, end: 0};
-
-  const start = (pagination.value.page - 1) * pagination.value.rowsPerPage + 1;
-  const end = Math.min(start + pagination.value.rowsPerPage - 1, total);
+  const { page, rowsPerPage } = pagination.value;
+  const start = (page - 1) * rowsPerPage + 1;
+  const end = Math.min(start + rowsPerPage - 1, total);
   return {start, end};
 });
 
 
 // --- 方法 & 事件处理 ---
 
-function handleRequest() {
-  if (!props.serverSide) return;
-  emit('request', {
-    pagination: pagination.value,
-    sort: sortState,
-    search: search.value,
-  });
-}
+// q-table 的 @request 事件处理器
+// 修正签名以匹配 Quasar 的期望
+// 经过多次尝试，类型问题依旧存在。临时使用 any 来绕过这个问题，以便程序能继续运行。
+// TODO: 找到 q-table @request 事件的确切类型并替换 any
+function onTableRequest(requestProps: any) {
+  const { page, rowsPerPage, sortBy, descending } = requestProps.pagination ?? pagination.value;
+  
+  // 更新内部状态, 并处理 undefined 的情况
+  pagination.value.page = page ?? 1;
+  pagination.value.rowsPerPage = rowsPerPage ?? 10;
+  pagination.value.sortBy = sortBy ?? null;
+  pagination.value.descending = descending ?? false;
 
-
-function handleSortClick(columnName: string) {
-  if (sortState.column === columnName) {
-    sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
-  } else {
-    sortState.column = columnName;
-    sortState.direction = 'asc';
-  }
-  // 在服务端模式下，每次排序都触发请求
+  // 在服务端模式下，发出请求
   if (props.serverSide) {
-    handleRequest();
+    emit('request', {
+      pagination: { page, rowsPerPage, sortBy, descending },
+      search: search,
+    });
   }
 }
+
 
 function getSortIcon(colName: string) {
-  if (sortState.column !== colName) return 'unfold_more';
-  return sortState.direction === 'asc' ? 'arrow_upward' : 'arrow_downward';
+    const { sortBy, descending } = pagination.value;
+    if (sortBy !== colName) return 'unfold_more';
+    return descending ? 'arrow_downward' : 'arrow_upward';
 }
 
 function goToPage() {
   const page = Number(customPage.value);
   if (page > 0 && page <= totalPages.value) {
     pagination.value.page = page;
-    // v-model:pagination 的 watch 会自动触发 handleRequest
+    // 在服务端模式下，手动触发请求
+    if (props.serverSide) {
+        onTableRequest({ pagination: pagination.value, filter: null, getCellValue: () => '' });
+    }
   }
 }
 
@@ -232,25 +207,13 @@ watch(selected, (newValue) => {
   emit('update:selection', newValue);
 });
 
-// 服务端模式下，当分页变化时，触发请求
-watch(pagination, () => {
-  if (props.serverSide) {
-    handleRequest();
-  }
-}, {deep: true});
-
 // 服务端模式下，当搜索条件变化时，触发请求
 watch(search, () => {
   if (props.serverSide) {
-    // 搜索时重置到第一页
-    if (pagination.value.page !== 1) {
-      pagination.value.page = 1;
-    } else {
-      handleRequest();
-    }
+    pagination.value.page = 1; // 搜索时重置到第一页
+    onTableRequest({ pagination: pagination.value, filter: null, getCellValue: () => '' });
   }
 }, {deep: true});
-
 
 // 客户端模式下，当父组件传入的行数据变化时，重置分页到第一页
 watch(() => props.rows, () => {
@@ -258,32 +221,41 @@ watch(() => props.rows, () => {
     pagination.value.page = 1;
   }
 });
+
+// 当父组件传入的 rowsNumber 变化时，更新 q-table
+watch(() => props.rowsNumber, (newVal) => {
+    if(props.serverSide) {
+        pagination.value.rowsNumber = newVal;
+    }
+})
+
 </script>
 
 <template>
   <div>
     <div class="row items-center justify-between q-mb-md">
       <div class="text-h6">{{ title }}</div>
-      <!-- 直接添加一个不可见的按钮，让row在top-right不插入按钮时，也能保持和插入按钮时一样的高度，避免复杂的height计算逻辑 -->
-      <q-btn flat disable/>
       <div>
         <slot name="top-right"/>
       </div>
     </div>
 
     <q-table
+        :rows="clientSideProcessedRows"
+        :row-key="rowKey"
+        :columns="generatedColumns"
+        :loading="loading"
         v-model:pagination="pagination"
         v-model:selected="selected"
-        :table-row-class-fn="rowClassFn"
+        @request="onTableRequest"
+        :selection="enableSelection ? 'multiple' : 'none'"
+        :rows-number="serverSide ? rowsNumber : undefined"
+        :row-class="rowClassFn"
+        hide-pagination
         square
         no-data-label="暂无数据"
         flat
         bordered
-        :rows="paginatedRows"
-        :columns="generatedColumns"
-        :row-key="rowKey"
-        hide-bottom
-        :selection="enableSelection ? 'multiple' : 'none'"
     >
       <template #header="props">
         <q-tr :props="props">
@@ -299,7 +271,9 @@ watch(() => props.rows, () => {
           >
             <div class="column items-center no-wrap" style="width: 100%;">
               <div class="row items-center no-wrap justify-between" style="width: 100%;">
-              <span class="no-wrap">{{ col.label }}</span>
+              <span class="no-wrap" @click="col.sortable ? props.sort(col.name) : null" :style="col.sortable ? 'cursor: pointer;' : ''">
+                  {{ col.label }}
+              </span>
               <div class="row items-center no-wrap">
                 <template v-if="col.isCustomSearchable">
                   <q-btn dense flat round icon="search" size="sm" @click.stop>
@@ -321,15 +295,15 @@ watch(() => props.rows, () => {
                   </q-btn>
                 </template>
 
-                <template v-if="col.isCustomSortable">
-                  <q-btn
-                      dense
-                      flat
-                      round
-                      :icon="getSortIcon(col.name)"
-                      size="sm"
-                      @click="handleSortClick(col.name)"
-                  />
+                <template v-if="col.sortable">
+                   <q-btn
+                       dense
+                       flat
+                       round
+                       :icon="getSortIcon(col.name)"
+                       size="sm"
+                       @click="props.sort(col.name)"
+                   />
                 </template>
                 </div>
               </div>
@@ -381,6 +355,7 @@ watch(() => props.rows, () => {
           color="black"
           active-color="primary"
           class="my-pagination-custom q-mr-md"
+          @update:model-value="page => onTableRequest({ pagination: { ...pagination, page }, filter: null, getCellValue: () => '' })"
       />
 
       <div class="row items-center q-gutter-x-md">
@@ -393,6 +368,7 @@ watch(() => props.rows, () => {
             map-options
             options-dense
             style="min-width: 80px"
+             @update:model-value="rowsPerPage => onTableRequest({ pagination: { ...pagination, page: 1, rowsPerPage }, filter: null, getCellValue: () => '' })"
         />
 
         <div class="row items-center no-wrap">
