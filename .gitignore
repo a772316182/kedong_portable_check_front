@@ -22,3 +22,17 @@ logs
 .env
 .env.*
 !.env.example
+/stationserver2.5/src/service/fscan_parser_modify4.py
+/stationserver2.5/log/manager/manager.log.2025-06-21
+/stationserver2.5/log/manager/manager.log.2025-06-26
+/stationserver2.5/log/service/service_basic_config.log.2025-06-17
+/stationserver2.5/log/service/service_basic_config.log.2025-06-26
+/stationserver2.5/log/service/service_city.log.2025-06-15
+/stationserver2.5/log/service/service_city.log.2025-06-25
+/stationserver2.5/log/service/service_city.log.2025-06-26
+/stationserver2.5/log/service/service_net_config.log.2025-06-22
+/stationserver2.5/log/service/service_net_config.log.2025-06-26
+/stationserver2.5/log/service/service_public_data.log.2025-06-08
+/stationserver2.5/log/service/service_station_manage.log.2025-06-18
+/stationserver2.5/log/service/service_station_manage.log.2025-06-26
+/stationserver2.5/src/service/traceroute_cache.json

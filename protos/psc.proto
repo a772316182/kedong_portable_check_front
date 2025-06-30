@@ -140,7 +140,27 @@ message DeleteMonitorObjectRequest {
 
 message UpdateMonitorObjectRequest {
   string id = 1;
-  map<string, string> updates = 2; // 动态更新字段，值转为字符串
+  optional string ip = 3;
+  optional string ip2 = 4;
+  optional string devname = 5;
+  optional float devtype = 6;
+  optional string systype = 7;
+  optional string subsystype = 8;
+  optional int32 securityarea = 9;
+  optional string mac = 10;
+  optional string mac2 = 11;
+  optional string hostname = 12;
+  optional string username = 13;
+  optional string passwd = 14;
+  optional string factory = 15;
+  optional string devversion = 16;
+  optional string remark = 17;
+  optional string asset_flag = 18;
+  optional string snmp_read_pwd = 19;
+  optional string snmp_write_pwd = 20;
+  optional string businesssys = 21;
+  optional bool bay_level_device = 22;
+  optional bool draw_topology = 23;
 }
 
 message GetMonitorObjectRequest {

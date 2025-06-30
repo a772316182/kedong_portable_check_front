@@ -168,8 +168,28 @@ export interface GetMonitorObjectResponse {
 
 // UpdateMonitorObject
 export interface UpdateMonitorObjectParams {
-  id: string;
-  updates: Record<string, string | number | boolean>;
+  id: string; // Required
+  ip?: string;
+  ip2?: string;
+  devname?: string;
+  devtype?: number | null;
+  systype?: string;
+  subsystype?: string;
+  securityarea?: number | null;
+  mac?: string;
+  mac2?: string;
+  hostname?: string;
+  username?: string;
+  passwd?: string;
+  factory?: string;
+  devversion?: string;
+  remark?: string;
+  asset_flag?: string;
+  snmp_read_pwd?: string;
+  snmp_write_pwd?: string;
+  businesssys?: string;
+  bay_level_device?: boolean;
+  draw_topology?: boolean;
 }
 
 export interface UpdateMonitorObjectResponse {

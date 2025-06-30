@@ -243,7 +243,7 @@ async function saveAsset() {
     let response;
     const assetData = editingAsset.value;
     if (assetData.id) { // Update
-      response = await updateMonitorObject({ id: assetData.id, updates: assetData as any });
+      response = await updateMonitorObject(assetData as any);
     } else { // Create
       response = await createMonitorObject(assetData as any);
     }
