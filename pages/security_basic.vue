@@ -10,7 +10,7 @@ const columns = {
   taskStatus: "任务状态",
   actions: "操作"
 }
-const rows = [
+const rows: { index: number, taskName: string, createTime: string, checkItem: string[], taskStatus: string }[] = [
   {
     index: 1,
     taskName: "通知单1",
@@ -57,7 +57,7 @@ const rows = [
 
 
 const currentStep = ref(1); // 使用字符串而不是数字来表示步骤
-const selectedTask = ref(null);
+const selectedTask = ref<{ index: number, taskName: string, createTime: string, checkItem: string[], taskStatus: string } | null>(null);
 
 function generateNoticeSlip() {
   dialogVisible.value = true;
@@ -70,7 +70,7 @@ function saveSecurityBasic(data: unknown) {
 
 
 // 查看任务详情
-function viewTask(task) {
+function viewTask(task: typeof rows[number]) {
   if (task.taskStatus === "已完成") {
     selectedTask.value = task;
     currentStep.value = 2; // 进入第二步

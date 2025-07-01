@@ -4,7 +4,7 @@
 const dialog = ref(false);
 const selectedRows = ref([]);
 const rows = ref<any[]>([]);
-const emit = defineEmits(['next']);
+const emit = defineEmits(['next', 'prev', 'reset']);
 
 // --- Data Generation & Business Logic ---
 const generateTestData = () => {
@@ -59,7 +59,7 @@ const labels = {
     <template #cell-area="{ row }">
       <div class="row q-gutter-xs items-center no-wrap">
         <common-status-chip
-            v-for="policy in row.area.split('  ').filter(p => p)"
+            v-for="policy in row.area.split('  ').filter((p: string) => p)"
             :key="policy"
             :label="policy"
         />

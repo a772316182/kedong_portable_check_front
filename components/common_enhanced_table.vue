@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type {QTableColumn, QTableProps} from 'quasar';
 import {useQuasar} from "quasar";
-import { rowClassFn } from '~/utils/tableStyle';
+import {rowClassFn} from "~/utils/tableStyle";
 
 interface Props {
   title?: string;
@@ -324,7 +324,7 @@ watch(() => props.rowsNumber, (newVal) => {
       </template>
 
       <template #body="props">
-        <q-tr :props="props">
+        <q-tr :props="props" :class="rowClassFn(props.row, props.rowIndex)">
           <q-td v-if="enableSelection" auto-width>
             <q-checkbox v-model="props.selected"/>
           </q-td>
