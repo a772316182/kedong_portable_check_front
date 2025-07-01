@@ -130,6 +130,22 @@ const clientSideProcessedRows = computed(() => {
   return result;
 });
 
+const paginatedRows = computed(() => {
+  if (props.serverSide) {
+    return props.rows; // Server-side provides already paginated rows
+  }
+
+  // Client-side pagination logic
+  const { page, rowsPerPage } = pagination.value;
+  if (rowsPerPage === 0) {
+    return clientSideProcessedRows.value; // Show all rows
+  }
+
+  const start = (page - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  return clientSideProcessedRows.value.slice(start, end);
+});
+
 
 // --- 分页相关计算属性 ---
 const totalRows = computed(() => {
@@ -241,7 +257,7 @@ watch(() => props.rowsNumber, (newVal) => {
     </div>
 
     <q-table
-        :rows="clientSideProcessedRows"
+        :rows="paginatedRows"
         :row-key="rowKey"
         :columns="generatedColumns"
         :loading="loading"
@@ -330,7 +346,10 @@ watch(() => props.rowsNumber, (newVal) => {
           </q-td>
 
           <q-td v-for="col in generatedColumns" :key="col.name" :props="props">
-            <slot :name="`cell-${col.name}`" :row="props.row" :value="getCellValue(props.row, col)">
+            <div v-if="col.name === 'index' && !serverSide">
+              {{ (pagination.page - 1) * pagination.rowsPerPage + props.rowIndex + 1 }}
+            </div>
+            <slot v-else :name="`cell-${col.name}`" :row="props.row" :value="getCellValue(props.row, col)">
               {{ getCellValue(props.row, col) }}
             </slot>
           </q-td>
