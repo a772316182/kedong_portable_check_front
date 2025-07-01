@@ -347,7 +347,7 @@ watch(() => props.rowsNumber, (newVal) => {
 
           <q-td v-for="col in generatedColumns" :key="col.name" :props="props">
             <div v-if="col.name === 'index' && !serverSide">
-              {{ (pagination.page - 1) * pagination.rowsPerPage + props.rowIndex + 1 }}
+              {{ clientSideProcessedRows.indexOf(props.row) + 1 }}
             </div>
             <slot v-else :name="`cell-${col.name}`" :row="props.row" :value="getCellValue(props.row, col)">
               {{ getCellValue(props.row, col) }}
