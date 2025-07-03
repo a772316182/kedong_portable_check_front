@@ -1,32 +1,16 @@
 <script setup lang="ts">
 
-const props = defineProps({
-  showDialog: {
-    type: Boolean,
-    required: true
-  },
-  currentDevice: {
-    type: Object,
-    default: null
-  }
-})
+const props = defineProps<{
+  modelValue: boolean,
+  currentDevice: any
+}>();
 
-const customPage = ref(null)
-const pagination = ref({
-  page: 1,
-  rowsPerPage: 10,
-  rowsNumber: 0
-})
-
-const rows = ref([])
-const totalRows = ref(0)
-
-const emit = defineEmits(['update:showDialog'])
+const emit = defineEmits(['update:modelValue']);
 
 const showDialog = computed({
-  get: () => props.showDialog,
-  set: (value) => emit('update:showDialog', value)
-})
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value)
+});
 
 const currentDeviceName = computed(() => props.currentDevice?.name || '未知设备')
 
@@ -59,12 +43,13 @@ const networkWhitelist = ref([
   {index: 12, protocol: 'TCP', address: '10.200.114.25', port: '3306'}
 ])
 
-const networkColumns = [
-  {name: 'index', label: '编号', field: 'index', align: 'left', style: 'width: 80px'},
-  {name: 'protocol', label: '协议', field: 'protocol', align: 'left', style: 'width: 100px'},
-  {name: 'address', label: '地址', field: 'address', align: 'left'},
-  {name: 'port', label: '端口', field: 'port', align: 'left', style: 'width: 100px'}
-]
+const networkColumns = {
+  index: '编号',
+  protocol: '协议',
+  address: '地址',
+  port: '端口'
+};
+
 
 // 服务端口白名单数据
 const serviceWhitelist = ref([
@@ -82,11 +67,11 @@ const serviceWhitelist = ref([
   {index: 12, protocol: 'UDP', port: '53'}
 ])
 
-const serviceColumns = [
-  {name: 'index', label: '编号', field: 'index', align: 'left', style: 'width: 80px'},
-  {name: 'protocol', label: '协议', field: 'protocol', align: 'left', style: 'width: 100px'},
-  {name: 'port', label: '端口', field: 'port', align: 'left', style: 'width: 100px'}
-]
+const serviceColumns = {
+  index: '编号',
+  protocol: '协议',
+  port: '端口'
+};
 
 // 关键文件/目录数据
 const criticalFiles = ref([
@@ -104,10 +89,10 @@ const criticalFiles = ref([
   {index: 12, path: '/var/log/messages'}
 ])
 
-const fileColumns = [
-  {name: 'index', label: '编号', field: 'index', align: 'left', style: 'width: 80px'},
-  {name: 'path', label: '关键文件/目录', field: 'path', align: 'left'}
-]
+const fileColumns = {
+  index: '编号',
+  path: '关键文件/目录'
+};
 
 // 危险操作指令数据
 const dangerousCommands = ref([
@@ -125,16 +110,15 @@ const dangerousCommands = ref([
   {index: 12, command: 'useradd hacker'}
 ])
 
-const commandColumns = [
-  {name: 'index', label: '编号', field: 'index', align: 'left', style: 'width: 80px'},
-  {name: 'command', label: '危险操作指令', field: 'command', align: 'left'}
-]
+const commandColumns = {
+  index: '编号',
+  command: '危险操作指令'
+};
 
 function handleSearch() {
   const match = policyTypes.find(pt => pt.label.includes(searchKeyword.value.trim()))
   if (match) {
     selectedPolicyType.value = match
-    pagination.value.page = 1
   }
   searchKeyword.value = ''
 }
@@ -153,29 +137,14 @@ const currentRows = computed(() => {
   return []
 })
 
-const currentPageRange = computed(() => {
-  const start = (pagination.value.page - 1) * pagination.value.rowsPerPage + 1
-  const end = Math.min(pagination.value.page * pagination.value.rowsPerPage, currentRows.value.length)
-  return {start, end}
-})
-
-function goToPage() {
-  if (!customPage.value) return
-  const pageNum = parseInt(customPage.value)
-  const maxPage = Math.ceil(currentRows.value.length / pagination.value.rowsPerPage)
-  if (pageNum >= 1 && pageNum <= maxPage) {
-    pagination.value.page = pageNum
-    customPage.value = null
-  }
-}
 
 function closeDialog() {
   showDialog.value = false
 }
 
-onMounted(() => {
-  pagination.value.rowsNumber = currentRows.value.length
-})
+// onMounted(() => {
+//   pagination.value.rowsNumber = currentRows.value.length
+// })
 </script>
 
 <template>
@@ -211,6 +180,7 @@ icon="close" flat round dense style="position: absolute; top: 4px; right: 4px; c
                 @update:model-value="pagination.page = 1"
             />
         </div>        -->
+        <!-- @update:model-value="pagination.page = 1" -->
         <div class="row items-center q-mb-md">
           <div class="text-subtitle1 q-mr-sm" style="line-height: 40px;">策略类型：</div>
           <q-select
@@ -219,7 +189,7 @@ icon="close" flat round dense style="position: absolute; top: 4px; right: 4px; c
               style="max-width: 200px;"
               outlined
               dense
-              @update:model-value="pagination.page = 1"
+              
           />
           <q-input
               v-model="searchKeyword"
@@ -238,177 +208,56 @@ icon="close" flat round dense style="position: absolute; top: 4px; right: 4px; c
 
       </q-card-section>
 
-      <q-card-section class="q-pt-none" style="height: 300px; overflow: auto;">
+      <q-card-section class="q-pt-none" style="height: 750px; overflow: auto;">
         <!-- 网络连接白名单表格 -->
-        <q-table
+        <common-enhanced-table
             v-if="selectedPolicyType.value === 'network'"
-            v-model:pagination="pagination"
-            flat
-            bordered
-            :rows="networkWhitelist.slice(
-            (pagination.page - 1) * pagination.rowsPerPage,
-            pagination.page * pagination.rowsPerPage
-          )"
-            :columns="networkColumns"
+            :rows="networkWhitelist"
+            :column-labels="networkColumns"
             row-key="index"
-            hide-pagination
             virtual-scroll
-            :header-class="'custom-header'"
-            dense
-            :table-row-class-fn="rowClassFn"
+            
         />
 
+
         <!-- 服务端口白名单表格 -->
-        <q-table
+        <common-enhanced-table
             v-else-if="selectedPolicyType.value === 'service'"
-            v-model:pagination="pagination"
-            flat
-            bordered
-            :rows="serviceWhitelist.slice(
-            (pagination.page - 1) * pagination.rowsPerPage,
-            pagination.page * pagination.rowsPerPage
-          )"
-            :columns="serviceColumns"
+            :rows="serviceWhitelist"
+            :column-labels="serviceColumns"
             row-key="index"
-            hide-pagination
             virtual-scroll
-            :header-class="'custom-header'"
-            dense
-            :table-row-class-fn="rowClassFn"
+            
         />
 
         <!-- 关键文件/目录表格 -->
-        <q-table
+        <common-enhanced-table
             v-else-if="selectedPolicyType.value === 'files'"
-            v-model:pagination="pagination"
-            flat
-            bordered
-            :rows="criticalFiles.slice(
-            (pagination.page - 1) * pagination.rowsPerPage,
-            pagination.page * pagination.rowsPerPage
-          )"
-            :columns="fileColumns"
+            :rows="criticalFiles"
+            :column-labels="fileColumns"
             row-key="index"
-            hide-pagination
             virtual-scroll
-            :header-class="'custom-header'"
-            dense
-            :table-row-class-fn="rowClassFn"
+            
         />
 
         <!-- 危险操作指令表格 -->
-        <q-table
+        <common-enhanced-table
             v-else-if="selectedPolicyType.value === 'commands'"
-            v-model:pagination="pagination"
-            flat
-            bordered
-            :rows="dangerousCommands.slice(
-            (pagination.page - 1) * pagination.rowsPerPage,
-            pagination.page * pagination.rowsPerPage
-          )"
-            :columns="commandColumns"
+            :rows="dangerousCommands"
+            :column-labels="commandColumns"
             row-key="index"
-            hide-pagination
             virtual-scroll
-            :header-class="'custom-header'"
-            dense
-            :table-row-class-fn="rowClassFn"
+            
         />
       </q-card-section>
 
-      <q-card-section>
-        <div class="row items-center justify-start q-mt-md">
-          <div class="text-caption q-mr-md">
-            第 {{ currentPageRange.start }}-{{ currentPageRange.end }} 条，共 {{ currentRows.length }} 条
-          </div>
-
-          <q-pagination
-              v-model="pagination.page"
-              :max="Math.ceil(currentRows.length / pagination.rowsPerPage)"
-              :max-pages="6"
-              direction-links
-              boundary-links
-              boundary-numbers
-              size="sm"
-              flat
-              color="black"
-              active-color="primary"
-              class="my-pagination-custom q-mr-md"
-          />
-
-          <div class="text-caption custom-page-size q-mr-md">
-            {{ pagination.rowsPerPage }} 条/页
-          </div>
-
-          <div class="row items-center">
-            <span class="q-mr-sm">跳至</span>
-            <q-input
-                v-model.number="customPage"
-                type="number"
-                dense
-                style="width: 60px;"
-                class="custom-jump-input"
-                @keyup.enter="goToPage"
-            />
-            <span class="q-ml-sm">页</span>
-          </div>
-        </div>
-      </q-card-section>
-
+      
       <q-separator/>
 
-      <q-card-actions align="right">
-        <q-btn v-close-popup flat label="关闭" color="primary"/>
-      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <style scoped>
-:deep(.q-table th) {
-  background-color: #006A6A !important;
-  color: white !important;
-  font-weight: bold !important;
-  font-size: 14px !important;
-}
 
-
-::v-deep(.my-pagination-custom .q-pagination__content .q-btn[aria-label*="页"]),
-.custom-page-size,
-::v-deep(.custom-jump-input .q-field__control) {
-  border: 1px solid #3BB5A3 !important;
-  border-radius: 4px !important;
-}
-
-::v-deep(.my-pagination-custom .q-pagination__content .q-btn[aria-label*="页"]) {
-  background: #E0F2F1 !important;
-  color: #3BB5A3 !important;
-  min-width: 28px !important;
-  min-height: 28px !important;
-}
-
-.custom-page-size {
-  padding: 4px 8px;
-  background-color: #E0F2F1 !important;
-  color: black !important;
-  min-height: 28px;
-  display: flex;
-  align-items: center;
-}
-
-::v-deep(.custom-jump-input .q-field__control) {
-  background-color: #E0F2F1 !important;
-  height: 28px !important;
-  min-height: unset !important;
-}
-
-::v-deep(.custom-jump-input .q-field__native) {
-  color: black !important;
-  padding: 0 8px;
-  height: 26px !important;
-}
-
-::v-deep(.custom-jump-input) {
-  height: 28px !important;
-}
 </style>
