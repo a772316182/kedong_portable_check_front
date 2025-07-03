@@ -50,11 +50,11 @@ const navigate = (path: string, title: string) => {
     </q-list>
 
     <q-list class="full-width">
-      <q-item v-ripple clickable @click="navigate('/topology', '拓扑绘制')">
+      <q-item v-ripple clickable @click="navigate('/example_test', 'grpc演示')">
         <q-item-section avatar>
           <Icon name="majesticons:file-report" size="24" mode="svg"/>
         </q-item-section>
-        <q-item-section>拓扑绘制</q-item-section>
+        <q-item-section>grpc演示</q-item-section>
       </q-item>
     </q-list>
 

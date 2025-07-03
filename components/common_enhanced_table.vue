@@ -312,14 +312,14 @@ watch(() => props.rowsNumber, (newVal) => {
                 </template>
 
                 <template v-if="col.sortable">
-                   <q-btn
-                       dense
-                       flat
-                       round
-                       :icon="getSortIcon(col.name)"
-                       size="sm"
+                  <q-btn
+                      dense
+                      flat
+                      round
+                      :icon="getSortIcon(col.name)"
+                      size="sm"
                        @click="props.sort(col.name)"
-                   />
+                  />
                 </template>
                 </div>
               </div>
