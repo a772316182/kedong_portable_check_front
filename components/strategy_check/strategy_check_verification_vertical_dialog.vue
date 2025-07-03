@@ -13,7 +13,7 @@ const showDialog = computed({
   set: (value) => emit('update:modelValue', value)
 });
 
-
+const selectedRows = ref([])
 const currentDeviceName = computed(() => props.currentDevice?.name || '未知设备')
 
 // 数据源
@@ -54,7 +54,7 @@ function closeDialog() {
 </script>
 <template>
   <q-dialog v-model="showDialog" persistent>
-    <q-card style="min-width: 1200px; max-width: 90vw; max-height: 90vh; overflow-y: auto;">
+    <q-card style="min-width: 1200px; max-width: 90vw; height: 750px; overflow-y: auto;">
       
       <q-card-section class="q-py-sm row items-center" style="background-color: #3BB5A3; position: relative;">
         <q-icon name="description" size="30px" class="q-mr-sm text-white" />
@@ -67,6 +67,7 @@ function closeDialog() {
             :rows="policyData"
             :column-labels="labels"
             row-key="index"
+            enable-selection
             >
         </common-enhanced-table>
 
