@@ -1,8 +1,8 @@
 import {loadSync, type PackageDefinition} from '@grpc/proto-loader'
 import {credentials, loadPackageDefinition} from '@grpc/grpc-js'
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { cwd } from 'process';
+import {fileURLToPath} from 'url';
+import {dirname, resolve} from 'path';
+import {cwd} from 'process';
 
 // Helper to build path relative to the current environment
 const getProtoPath = (filename: string) => {
@@ -12,6 +12,8 @@ const getProtoPath = (filename: string) => {
 
     console.log("当前工作目录: " + cwd());
     console.log("当前执行文件所在的目录: " + __dirname);
+    console.log("当前执行文件: " + __filename)
+    console.log("文件路径: " + resolve("public/protos/"))
 
     return `public/protos/${filename}`
 }
