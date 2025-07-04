@@ -5,7 +5,7 @@ import {credentials, loadPackageDefinition} from '@grpc/grpc-js'
 // Helper to build path relative to the current environment
 const getProtoPath = (filename: string) => {
     // In local dev (`npm run dev`), process.cwd() is the project root. The files are in `server/assets/protos/`.
-    if (import.meta.dev) {
+    if (process.dev) {
         return path.join(process.cwd(), 'server', 'assets', 'protos', filename);
     }
     // In production builds (like on Vercel), `process.cwd()` is `/var/task`.
