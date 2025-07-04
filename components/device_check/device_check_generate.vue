@@ -1,46 +1,15 @@
 <script setup lang="ts">
-
 // 定义 emit
 const emit = defineEmits(["save", "cancel"]);
 const selectedRows = ref([]);
-const columns = [
-  {
-    name: "index",
-    label: "编号",
-    field: "index",
-    align: "center",
-  },
-  {
-    name: "securityZone",
-    label: "安全区",
-    field: "securityZone",
-    align: "center",
-  },
-  {
-    name: "name",
-    label: "设备名称",
-    field: "name",
-    align: "left",
-  },
-  {
-    name: "networkIp",
-    label: "网络设备IP",
-    field: "networkIp",
-    align: "center",
-  },
-  {
-    name: "deviceType",
-    label: "设备类型",
-    field: "deviceType",
-    align: "center",
-  },
-  {
-    name: "checkToolIp",
-    label: "检查工具IP",
-    field: "checkToolIp",
-    align: "center",
-  },
-];
+const columns = ref({
+  index: "编号",
+  securityZone: "安全区",
+  name: "设备名称",
+  networkIp: "网络设备IP",
+  deviceType: "设备类型",
+  checkToolIp: "检查工具IP",
+});
 const rows = [
   {
     index: 1,
@@ -93,13 +62,13 @@ const selectedCheckItems = ref([]); // 存储选中项
 const selectedRangeItems = ref([]);
 // 检查项目列表
 const checkItemOptions = [
-  {label: "基线核查"},
-  {label: "高危端口"},
-  {label: "漏洞扫描"},
-  {label: "弱口令扫描"},
-  {label: "违规外联"},
-  {label: "违规外设"},
-  {label: "恶意代码部署情况"},
+  { label: "基线核查" },
+  { label: "高危端口" },
+  { label: "漏洞扫描" },
+  { label: "弱口令扫描" },
+  { label: "违规外联" },
+  { label: "违规外设" },
+  { label: "恶意代码部署情况" },
 ];
 
 // 保存按钮点击
@@ -129,11 +98,11 @@ function onCancel() {
       <div class="row q-col-gutter-md">
         <div class="col-1 flex flex-center text-body1">任务名称</div>
         <div class="col-4">
-          <q-input v-model="taskName" filled/>
+          <q-input v-model="taskName" filled />
         </div>
         <div class="col-1 offset-1 flex flex-center text-body1">厂站名称</div>
         <div class="col-4">
-          <q-input v-model="plantName" filled/>
+          <q-input v-model="plantName" filled />
         </div>
         <div class="row q-col-gutter-md q-gutter-y-md">
           <div class="col-1 flex flex-center text-body1">检查项目</div>
@@ -141,15 +110,15 @@ function onCancel() {
             <div class="bg-grey-3 q-pa-md rounded-borders">
               <div class="row q-col-gutter-md">
                 <div
-                    v-for="option in checkItemOptions"
-                    :key="option.label"
-                    class="col-3 col-md-4 col-sm-6"
+                  v-for="option in checkItemOptions"
+                  :key="option.label"
+                  class="col-3 col-md-4 col-sm-6"
                 >
                   <q-checkbox
-                      v-model="selectedCheckItems"
-                      :val="option.label"
-                      :label="option.label"
-                      color="primary"
+                    v-model="selectedCheckItems"
+                    :val="option.label"
+                    :label="option.label"
+                    color="primary"
                   />
                 </div>
               </div>
@@ -161,19 +130,19 @@ function onCancel() {
       <div class="row q-col-gutter-md q-gutter-y-md">
         <div class="col-1 flex flex-center text-body1">检查范围</div>
         <div class="col-10">
-          <q-table
-              v-model:selected="selectedRows"
-              selection="multiple"
-              square
-              no-data-label="暂无数据"
-              flat
-              bordered
-              :rows="rows"
-              :columns="columns"
-              row-key="index"
-              :table-row-class-fn="rowClassFn"
-              :rows-per-page-options="[5, 10, 20, 50, 0]"
-          />
+          <common-enhanced-table
+            :rows="rows"
+            :column-labels="columns"
+            enable-selection
+            v-model:selection="selectedRows"
+            row-key="index"
+            :non-searchable-columns="Object.keys(columns)"
+            :non-sortable-columns="['checkToolIp']"
+          >
+            <template #cell-checkToolIp="{ row }">
+              <q-input v-model="row.checkToolIp" filled />
+            </template>
+          </common-enhanced-table>
         </div>
       </div>
     </q-card-section>
@@ -181,18 +150,18 @@ function onCancel() {
       <div class="row q-col-gutter-md justify-center">
         <div class="col-4">
           <q-btn
-              class="full-width"
-              label="保存"
-              color="primary"
-              @click="onSave"
+            class="full-width"
+            label="保存"
+            color="primary"
+            @click="onSave"
           />
         </div>
         <div class="col-4">
           <q-btn
-              class="full-width"
-              label="取消"
-              color="red-10"
-              @click="onCancel"
+            class="full-width"
+            label="取消"
+            color="red-10"
+            @click="onCancel"
           />
         </div>
       </div>

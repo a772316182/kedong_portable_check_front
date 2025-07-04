@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+const dialogVisible = ref(false);
 const columns = {
   index: "编号",
   deviceName: "设备名称",
@@ -7,7 +7,7 @@ const columns = {
   deviceIP1: "设备IP1",
   deviceIP2: "设备IP2",
   checkResult: "核查结果",
-}
+};
 const rows = [
   {
     index: 1,
@@ -42,23 +42,37 @@ const rows = [
     checkResult: "合格",
   },
 ];
+
+// 查看任务详情
+function showEvidenceDialog(taskStatus: String) {
+  if (taskStatus === "不合格") {
+    dialogVisible.value = true;
+  }
+}
 </script>
 
 <template>
-      <div class="q-gutter-y-md">
-        <common-enhanced-table
-            title="检查结果表"
-            :rows="rows"
-            :column-labels="columns"
-            row-key="index">
-          <template #cell-checkResult="{row}">
-            <common-status-chip :label="row.checkResult"/>
-          </template>
-        </common-enhanced-table>
-      </div>
-      <!-- 页面底部导航按钮 -->
-      <div class="q-mt-md row justify-center items-center q-gutter-x-md">
-        <q-btn label="上一步" color="primary" @click="$emit('back')"/>
-        <q-btn label="完成" color="primary" @click="$emit('next')"/>
-      </div>
+  <div class="q-gutter-y-md">
+    <common-enhanced-table
+      title="检查结果表"
+      :rows="rows"
+      :column-labels="columns"
+      row-key="index"
+    >
+      <template #cell-checkResult="{ row }">
+        <common-status-chip
+          :label="row.checkResult"
+          @click="showEvidenceDialog(row.checkResult)"
+        />
+      </template>
+    </common-enhanced-table>
+  </div>
+  <q-dialog v-model="dialogVisible">
+    <device-check-evidence @cancel="dialogVisible = false" />
+  </q-dialog>
+  <!-- 页面底部导航按钮 -->
+  <div class="q-mt-md row justify-center items-center q-gutter-x-md">
+    <q-btn label="上一步" color="primary" @click="$emit('back')" />
+    <q-btn label="完成" color="primary" @click="$emit('next')" />
+  </div>
 </template>

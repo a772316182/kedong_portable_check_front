@@ -1,5 +1,6 @@
 <script setup lang="ts">
-
+const dialogVisible = ref(false);
+const evidenceTitle = ref("");
 const columns = {
   index: "编号",
   deviceName: "设备名称",
@@ -10,7 +11,10 @@ const columns = {
   vulnerabilityScan: "漏洞扫描",
   highRiskPorts: "高危端口",
   weakPasswordScan: "弱口令扫描",
-  illegalConnection: "违规外联"
+  illegalConnection: "违规外联",
+  illegalPeripheral: "违规外设",
+  malwareConfig: "恶意代码配置",
+  networkPlanConfig: "网络规划配置",
 };
 const rows = [
   {
@@ -24,6 +28,9 @@ const rows = [
     highRiskPorts: "不合格",
     weakPasswordScan: "合格",
     illegalConnection: "合格",
+    illegalPeripheral: "合格",
+    malwareConfig: "不合格",
+    networkPlanConfig: "合格",
   },
   {
     index: 2,
@@ -36,6 +43,9 @@ const rows = [
     highRiskPorts: "合格",
     weakPasswordScan: "不合格",
     illegalConnection: "合格",
+    illegalPeripheral: "合格",
+    malwareConfig: "不合格",
+    networkPlanConfig: "合格",
   },
   {
     index: 3,
@@ -48,6 +58,9 @@ const rows = [
     highRiskPorts: "不合格",
     weakPasswordScan: "不合格",
     illegalConnection: "不合格",
+    illegalPeripheral: "不合格",
+    malwareConfig: "不合格",
+    networkPlanConfig: "不合格",
   },
   {
     index: 4,
@@ -60,6 +73,9 @@ const rows = [
     highRiskPorts: "合格",
     weakPasswordScan: "合格",
     illegalConnection: "合格",
+    illegalPeripheral: "合格",
+    malwareConfig: "合格",
+    networkPlanConfig: "未核查",
   },
   {
     index: 5,
@@ -72,6 +88,9 @@ const rows = [
     highRiskPorts: "不合格",
     weakPasswordScan: "不合格",
     illegalConnection: "不合格",
+    illegalPeripheral: "不合格",
+    malwareConfig: "不合格",
+    networkPlanConfig: "不合格",
   },
   {
     index: 6,
@@ -84,36 +103,96 @@ const rows = [
     highRiskPorts: "合格",
     weakPasswordScan: "合格",
     illegalConnection: "合格",
+    illegalPeripheral: "合格",
+    malwareConfig: "合格",
+    networkPlanConfig: "合格",
   },
 ];
+
+// 查看任务详情
+function showEvidenceDialog(taskStatus: string, field: keyof typeof columns) {
+  if (taskStatus === "不合格") {
+    dialogVisible.value = true;
+    evidenceTitle.value = columns[field];
+  }
+}
 </script>
 
 <template>
   <common-enhanced-table
-      title="检查结果表"
-      :rows="rows"
-      :column-labels="columns"
-      row-key="index"
+    title="检查结果表"
+    :rows="rows"
+    :column-labels="columns"
+    row-key="index"
+    :non-searchable-columns="Object.keys(columns)"
   >
-    <template #cell-baselineCheck="{row}">
-      <common-status-chip :label="row.baselineCheck"/>
+    <template #cell-baselineCheck="{ row }">
+      <common-status-chip
+        :label="row.baselineCheck"
+        @click="showEvidenceDialog(row.baselineCheck, 'baselineCheck')"
+      />
     </template>
-    <template #cell-vulnerabilityScan="{row}">
-      <common-status-chip :label="row.vulnerabilityScan"/>
+
+    <template #cell-vulnerabilityScan="{ row }">
+      <common-status-chip
+        :label="row.vulnerabilityScan"
+        @click="showEvidenceDialog(row.vulnerabilityScan, 'vulnerabilityScan')"
+      />
     </template>
-    <template #cell-highRiskPorts="{row}">
-      <common-status-chip :label="row.highRiskPorts"/>
+
+    <template #cell-highRiskPorts="{ row }">
+      <common-status-chip
+        :label="row.highRiskPorts"
+        @click="showEvidenceDialog(row.highRiskPorts, 'highRiskPorts')"
+      />
     </template>
-    <template #cell-weakPasswordScan="{row}">
-      <common-status-chip :label="row.weakPasswordScan"/>
+
+    <template #cell-weakPasswordScan="{ row }">
+      <common-status-chip
+        :label="row.weakPasswordScan"
+        @click="showEvidenceDialog(row.weakPasswordScan, 'weakPasswordScan')"
+      />
     </template>
-    <template #cell-illegalConnection="{row}">
-      <common-status-chip :label="row.illegalConnection"/>
+
+    <template #cell-illegalConnection="{ row }">
+      <common-status-chip
+        :label="row.illegalConnection"
+        @click="showEvidenceDialog(row.illegalConnection, 'illegalConnection')"
+      />
+    </template>
+
+    <template #cell-illegalPeripheral="{ row }">
+      <common-status-chip
+        :label="row.illegalPeripheral"
+        @click="showEvidenceDialog(row.illegalPeripheral, 'illegalPeripheral')"
+      />
+    </template>
+
+    <template #cell-malwareConfig="{ row }">
+      <common-status-chip
+        :label="row.malwareConfig"
+        @click="showEvidenceDialog(row.malwareConfig, 'malwareConfig')"
+      />
+    </template>
+
+    <template #cell-networkPlanConfig="{ row }">
+      <common-status-chip
+        :label="row.networkPlanConfig"
+        @click="showEvidenceDialog(row.networkPlanConfig, 'networkPlanConfig')"
+      />
     </template>
   </common-enhanced-table>
+
+  <q-dialog v-model="dialogVisible">
+    <security-basic-evidence
+      :evidence-title="evidenceTitle"
+      @cancel="dialogVisible = false"
+    />
+  </q-dialog>
+
   <!-- 页面底部导航按钮 -->
   <div class="q-mt-md row justify-center items-center q-gutter-x-md">
-    <q-btn label="上一步" color="primary" @click="$emit('back')"/>
-    <q-btn label="完成" color="primary" @click="$emit('next')"/>
+    <q-btn label="上一步" color="primary" @click="$emit('back')" />
+    <q-btn label="完成" color="primary" @click="$emit('next')" />
   </div>
 </template>
