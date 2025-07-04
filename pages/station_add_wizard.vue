@@ -152,8 +152,8 @@ onMounted(loadProgress);
 </script>
 
 <template>
-  <q-page padding>
-    <div class="column" style="height: calc(100vh - 100px);">
+  <q-page class="q-pa-md  q-gutter-y-md">
+    <div >
       
       <div class="row items-center justify-between q-mb-md">
         <div class="text-h5">新增/配置厂站流程</div>

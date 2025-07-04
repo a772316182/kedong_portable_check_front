@@ -1,145 +1,41 @@
-<template>
-  <div class="policy-status-container q-pa-md">
-    <div class="text-h5 q-mb-md">策略检查状态</div>
+<script setup lang="ts">
 
-    <div class="policy-cards row q-gutter-md">
-      <!-- 主机策略卡片 -->
-      <q-card class="policy-card col" flat bordered>
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6">主机策略</div>
-        </q-card-section>
-
-        <q-card-section class="text-center">
-          <q-circular-progress
-              show-value
-              font-size="16px"
-              :value="99"
-              size="120px"
-              :thickness="0.2"
-              color="primary"
-              track-color="grey-3"
-              class="q-ma-md"
-          >
-            99%
-          </q-circular-progress>
-          <div class="text-subtitle1">检查中</div>
-        </q-card-section>
-      </q-card>
-
-      <!-- 纵向策略卡片 -->
-      <q-card class="policy-card col" flat bordered>
-        <q-card-section class="bg-teal text-white">
-          <div class="text-h6">纵向策略</div>
-        </q-card-section>
-
-        <q-card-section class="text-center">
-          <q-circular-progress
-              show-value
-              font-size="16px"
-              :value="99"
-              size="120px"
-              :thickness="0.2"
-              color="teal"
-              track-color="grey-3"
-              class="q-ma-md"
-          >
-            99%
-          </q-circular-progress>
-          <div class="text-subtitle1">检查中</div>
-        </q-card-section>
-      </q-card>
-
-      <!-- 隔离策略卡片 -->
-      <q-card class="policy-card col" flat bordered>
-        <q-card-section class="bg-orange text-white">
-          <div class="text-h6">隔离策略</div>
-        </q-card-section>
-
-        <q-card-section class="text-center">
-          <q-circular-progress
-              show-value
-              font-size="16px"
-              :value="99"
-              size="120px"
-              :thickness="0.2"
-              color="orange"
-              track-color="grey-3"
-              class="q-ma-md"
-          >
-            99%
-          </q-circular-progress>
-          <div class="text-subtitle1">检查中</div>
-        </q-card-section>
-      </q-card>
-
-      <!-- 防火墙策略卡片 -->
-      <q-card class="policy-card col" flat bordered>
-        <q-card-section class="bg-red text-white">
-          <div class="text-h6">防火墙策略</div>
-        </q-card-section>
-
-        <q-card-section class="text-center">
-          <q-circular-progress
-              show-value
-              font-size="16px"
-              :value="99"
-              size="120px"
-              :thickness="0.2"
-              color="red"
-              track-color="grey-3"
-              class="q-ma-md"
-          >
-            99%
-          </q-circular-progress>
-          <div class="text-subtitle1">检查中</div>
-        </q-card-section>
-      </q-card>
-    </div>
-    <div class="row justify-center q-gutter-sm q-mt-md">
-      <q-btn color="primary" flat label="上一步" @click="emit('prev')"/>
-      <q-btn color="primary" label="完成" @click="emit('reset')"/>
-    </div>
-  </div>
-</template>
-
-<script setup>
+const activePolicy = ref('host') // 默认显示主机策略
 const emit = defineEmits(['prev', 'reset'])
+
+
+
 </script>
 
-<style scoped>
-.policy-status-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
+<template>
+  <!-- 中间内容 -->
+  <div class="col q-pa-md">
+    <!-- 策略切换按钮 -->
+    <div class="row q-gutter-sm q-mb-md">
+      <q-btn label="主机策略检查结果" :color="activePolicy === 'host' ? 'primary' : 'grey'" @click="activePolicy = 'host'"/>
+      <q-btn
+label="纵向策略检查结果" :color="activePolicy === 'vertical' ? 'primary' : 'grey'"
+             @click="activePolicy = 'vertical'"/>
+      <q-btn
+label="隔离策略检查结果" :color="activePolicy === 'isolation' ? 'primary' : 'grey'"
+             @click="activePolicy = 'isolation'"/>
+      <q-btn
+label="防火墙策略检查结果" :color="activePolicy === 'firewall' ? 'primary' : 'grey'"
+             @click="activePolicy = 'firewall'"/>
+    </div>
 
-.policy-cards {
-  display: flex;
-  flex-wrap: wrap;
-}
+    <!-- 动态切换子组件 -->
+    <div>
+      <strategy-check-result-host v-if="activePolicy === 'host'"/>
+      <strategy-check-result-vertical v-else-if="activePolicy === 'vertical'"/>
+      <strategy-check-result-isolation v-else-if="activePolicy === 'isolation'"/>
+      <strategy-check-result-firewall v-else-if="activePolicy === 'firewall'"/>
+    </div>
+    <!-- 底部按钮保留 -->
+    <div class="row justify-center q-gutter-sm q-mt-md">
+      <q-btn label="上一步" color="primary" flat @click="emit('prev')"/>
+      <q-btn label="完成" color="primary" @click="emit('reset')"/>
+    </div>
+  </div>
 
-.policy-card {
-  flex: 1 1 200px; /* 每个卡片最小宽度200px */
-  min-width: 200px;
-  max-width: 280px;
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.3s;
-}
-
-.policy-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-@media (max-width: 900px) {
-  .policy-card {
-    flex: 1 1 45%;
-  }
-}
-
-@media (max-width: 600px) {
-  .policy-card {
-    flex: 1 1 100%;
-  }
-}
-</style>
+</template>
