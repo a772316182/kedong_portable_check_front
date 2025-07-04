@@ -5,7 +5,7 @@ import {dirname, resolve} from 'path';
 import {cwd} from 'process';
 
 // Helper to build path relative to the current environment
-const getProtoPath = (filename: string) => {
+const getProtoPath = (filename: string): string => {
 
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
@@ -15,7 +15,7 @@ const getProtoPath = (filename: string) => {
     console.log("当前执行文件: " + __filename)
     console.log("文件路径: " + resolve("public/protos/"))
 
-    return `public/protos/${filename}`
+    return resolve(`public/protos/${filename}`)
 }
 
 // 1. proto 文件路径
