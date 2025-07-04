@@ -1,9 +1,12 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
     compatibilityDate: '2025-05-15',
-    app: {
-        pageTransition: {name: 'page', mode: 'out-in'},
+    app:{
+        pageTransition: { name: 'page', mode: 'out-in' },
     },
     devtools: {enabled: false},
     modules: [
@@ -30,6 +33,27 @@ export default defineNuxtConfig({
                 info: '#f1f1f1',
                 warning: '#F2C037'
             }
+        }
+    },
+    hooks: {
+        'nitro:build:public-assets': (nitro) => {
+            // 源目录：你的 .proto 文件所在的位置
+            const srcDir = path.resolve('protos')
+            // 目标目录：构建后的服务器输出目录下的 'protos' 文件夹
+            const dstDir = path.resolve(nitro.options.output.serverDir, 'protos')
+
+            // 确保目标目录存在
+            if (!fs.existsSync(dstDir)) {
+                fs.mkdirSync(dstDir, {recursive: true})
+            }
+
+            // 读取源目录中的所有文件并复制
+            fs.readdirSync(srcDir).forEach(file => {
+                const srcFile = path.join(srcDir, file)
+                const dstFile = path.join(dstDir, file)
+                fs.copyFileSync(srcFile, dstFile)
+                console.log(`Copied proto file: ${file} to ${dstDir}`)
+            })
         }
     }
 })
