@@ -15,7 +15,7 @@ const getProtoPath = (filename: string): string => {
     console.log("当前执行文件: " + __filename)
     console.log("文件路径: " + resolve("public/protos/"))
 
-    return resolve(`public/protos/${filename}`)
+    return resolve(`public/${filename}`)
 }
 
 // 1. proto 文件路径
