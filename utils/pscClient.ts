@@ -21,7 +21,8 @@ const PSC = grpcObject.plantStationControl.PSC
 
 // 5. 创建并导出一个客户端实例，指向远程服务器
 export const pscClient = new PSC(
-    '192.168.136.129:50059',
+    '47.93.158.28:8092',
+    // '192.168.136.129:50059',
     // '219.216.65.200:50059',
     credentials.createInsecure(),
 )

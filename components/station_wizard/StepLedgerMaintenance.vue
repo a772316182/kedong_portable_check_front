@@ -242,7 +242,6 @@ onMounted(() => {
           在此处管理与该厂站关联的所有设备资产。请确保所有关键设备都已录入并信息准确。
         </p>
 
-        <div class="q-mt-lg" style="width: 1100px; min-width: 1100px; max-width: 1100px;">
           <common-enhanced-table
               title="资产列表"
               :rows="rows"
@@ -281,7 +280,6 @@ onMounted(() => {
             </template>
             
           </common-enhanced-table>
-        </div>
       </div>
     </div>
 
