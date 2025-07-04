@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { pscClient } from '../../../utils/pscClient'
+import { pscClient } from '../pscClient'
 import type { QueryMonitorObjectsParams, QueryMonitorObjectsResponse } from '~/types/api'
 
 export default defineEventHandler(async (event) => {

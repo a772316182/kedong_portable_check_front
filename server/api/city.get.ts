@@ -1,5 +1,5 @@
 import {defineEventHandler, getQuery} from 'h3'
-import {pscClient} from '../../utils/pscClient'
+import {pscClient} from './pscClient'
 
 export default defineEventHandler(async (event) => {
     const {areaPid = '0'} = getQuery(event)

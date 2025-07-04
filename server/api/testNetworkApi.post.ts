@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { pscClient } from '../../utils/pscClient'
+import { pscClient } from './pscClient'
 
 /**
  * 用于直接测试网络相关API的端点

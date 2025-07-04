@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3';
-import { pscClient } from '~/utils/pscClient';
+import { pscClient } from '~/server/api/pscClient';
 import type { SaveTopologyParams, SaveTopologyResponse } from '~/types/api';
 import type { RpcError } from 'grpc-web';
 

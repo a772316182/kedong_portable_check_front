@@ -1,6 +1,6 @@
 import path from 'path'
 import {loadSync, type PackageDefinition} from '@grpc/proto-loader'
-import {credentials, type GrpcObject, loadPackageDefinition} from '@grpc/grpc-js'
+import {credentials, loadPackageDefinition} from '@grpc/grpc-js'
 
 // Helper to build path relative to the current environment
 const getProtoPath = (filename: string) => {
@@ -10,7 +10,7 @@ const getProtoPath = (filename: string) => {
     }
     // In production builds (like on Vercel), `process.cwd()` is `/var/task`.
     // The nuxt.config.ts hook copies `server/assets/protos/*` to the server's output directory as `protos/*`.
-    return path.join(process.cwd(), 'protos', filename);
+    return path.join('./assets', 'protos', filename);
 }
 
 // 1. proto 文件路径

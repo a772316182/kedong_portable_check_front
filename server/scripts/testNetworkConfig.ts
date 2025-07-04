@@ -1,4 +1,4 @@
-import { pscClient } from '../../utils/pscClient'
+import { pscClient } from '../api/pscClient'
 
 // 测试NetConfig - 添加网络配置
 function testAddNetworkConfig() {

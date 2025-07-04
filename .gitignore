@@ -6,7 +6,7 @@
 .cache
 .cursor
 dist
-stationserver2.5/
+stationserver2.5
 # Node dependencies
 node_modules
 

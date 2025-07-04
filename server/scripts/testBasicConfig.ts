@@ -1,4 +1,4 @@
-import { pscClient } from '../../utils/pscClient'
+import { pscClient } from '../api/pscClient'
 
 // 测试添加厂站
 function testAddStation() {

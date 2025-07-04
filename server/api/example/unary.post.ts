@@ -1,4 +1,4 @@
-import { exampleClient } from '~/utils/pscClient'
+import { exampleClient } from '~/server/api/pscClient'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)

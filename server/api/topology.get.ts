@@ -1,5 +1,5 @@
 import { defineEventHandler, getQuery } from 'h3';
-import { pscClient } from '~/utils/pscClient';
+import { pscClient } from '~/server/api/pscClient';
 import type { GetTopologyResponse } from '~/types/api';
 import type { RpcError } from 'grpc-web';
 
