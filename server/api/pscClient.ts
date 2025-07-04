@@ -10,7 +10,7 @@ const getProtoPath = (filename: string) => {
     }
     // In production builds (like on Vercel), `process.cwd()` is `/var/task`.
     // The nuxt.config.ts hook copies `server/assets/protos/*` to the server's output directory as `protos/*`.
-    return path.resolve('./protos', filename)
+    return `@@/public/protos/${filename}`
 }
 
 // 1. proto 文件路径

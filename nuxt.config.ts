@@ -5,6 +5,9 @@ import path from 'node:path'
 
 export default defineNuxtConfig({
     compatibilityDate: '2025-05-15',
+    app:{
+        pageTransition: { name: 'page', mode: 'out-in' },
+    },
     devtools: {enabled: false},
     modules: [
         '@nuxt/content',
@@ -33,7 +36,7 @@ export default defineNuxtConfig({
         }
     },
     hooks: {
-        'nitro:build:before': (nitro) => {
+        'nitro:build:public-assets': (nitro) => {
             // 源目录：你的 .proto 文件所在的位置
             const srcDir = path.resolve('server/assets/protos')
             // 目标目录：构建后的服务器输出目录下的 'protos' 文件夹
