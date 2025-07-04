@@ -4,6 +4,7 @@
 .nuxt
 .nitro
 .cache
+.cursor
 dist
 stationserver2.5/
 # Node dependencies
