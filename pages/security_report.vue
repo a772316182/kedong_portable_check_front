@@ -75,4 +75,5 @@ function deleteReport(item: any) {
     </q-card>
 
   </q-page>
+  <security-report-generate v-model="dialog"/>
 </template>

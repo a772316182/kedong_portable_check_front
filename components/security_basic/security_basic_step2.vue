@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const selectedRows = ref([]);
 const columns = ref({
   index: "编号",
@@ -9,7 +8,7 @@ const columns = ref({
   ip: "设备IP",
   mac: "MAC地址",
   progress: "核查进度",
-})
+});
 
 const rows = [
   {
@@ -56,16 +55,16 @@ const segmentGroups = ref([
     name: "Ⅰ区B网",
     selectedAll: false,
     segments: [
-      {range: "192.168.11.11 - 192.168.11.12", selected: false},
-      {range: "192.168.11.13 - 192.168.11.14", selected: false},
+      { range: "192.168.11.11 - 192.168.11.12", selected: false },
+      { range: "192.168.11.13 - 192.168.11.14", selected: false },
     ],
   },
   {
     name: "ⅠⅠ区A网",
     selectedAll: false,
     segments: [
-      {range: "10.0.0.1 - 10.0.0.2", selected: false},
-      {range: "10.0.0.3 - 10.0.0.4", selected: false},
+      { range: "10.0.0.1 - 10.0.0.2", selected: false },
+      { range: "10.0.0.3 - 10.0.0.4", selected: false },
     ],
   },
 ]);
@@ -88,16 +87,6 @@ function parseProgress(value) {
   return isNaN(num) ? 0 : num / 100;
 }
 
-// 切换单行选中状态
-function toggleRowSelection(row) {
-  const index = selectedRows.value.indexOf(row.index);
-  if (index === -1) {
-    selectedRows.value.push(row.index);
-  } else {
-    selectedRows.value.splice(index, 1);
-  }
-}
-
 // 切换整个组的选中状态
 function toggleGroup(group) {
   group.segments.forEach((seg) => {
@@ -115,35 +104,31 @@ function updateGroupSelection(group) {
   <div class="row q-gutter-md">
     <!-- 左侧：白色分区选择框 -->
     <div
-        class="bg-white q-pa-md"
-        style="
-          width: 300px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          max-height: 600px;
-          overflow-y: auto;
-        "
+      class="bg-white q-pa-md"
+      style="
+        width: 300px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        max-height: 600px;
+        overflow-y: auto;
+      "
     >
-      <div
-          v-for="(group, index) in segmentGroups"
-          :key="index"
-          class="q-mb-md"
-      >
+      <div v-for="(group, index) in segmentGroups" :key="index" class="q-mb-md">
         <div class="row items-center q-mb-sm">
           <q-checkbox
-              v-model="group.selectedAll"
-              label="全选"
-              @update:model-value="toggleGroup(group)"
+            v-model="group.selectedAll"
+            label="全选"
+            @update:model-value="toggleGroup(group)"
           />
           <div class="q-ml-sm text-bold">{{ group.name }}</div>
         </div>
         <div class="q-ml-lg">
           <q-checkbox
-              v-for="(segment, idx) in group.segments"
-              :key="idx"
-              v-model="segment.selected"
-              :label="segment.range"
-              @update:model-value="updateGroupSelection(group)"
+            v-for="(segment, idx) in group.segments"
+            :key="idx"
+            v-model="segment.selected"
+            :label="segment.range"
+            @update:model-value="updateGroupSelection(group)"
           />
         </div>
       </div>
@@ -153,32 +138,31 @@ function updateGroupSelection(group) {
     <div class="col">
       <div class="q-gutter-y-md">
         <common-enhanced-table
-            title="基础检查表"
-            :rows="rows"
-            :column-labels="columns"
-            enable-selection
-            v-model:selection="selectedRows"
-            row-key="index"
+          title="基础检查表"
+          :rows="rows"
+          :column-labels="columns"
+          enable-selection
+          v-model:selection="selectedRows"
+          row-key="index"
+          :non-searchable-columns="Object.keys(columns)"
+          :non-sortable-columns="Object.keys(columns)"
         >
           <template #top-right>
             <div class="q-gutter-md">
-              <q-btn label="批量核查" color="primary"/>
-              <q-btn label="取消检查" color="yellow-10"/>
+              <q-btn label="批量核查" color="primary" />
+              <q-btn label="取消检查" color="yellow-10" />
             </div>
           </template>
-          <template #cell-progress="{row}">
+          <template #cell-progress="{ row }">
             <div v-if="row.error">
-              <q-badge color="red">{{
-                  row.errorMessage
-                }}
-              </q-badge>
+              <q-badge color="red">{{ row.errorMessage }} </q-badge>
             </div>
             <div v-else>
               <q-linear-progress
-                  :value="parseProgress(row.progress)"
-                  :color="getProgressColor(row)"
-                  size="md"
-                  class="q-mt-sm"
+                :value="parseProgress(row.progress)"
+                :color="getProgressColor(row)"
+                size="md"
+                class="q-mt-sm"
               />
               <div class="text-center">
                 {{ getStatusText(row) }}
@@ -192,7 +176,7 @@ function updateGroupSelection(group) {
 
   <!-- 页面底部导航按钮 -->
   <div class="q-mt-md row justify-center items-center q-gutter-x-md">
-    <q-btn label="上一步" color="primary" @click="$emit('back')"/>
-    <q-btn label="下一步" color="primary" @click="$emit('next')"/>
+    <q-btn label="上一步" color="primary" @click="$emit('back')" />
+    <q-btn label="下一步" color="primary" @click="$emit('next')" />
   </div>
 </template>

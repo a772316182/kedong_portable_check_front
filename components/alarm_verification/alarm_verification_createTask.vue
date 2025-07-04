@@ -107,6 +107,7 @@ function deleteTask(item: any) {
       </q-btn>
     </template>
   </common-enhanced-table>
+  <alarm-verification-createdialog v-model="dialog"/>
 </template>
 
 <style scoped>

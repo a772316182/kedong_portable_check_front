@@ -76,8 +76,10 @@ function handlePolicyClick(name: any) {
           :non-searchable-columns="['index', 'actions']"
       >
         <template #top-right>
-          <q-btn label="策略导入" color="primary"/>
+          <q-btn label="策略导入" color="primary" class="q-mr-sm"/>
+          <q-btn label="模板下载" color="primary"/>
         </template>
+        
 
         <template #cell-count="{ row }">
           <q-btn outline color="primary" @click="handlePolicyClick(row)">{{ row.count }}</q-btn>
@@ -85,6 +87,6 @@ function handlePolicyClick(name: any) {
       </common-enhanced-table>
     </q-card-section>
   </q-card>
-  <strategy-check-verification-vertical-dialog v-model="showPolicyDialog" :name="currentDevice"/>
+  <strategy-check-verification-vertical-dialog v-model="showPolicyDialog" :currentDevice="currentDevice"/>
 </template>
 

@@ -2,7 +2,7 @@
 
 const props = defineProps<{
   modelValue: boolean,
-  currentDevice: any
+  device: any
 }>();
 
 const emit = defineEmits(['update:modelValue']);
@@ -12,7 +12,7 @@ const showDialog = computed({
   set: (value) => emit('update:modelValue', value)
 });
 
-const currentDeviceName = computed(() => props.currentDevice?.name || '未知设备')
+const currentDeviceName = computed(() => props.device?.name || '未知设备')
 
 // 策略类型选项
 const policyTypes = [

@@ -27,7 +27,7 @@ function handleStepChange(newStep: number) {
           <alarm-verification-create-task
               @next="handleStepChange(activeStep + 1)"
               @prev="handleStepChange(activeStep - 1)"
-              @reset="handleStepChange(0)"
+              @reset="handleStepChange(1)"
               @view-verification="handleStepChange(1)"
           />
         </q-step>
@@ -39,7 +39,7 @@ function handleStepChange(newStep: number) {
           <alarm-verification-verification
               @next="handleStepChange(activeStep + 1)"
               @prev="handleStepChange(activeStep - 1)"
-              @reset="handleStepChange(0)"
+              @reset="handleStepChange(1)"
               @view-verification="handleStepChange(1)"
           />
         </q-step>
@@ -47,7 +47,7 @@ function handleStepChange(newStep: number) {
           <alarm-verification-result
               @next="handleStepChange(activeStep + 1)"
               @prev="handleStepChange(activeStep - 1)"
-              @reset="handleStepChange(0)"
+              @reset="handleStepChange(1)"
               @view-verification="handleStepChange(1)"
           />
         </q-step>

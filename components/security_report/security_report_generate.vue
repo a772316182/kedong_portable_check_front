@@ -7,20 +7,24 @@ defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const showPolicyDialog = ref(false);
+const currentDevice = ref(null);
+
+const emit = defineEmits(['update:modelValue','save'])
 
 const taskName = ref('富国站及核查任务')
 const stationName = ref('富国站')
 const creator = ref('张三')
 const checkboxes = ref([])
+const itemSelection = ref([]);
 
-const taskColumns = [
-  {name: 'id', label: '编号', field: 'id', align: 'left'},
-  {name: 'type', label: '任务类型', field: 'type', align: 'left'},
-  {name: 'name', label: '检查任务名称', field: 'name', align: 'left'},
-  {name: 'time', label: '检查时间', field: 'time', align: 'left'},
-  {name: 'detail', label: '查看详情', field: 'detail', align: 'left'}
-]
+const labels = {
+  id: '编号',
+  type: '任务类型',
+  name: '检查任务名称',
+  time: '检查时间',
+  detail: '查看详情'
+};
 
 const taskRows = ref([
   {id: 1, type: '安全基础检查', name: '', time: '2023-09-09 00:00:00', detail: '查看', selected: false},
@@ -30,17 +34,21 @@ const taskRows = ref([
   {id: 5, type: '安全基础检查', name: '', time: '', detail: '', selected: false}
 ])
 
-function taskRowClassFn(row) {
-  return row.id % 2 === 0 ? 'dialog-even-row' : 'dialog-odd-row'
+function onSave() {
+  const allSelectedItems = itemSelection.value;
+  console.log('Saving task with selected items:', allSelectedItems);
+  emit('save', allSelectedItems);
+  closeDialog();
 }
 
 function closeDialog() {
-  emit('update:modelValue', false)
+  emit('update:modelValue', false);
 }
 
-function confirmDialog() {
-  // 这里可以添加确认逻辑
-  emit('update:modelValue', false)
+function handlePolicyClick(row: any) {
+  currentDevice.value = row;
+  showPolicyDialog.value = true;
+    
 }
 </script>
 
@@ -62,104 +70,65 @@ icon="close" flat round dense style="position: absolute; top: 4px; right: 4px; c
                @click="closeDialog"/>
       </q-card-section>
 
-      <q-card-section>
-        <!-- 任务名称 + 厂站名称 同行 -->
-        <div class="row q-mb-md">
-          <div class="row items-center col-6">
-            <div class="text-weight-bold">任务名称：</div>
-            <q-input v-model="taskName" dense :style="{ backgroundColor: '#f0f0f0' , width: '490px'}" class="q-ml-sm"/>
+      <q-card-section class="col" style="overflow-y: auto;">
+        <div class="q-gutter-y-md">
+          <div class="row q-col-gutter-lg">
+            <div class="col-6">
+              <q-input v-model="taskName" dense outlined label="任务名称"/>
+            </div>
+            <div class="col-6">
+              <q-input v-model="stationName" dense outlined label="厂站名称"/>
+            </div>
+            <div class="col-6">
+              <q-input v-model="creator" label="创建人" dense outlined/>
+            </div>
           </div>
-          <div class="row items-center col-6">
-            <div class="text-weight-bold">厂站名称：</div>
-            <q-input
-v-model="stationName" dense :style="{ backgroundColor: '#f0f0f0' , width: '490px'}"
-                     class="q-ml-sm"/>
-          </div>
-        </div>
 
-        <!-- 创建人 -->
-        <div class="row q-mb-md">
-          <div class="text-weight-bold" style="margin-left: 1em;">创建人：</div>
-          <q-input v-model="creator" dense :style="{ backgroundColor: '#f0f0f0', width: '1075px' }" class="q-ml-sm"/>
-        </div>
-
-        <!-- 报告项 -->
-        <div class="row q-mb-md">
-          <div class="text-weight-bold" style="margin-left: 1em;">报告项：</div>
-          <div class="q-ml-sm">
-            <q-checkbox v-model="checkboxes" val="安全基础检查" label="安全基础检查"/>
-            <q-checkbox v-model="checkboxes" val="网络设备检查" label="网络设备检查"/>
-            <q-checkbox v-model="checkboxes" val="策略核查" label="策略核查"/>
-            <q-checkbox v-model="checkboxes" val="告警验证" label="告警验证"/>
+          <div>
+            <div class="text-subtitle1 q-mb-sm">报告项</div>
+            <q-option-group
+                v-model="checkboxes"
+                :options="[ { label: '安全基础检查', value: '安全基础检查' }, { label: '网络设备检查', value: '网络设备检查' }
+                 , { label: '策略核查', value: '策略核查' }, { label: '告警验证', value: '告警验证' }]"
+                type="checkbox"
+                inline
+            />
           </div>
-        </div>
-        <div class="row no-wrap q-mt-md" style="align-items: flex-start;">
-          <div class="text-weight-bold q-mb-sm">任务列表：</div>
-          <q-table
-              flat
-              bordered
-              :rows="taskRows"
-              :columns="taskColumns"
-              row-key="id"
-              hide-pagination
-              hide-bottom
-              style="width: 1080px;"
-              :row-class="taskRowClassFn"
-          >
-            <template #header="props">
-              <q-tr :props="props" class="dialog-header">
-                <q-th auto-width/>
-                <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                  {{ col.label }}
-                </q-th>
-              </q-tr>
-            </template>
-            <template #body="props">
-              <q-tr :props="props" :class="taskRowClassFn(props.row)">
-                <q-td>
-                  <q-checkbox v-model="props.row.selected"/>
-                </q-td>
-                <q-td v-for="col in props.cols" :key="col.name" :props="props">
-                  {{ col.value }}
-                </q-td>
-              </q-tr>
-            </template>
-          </q-table>
-        </div>
+
+            <div class="q-mb-md">
+              <div class="text-subtitle1 q-mb-sm">任务列表</div>
+              <common-enhanced-table
+                  v-model:selection="itemSelection"
+                  :rows="taskRows"
+                  :column-labels="labels"
+                  row-key="id"
+                  enable-selection
+              >
+            
+              <template #cell-detail="{ row }">
+                <q-btn v-if="row.detail" outline color="primary" @click="handlePolicyClick(row)">{{ row.detail }}</q-btn>
+              </template>
+            
+              </common-enhanced-table>
+            </div>
+          
+          
+
+            
+
+          </div>
+        
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
         <q-btn flat label="取消" color="primary" @click="closeDialog"/>
-        <q-btn label="确认" color="primary" @click="confirmDialog"/>
+        <q-btn label="确认" color="primary" @click="onSave"/>
       </q-card-actions>
     </q-card>
   </q-dialog>
+  <security-report-generate-detail v-model="showPolicyDialog" :currentDevice="currentDevice"/>
 </template>
 
 <style scoped>
-/* 对话框表格样式 */
-.dialog-header {
-  /* background-color: #2e7d32 !important; */
-  background-color: #3BB5A3 !important;
-  color: white !important;
-}
 
-.dialog-header th {
-  font-weight: bold;
-  color: white !important;
-}
-
-.dialog-even-row {
-  /* background-color: #e8f5e9 !important; */
-  background-color: #E0F2F1 !important;
-}
-
-.dialog-odd-row {
-  background-color: #f5f5f5 !important;
-}
-
-/* 对话框输入框样式 */
-.q-field--dense .q-field__control {
-  height: 40px !important;
-}
 </style>
