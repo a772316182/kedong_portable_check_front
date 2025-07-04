@@ -5,12 +5,12 @@ import {credentials, loadPackageDefinition} from '@grpc/grpc-js'
 // Helper to build path relative to the current environment
 const getProtoPath = (filename: string) => {
     // In local dev (`npm run dev`), process.cwd() is the project root. The files are in `server/assets/protos/`.
-    if (process.dev) {
+    if (import.meta.dev) {
         return path.join(process.cwd(), 'server', 'assets', 'protos', filename);
     }
     // In production builds (like on Vercel), `process.cwd()` is `/var/task`.
     // The nuxt.config.ts hook copies `server/assets/protos/*` to the server's output directory as `protos/*`.
-    return path.join('./assets', 'protos', filename);
+    return path.join('server/assets/protos/', filename);
 }
 
 // 1. proto 文件路径
